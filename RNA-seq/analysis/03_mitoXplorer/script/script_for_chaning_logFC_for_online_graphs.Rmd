@@ -1,0 +1,64 @@
+---
+title: "Changing logFC for colors"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+library(dplyr)
+```
+
+```{r}
+# Define file paths
+file_paths <- c(
+  "C:/Users/nks882/OneDrive - University of Copenhagen/Desktop/mitoXplorer2.0/af_vs_sham_RA_RNA_adjust.csv",
+  "C:/Users/nks882/OneDrive - University of Copenhagen/Desktop/mitoXplorer2.0/Metformin_vs_AF_RA_RNA.csv"
+)
+
+# Define a function to process the files
+process_file <- function(file_path) {
+  # Read the CSV file with comma separator
+  data <- read.csv(file_path, sep = ",")
+  
+  # Print column names for debugging
+  print(colnames(data))
+  
+  # Check if Log2FC column exists
+  if ("Log2FC" %in% colnames(data)) {
+    # Swap positive to negative and negative to positive for the Log2FC column
+    data <- data %>% mutate(Log2FC = -Log2FC)
+    
+    # Generate a new file name
+    new_file_path <- sub(".csv", "_modified.csv", file_path)
+    
+    # Save the modified data to a new CSV file
+    write.csv(data, new_file_path, row.names = FALSE, sep = ",")
+    
+    # Return the new file path
+    return(new_file_path)
+  } else {
+    stop("Column 'Log2FC' not found in the file: ", file_path)
+  }
+}
+
+# Apply the function to each file path
+modified_files <- lapply(file_paths, process_file)
+
+# Print the paths of the modified files
+print(modified_files)
+
+
+```
+

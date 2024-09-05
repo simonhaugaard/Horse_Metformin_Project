@@ -1,0 +1,944 @@
+SAMPLE NAME	HGNC ID	GENE NAME	PROCESS	LOG2FOLD	P-VALUE
+Met_vs_Placebo_RA_user	AARS2	alanyl-tRNA synthetase 2, mitochondrial	Translation	-0.76	0.003
+Met_vs_Placebo_RA_user	BPHL	biphenyl hydrolase like	Translation	-0.32	0.066
+Met_vs_Placebo_RA_user	CARS2	cysteinyl-tRNA synthetase 2, mitochondrial	Translation	0.221	0.219
+Met_vs_Placebo_RA_user	DAP3	death associated protein 3	Translation	-0.015	0.900
+Met_vs_Placebo_RA_user	DARS2	aspartyl-tRNA synthetase 2, mitochondrial	Translation	0.043	0.881
+Met_vs_Placebo_RA_user	DDX28	DEAD-box helicase 28	Translation	-0.288	0.014
+Met_vs_Placebo_RA_user	EARS2	glutamyl-tRNA synthetase 2, mitochondrial	Translation	0.556	0.055
+Met_vs_Placebo_RA_user	EIF2AK3	eukaryotic translation initiation factor 2 alpha kinase 3	Translation	0.283	0.232
+Met_vs_Placebo_RA_user	ELAC2	elaC ribonuclease Z 2	Translation	-0.058	0.704
+Met_vs_Placebo_RA_user	ERAL1	Era like 12S mitochondrial rRNA chaperone 1	Translation	-0.241	0.026
+Met_vs_Placebo_RA_user	FARS2	phenylalanyl-tRNA synthetase 2, mitochondrial	Translation	-0.056	0.591
+Met_vs_Placebo_RA_user	FASTK	Fas activated serine/threonine kinase	Translation	-0.332	0.001
+Met_vs_Placebo_RA_user	FASTKD1	FAST kinase domains 1	Translation	0.596	0.001
+Met_vs_Placebo_RA_user	FASTKD2	FAST kinase domains 2	Translation	0.141	0.171
+Met_vs_Placebo_RA_user	FASTKD3	FAST kinase domains 3	Translation	0.248	0.076
+Met_vs_Placebo_RA_user	FASTKD5	FAST kinase domains 5	Translation	0.121	0.399
+Met_vs_Placebo_RA_user	GADD45GIP1	GADD45G interacting protein 1	Translation	-0.49	0.000
+Met_vs_Placebo_RA_user	GARS1	glycyl-tRNA synthetase	Translation	-0.037	0.808
+Met_vs_Placebo_RA_user	GATB	glutamyl-tRNA amidotransferase subunit B	Translation	0.025	0.838
+Met_vs_Placebo_RA_user	GATC	glutamyl-tRNA amidotransferase subunit C	Translation	-0.168	0.127
+Met_vs_Placebo_RA_user	GFM2	G elongation factor mitochondrial 2	Translation	0.429	0.015
+Met_vs_Placebo_RA_user	GTPBP10	GTP binding protein 10	Translation	0.082	0.555
+Met_vs_Placebo_RA_user	GTPBP3	GTP binding protein 3, mitochondrial	Translation	-0.281	0.017
+Met_vs_Placebo_RA_user	GUF1	GUF1 homolog, GTPase	Translation	0.123	0.502
+Met_vs_Placebo_RA_user	HARS2	histidyl-tRNA synthetase 2, mitochondrial	Translation	0.01	0.937
+Met_vs_Placebo_RA_user	HEMK1	HemK methyltransferase family member 1	Translation	-0.187	0.269
+Met_vs_Placebo_RA_user	IARS2	isoleucyl-tRNA synthetase 2, mitochondrial	Translation	0.147	0.049
+Met_vs_Placebo_RA_user	LACTB2	lactamase beta 2	Translation	0.04	0.732
+Met_vs_Placebo_RA_user	LARS2	leucyl-tRNA synthetase 2, mitochondrial	Translation	0.103	0.588
+Met_vs_Placebo_RA_user	LRPPRC	leucine rich pentatricopeptide repeat containing	Translation	0.497	0.000
+Met_vs_Placebo_RA_user	MALSU1	mitochondrial assembly of ribosomal large subunit 1	Translation	-0.197	0.085
+Met_vs_Placebo_RA_user	MARS2	methionyl-tRNA synthetase 2, mitochondrial	Translation	0.365	0.012
+Met_vs_Placebo_RA_user	METTL17	methyltransferase like 17	Translation	-0.145	0.437
+Met_vs_Placebo_RA_user	MPV17L2	MPV17 mitochondrial inner membrane protein like 2	Translation	-0.295	0.035
+Met_vs_Placebo_RA_user	MRM1	mitochondrial rRNA methyltransferase 1	Translation	-0.318	0.010
+Met_vs_Placebo_RA_user	MRM2	mitochondrial rRNA methyltransferase 2	Translation	-0.258	0.006
+Met_vs_Placebo_RA_user	MRM3	mitochondrial rRNA methyltransferase 3	Translation	0.057	0.620
+Met_vs_Placebo_RA_user	MRPL11	mitochondrial ribosomal protein L11	Translation	-0.387	0.000
+Met_vs_Placebo_RA_user	MRPL12	mitochondrial ribosomal protein L12	Translation	-0.516	0.000
+Met_vs_Placebo_RA_user	MRPL13	mitochondrial ribosomal protein L13	Translation	-0.528	0.000
+Met_vs_Placebo_RA_user	MRPL14	mitochondrial ribosomal protein L14	Translation	-0.564	0.000
+Met_vs_Placebo_RA_user	MRPL15	mitochondrial ribosomal protein L15	Translation	0.354	0.002
+Met_vs_Placebo_RA_user	MRPL16	mitochondrial ribosomal protein L16	Translation	-0.493	0.000
+Met_vs_Placebo_RA_user	MRPL17	mitochondrial ribosomal protein L17	Translation	-0.377	0.000
+Met_vs_Placebo_RA_user	MRPL18	mitochondrial ribosomal protein L18	Translation	-0.304	0.004
+Met_vs_Placebo_RA_user	MRPL19	mitochondrial ribosomal protein L19	Translation	-0.108	0.224
+Met_vs_Placebo_RA_user	MRPL2	mitochondrial ribosomal protein L2	Translation	-0.483	0.000
+Met_vs_Placebo_RA_user	MRPL21	mitochondrial ribosomal protein L21	Translation	-0.249	0.085
+Met_vs_Placebo_RA_user	MRPL22	mitochondrial ribosomal protein L22	Translation	-0.101	0.501
+Met_vs_Placebo_RA_user	MRPL24	mitochondrial ribosomal protein L24	Translation	-0.451	0.000
+Met_vs_Placebo_RA_user	MRPL27	mitochondrial ribosomal protein L27	Translation	-0.672	0.000
+Met_vs_Placebo_RA_user	MRPL28	mitochondrial ribosomal protein L28	Translation	-0.481	0.000
+Met_vs_Placebo_RA_user	MRPL3	mitochondrial ribosomal protein L3	Translation	0.08	0.332
+Met_vs_Placebo_RA_user	MRPL30	mitochondrial ribosomal protein L30	Translation	-0.258	0.005
+Met_vs_Placebo_RA_user	MRPL34	mitochondrial ribosomal protein L34	Translation	-0.609	0.000
+Met_vs_Placebo_RA_user	MRPL35	mitochondrial ribosomal protein L35	Translation	-0.405	0.000
+Met_vs_Placebo_RA_user	MRPL36	mitochondrial ribosomal protein L36	Translation	-0.513	0.000
+Met_vs_Placebo_RA_user	MRPL37	mitochondrial ribosomal protein L37	Translation	-0.27	0.003
+Met_vs_Placebo_RA_user	MRPL39	mitochondrial ribosomal protein L39	Translation	0.024	0.904
+Met_vs_Placebo_RA_user	MRPL4	mitochondrial ribosomal protein L4	Translation	-0.348	0.002
+Met_vs_Placebo_RA_user	MRPL40	mitochondrial ribosomal protein L40	Translation	-0.546	0.000
+Met_vs_Placebo_RA_user	MRPL41	mitochondrial ribosomal protein L41	Translation	-0.49	0.000
+Met_vs_Placebo_RA_user	MRPL42	mitochondrial ribosomal protein L42	Translation	-0.323	0.217
+Met_vs_Placebo_RA_user	MRPL43	mitochondrial ribosomal protein L43	Translation	-0.412	0.000
+Met_vs_Placebo_RA_user	MRPL45	mitochondrial ribosomal protein L45	Translation	-0.078	0.238
+Met_vs_Placebo_RA_user	MRPL46	mitochondrial ribosomal protein L46	Translation	-0.141	0.130
+Met_vs_Placebo_RA_user	MRPL47	mitochondrial ribosomal protein L47	Translation	-0.337	0.039
+Met_vs_Placebo_RA_user	MRPL48	mitochondrial ribosomal protein L48	Translation	-0.107	0.428
+Met_vs_Placebo_RA_user	MRPL49	mitochondrial ribosomal protein L49	Translation	-0.117	0.244
+Met_vs_Placebo_RA_user	MRPL50	mitochondrial ribosomal protein L50	Translation	0.022	0.839
+Met_vs_Placebo_RA_user	MRPL51	mitochondrial ribosomal protein L51	Translation	-0.289	0.005
+Met_vs_Placebo_RA_user	MRPL52	mitochondrial ribosomal protein L52	Translation	-0.302	0.005
+Met_vs_Placebo_RA_user	MRPL53	mitochondrial ribosomal protein L53	Translation	0.103	0.437
+Met_vs_Placebo_RA_user	MRPL57	mitochondrial ribosomal protein L57	Translation	-0.377	0.008
+Met_vs_Placebo_RA_user	MRPL58	mitochondrial ribosomal protein L58	Translation	-0.331	0.001
+Met_vs_Placebo_RA_user	MRPL9	mitochondrial ribosomal protein L9	Translation	-0.243	0.011
+Met_vs_Placebo_RA_user	MRPS10	mitochondrial ribosomal protein S10	Translation	-0.277	0.031
+Met_vs_Placebo_RA_user	MRPS11	mitochondrial ribosomal protein S11	Translation	-0.526	0.000
+Met_vs_Placebo_RA_user	MRPS12	mitochondrial ribosomal protein S12	Translation	-0.418	0.000
+Met_vs_Placebo_RA_user	MRPS14	mitochondrial ribosomal protein S14	Translation	-0.366	0.000
+Met_vs_Placebo_RA_user	MRPS15	mitochondrial ribosomal protein S15	Translation	-0.489	0.000
+Met_vs_Placebo_RA_user	MRPS16	mitochondrial ribosomal protein S16	Translation	0.127	0.210
+Met_vs_Placebo_RA_user	MRPS18A	mitochondrial ribosomal protein S18A	Translation	-0.081	0.493
+Met_vs_Placebo_RA_user	MRPS18B	mitochondrial ribosomal protein S18B	Translation	-0.344	0.000
+Met_vs_Placebo_RA_user	MRPS18C	mitochondrial ribosomal protein S18C	Translation	-0.061	0.775
+Met_vs_Placebo_RA_user	MRPS2	mitochondrial ribosomal protein S2	Translation	-0.507	0.000
+Met_vs_Placebo_RA_user	MRPS22	mitochondrial ribosomal protein S22	Translation	-0.16	0.188
+Met_vs_Placebo_RA_user	MRPS23	mitochondrial ribosomal protein S23	Translation	-0.353	0.001
+Met_vs_Placebo_RA_user	MRPS24	mitochondrial ribosomal protein S24	Translation	-0.385	0.000
+Met_vs_Placebo_RA_user	MRPS25	mitochondrial ribosomal protein S25	Translation	-0.489	0.001
+Met_vs_Placebo_RA_user	MRPS26	mitochondrial ribosomal protein S26	Translation	-0.513	0.000
+Met_vs_Placebo_RA_user	MRPS27	mitochondrial ribosomal protein S27	Translation	-0.551	0.000
+Met_vs_Placebo_RA_user	MRPS28	mitochondrial ribosomal protein S28	Translation	-0.2	0.213
+Met_vs_Placebo_RA_user	MRPS30	mitochondrial ribosomal protein S30	Translation	-0.163	0.119
+Met_vs_Placebo_RA_user	MRPS31	mitochondrial ribosomal protein S31	Translation	-0.122	0.304
+Met_vs_Placebo_RA_user	MRPS33	mitochondrial ribosomal protein S33	Translation	0.06	0.320
+Met_vs_Placebo_RA_user	MRPS34	mitochondrial ribosomal protein S34	Translation	-0.609	0.000
+Met_vs_Placebo_RA_user	MRPS35	mitochondrial ribosomal protein S35	Translation	-0.003	0.977
+Met_vs_Placebo_RA_user	MRPS36	mitochondrial ribosomal protein S36	Translation	-0.179	0.054
+Met_vs_Placebo_RA_user	MRPS5	mitochondrial ribosomal protein S5	Translation	-0.207	0.047
+Met_vs_Placebo_RA_user	MRPS6	mitochondrial ribosomal protein S6	Translation	-0.559	0.000
+Met_vs_Placebo_RA_user	MRPS7	mitochondrial ribosomal protein S7	Translation	-0.272	0.009
+Met_vs_Placebo_RA_user	MRPS9	mitochondrial ribosomal protein S9	Translation	-0.073	0.411
+Met_vs_Placebo_RA_user	MRRF	mitochondrial ribosome recycling factor	Translation	0.105	0.511
+Met_vs_Placebo_RA_user	MTERF3	mitochondrial transcription termination factor 3	Translation	0.179	0.406
+Met_vs_Placebo_RA_user	MTERF4	mitochondrial transcription termination factor 4	Translation	-0.068	0.636
+Met_vs_Placebo_RA_user	MTFMT	mitochondrial methionyl-tRNA formyltransferase	Translation	-0.132	0.675
+Met_vs_Placebo_RA_user	MTG1	mitochondrial ribosome associated GTPase 1	Translation	-0.29	0.008
+Met_vs_Placebo_RA_user	MTG2	mitochondrial ribosome associated GTPase 2	Translation	-0.086	0.536
+Met_vs_Placebo_RA_user	MTIF2	mitochondrial translational initiation factor 2	Translation	-0.081	0.489
+Met_vs_Placebo_RA_user	MTIF3	mitochondrial translational initiation factor 3	Translation	-0.145	0.156
+Met_vs_Placebo_RA_user	MTO1	mitochondrial tRNA translation optimization 1	Translation	0.24	0.006
+Met_vs_Placebo_RA_user	MTPAP	mitochondrial poly(A) polymerase	Translation	-0.056	0.704
+Met_vs_Placebo_RA_user	MTRES1	mitochondrial transcription rescue factor 1	Translation	-0.247	0.003
+Met_vs_Placebo_RA_user	MTRF1	mitochondrial translation release factor 1	Translation	0.109	0.519
+Met_vs_Placebo_RA_user	MTRF1L	mitochondrial translational release factor 1 like	Translation	-0.011	0.961
+Met_vs_Placebo_RA_user	NOA1	nitric oxide associated 1	Translation	-0.086	0.585
+Met_vs_Placebo_RA_user	NSUN3	NOP2/Sun RNA methyltransferase 3	Translation	-0.01	0.950
+Met_vs_Placebo_RA_user	OSGEPL1	O-sialoglycoprotein endopeptidase like 1	Translation	0.395	0.133
+Met_vs_Placebo_RA_user	PARS2	prolyl-tRNA synthetase 2, mitochondrial	Translation	0.277	0.037
+Met_vs_Placebo_RA_user	PDE12	phosphodiesterase 12	Translation	0.157	0.233
+Met_vs_Placebo_RA_user	PIN4	peptidylprolyl cis/trans isomerase, NIMA-interacting 4	Translation	-0.524	0.026
+Met_vs_Placebo_RA_user	PNPT1	polyribonucleotide nucleotidyltransferase 1	Translation	-0.016	0.944
+Met_vs_Placebo_RA_user	PPA2	pyrophosphatase (inorganic) 2	Translation	-0.336	0.012
+Met_vs_Placebo_RA_user	PRORP	protein only RNase P catalytic subunit	Translation	0.003	0.988
+Met_vs_Placebo_RA_user	PSTK	phosphoseryl-tRNA kinase	Translation	0.258	0.181
+Met_vs_Placebo_RA_user	PTCD1	pentatricopeptide repeat domain 1	Translation	0.012	0.949
+Met_vs_Placebo_RA_user	PTRH2	peptidyl-tRNA hydrolase 2	Translation	-0.337	0.002
+Met_vs_Placebo_RA_user	PUS1	pseudouridine synthase 1	Translation	-0.259	0.120
+Met_vs_Placebo_RA_user	PUSL1	pseudouridine synthase like 1	Translation	-0.782	0.000
+Met_vs_Placebo_RA_user	QRSL1	glutaminyl-tRNA amidotransferase subunit QRSL1	Translation	-0.023	0.861
+Met_vs_Placebo_RA_user	QTRT1	queuine tRNA-ribosyltransferase catalytic subunit 1	Translation	-0.555	0.001
+Met_vs_Placebo_RA_user	RARS2	arginyl-tRNA synthetase 2, mitochondrial	Translation	0.057	0.806
+Met_vs_Placebo_RA_user	RBFA	ribosome binding factor A	Translation	0.291	0.007
+Met_vs_Placebo_RA_user	REXO2	RNA exonuclease 2	Translation	-0.559	0.000
+Met_vs_Placebo_RA_user	RIDA	reactive intermediate imine deaminase A homolog	Translation	0.296	0.077
+Met_vs_Placebo_RA_user	RMND1	required for meiotic nuclear division 1 homolog	Translation	0.043	0.839
+Met_vs_Placebo_RA_user	RPS19	ribosomal protein S19	Translation	-0.407	0.004
+Met_vs_Placebo_RA_user	RPUSD3	RNA pseudouridine synthase D3	Translation	-0.011	0.963
+Met_vs_Placebo_RA_user	RPUSD4	RNA pseudouridine synthase D4	Translation	-0.118	0.373
+Met_vs_Placebo_RA_user	SARS2	seryl-tRNA synthetase 2, mitochondrial	Translation	-0.289	0.012
+Met_vs_Placebo_RA_user	SBDS	SBDS ribosome maturation factor	Translation	0.195	0.013
+Met_vs_Placebo_RA_user	SLIRP	SRA stem-loop interacting RNA binding protein	Translation	-0.239	0.151
+Met_vs_Placebo_RA_user	TACO1	translational activator of cytochrome c oxidase I	Translation	0.487	0.000
+Met_vs_Placebo_RA_user	TARS2	threonyl-tRNA synthetase 2, mitochondrial	Translation	-0.075	0.425
+Met_vs_Placebo_RA_user	TRIT1	tRNA isopentenyltransferase 1	Translation	-0.192	0.213
+Met_vs_Placebo_RA_user	TRMT10C	tRNA methyltransferase 10C, mitochondrial RNase P subunit	Translation	-0.182	0.259
+Met_vs_Placebo_RA_user	TRMT11	tRNA methyltransferase 11 homolog	Translation	0.038	0.842
+Met_vs_Placebo_RA_user	TRMT2B	tRNA methyltransferase 2 homolog B	Translation	-0.118	0.505
+Met_vs_Placebo_RA_user	TRMT5	tRNA methyltransferase 5	Translation	-0.074	0.452
+Met_vs_Placebo_RA_user	TRMT61B	tRNA methyltransferase 61B	Translation	0.294	0.019
+Met_vs_Placebo_RA_user	TRMU	tRNA 5-methylaminomethyl-2-thiouridylate methyltransferase	Translation	-0.182	0.441
+Met_vs_Placebo_RA_user	TRNT1	tRNA nucleotidyl transferase 1	Translation	0.124	0.442
+Met_vs_Placebo_RA_user	TSFM	Ts translation elongation factor, mitochondrial	Translation	-0.299	0.014
+Met_vs_Placebo_RA_user	TUFM	Tu translation elongation factor, mitochondrial	Translation	-0.284	0.000
+Met_vs_Placebo_RA_user	VARS2	valyl-tRNA synthetase 2, mitochondrial	Translation	-0.069	0.671
+Met_vs_Placebo_RA_user	WARS2	tryptophanyl tRNA synthetase 2, mitochondrial	Translation	0.023	0.900
+Met_vs_Placebo_RA_user	YARS2	tyrosyl-tRNA synthetase 2	Translation	-0.144	0.271
+Met_vs_Placebo_RA_user	AASS	aminoadipate-semialdehyde synthase	Amino Acid Metabolism	0.203033	0.141158
+Met_vs_Placebo_RA_user	ABAT	4-aminobutyrate aminotransferase	Amino Acid Metabolism	0.271956	0.729102
+Met_vs_Placebo_RA_user	ABHD10	abhydrolase domain containing 10	Amino Acid Metabolism	-0.136203	0.0948168
+Met_vs_Placebo_RA_user	ABHD11	abhydrolase domain containing 11	Amino Acid Metabolism	-0.320702	0.00109065
+Met_vs_Placebo_RA_user	ABHD16A	abhydrolase domain containing 16A	Amino Acid Metabolism	-0.193275	0.0692093
+Met_vs_Placebo_RA_user	ACAT1	acetyl-CoA acetyltransferase 1	Amino Acid Metabolism	-0.0574895	0.68497
+Met_vs_Placebo_RA_user	ADO	2-aminoethanethiol dioxygenase	Amino Acid Metabolism	0.271012	0.0100045
+Met_vs_Placebo_RA_user	ALDH18A1	aldehyde dehydrogenase 18 family member A1	Amino Acid Metabolism	-0.0428989	0.719289
+Met_vs_Placebo_RA_user	ALDH4A1	aldehyde dehydrogenase 4 family member A1	Amino Acid Metabolism	-0.247591	0.502122
+Met_vs_Placebo_RA_user	ALDH5A1	aldehyde dehydrogenase 5 family member A1	Amino Acid Metabolism	0.209635	0.219238
+Met_vs_Placebo_RA_user	ALDH6A1	aldehyde dehydrogenase 6 family member A1	Amino Acid Metabolism	0.296756	0.0164263
+Met_vs_Placebo_RA_user	AMT	aminomethyltransferase	Amino Acid Metabolism	-0.251671	0.0785307
+Met_vs_Placebo_RA_user	ASS1	argininosuccinate synthase 1	Amino Acid Metabolism	-0.497499	0.0510018
+Met_vs_Placebo_RA_user	AUH	AU RNA binding methylglutaconyl-CoA hydratase	Amino Acid Metabolism	-0.0953455	0.385541
+Met_vs_Placebo_RA_user	BCAT1	branched chain amino acid transaminase 1	Amino Acid Metabolism	0.778778	0.000564695
+Met_vs_Placebo_RA_user	BCAT2	branched chain amino acid transaminase 2	Amino Acid Metabolism	-0.194089	0.243911
+Met_vs_Placebo_RA_user	BCKDHA	branched chain keto acid dehydrogenase E1, alpha polypeptide	Amino Acid Metabolism	-0.265516	0.0092153
+Met_vs_Placebo_RA_user	BCKDHB	branched chain keto acid dehydrogenase E1 subunit beta	Amino Acid Metabolism	0.0397203	0.782383
+Met_vs_Placebo_RA_user	BCKDK	branched chain ketoacid dehydrogenase kinase	Amino Acid Metabolism	-0.133235	0.0645218
+Met_vs_Placebo_RA_user	CKMT2	creatine kinase, mitochondrial 2	Amino Acid Metabolism	-0.0624171	0.632555
+Met_vs_Placebo_RA_user	DBT	dihydrolipoamide branched chain transacylase E2	Amino Acid Metabolism	0.134527	0.217182
+Met_vs_Placebo_RA_user	DHTKD1	dehydrogenase E1 and transketolase domain containing 1	Amino Acid Metabolism	0.276451	0.0793887
+Met_vs_Placebo_RA_user	ETHE1	ETHE1 persulfide dioxygenase	Amino Acid Metabolism	-0.343134	0.0279357
+Met_vs_Placebo_RA_user	ETNPPL	ethanolamine-phosphate phospho-lyase	Amino Acid Metabolism	-0.0331931	0.916672
+Met_vs_Placebo_RA_user	FAHD1	fumarylacetoacetate hydrolase domain containing 1	Amino Acid Metabolism	-0.111913	0.366636
+Met_vs_Placebo_RA_user	FAHD2A	fumarylacetoacetate hydrolase domain containing 2A	Amino Acid Metabolism	-0.527628	2.405e-7
+Met_vs_Placebo_RA_user	GATM	glycine amidinotransferase	Amino Acid Metabolism	0.850598	0.00395951
+Met_vs_Placebo_RA_user	GCSH	glycine cleavage system protein H	Amino Acid Metabolism	-0.00779023	0.960606
+Met_vs_Placebo_RA_user	GLS	glutaminase	Amino Acid Metabolism	0.293193	0.0271754
+Met_vs_Placebo_RA_user	GLS2	glutaminase 2	Amino Acid Metabolism	-0.00753102	0.963445
+Met_vs_Placebo_RA_user	GLUL	glutamate-ammonia ligase	Amino Acid Metabolism	0.278401	0.0942992
+Met_vs_Placebo_RA_user	GOT2	glutamic-oxaloacetic transaminase 2	Amino Acid Metabolism	-0.0375024	0.54218
+Met_vs_Placebo_RA_user	GPT2	glutamic--pyruvic transaminase 2	Amino Acid Metabolism	0.000534026	0.997197
+Met_vs_Placebo_RA_user	GSTZ1	glutathione S-transferase zeta 1	Amino Acid Metabolism	-0.274862	0.0990357
+Met_vs_Placebo_RA_user	HIBADH	3-hydroxyisobutyrate dehydrogenase	Amino Acid Metabolism	-0.0142692	0.885456
+Met_vs_Placebo_RA_user	HIBCH	3-hydroxyisobutyryl-CoA hydrolase	Amino Acid Metabolism	-0.306615	0.00213061
+Met_vs_Placebo_RA_user	HMGCL	3-hydroxy-3-methylglutaryl-CoA lyase	Amino Acid Metabolism	-0.462703	0.00112571
+Met_vs_Placebo_RA_user	IVD	isovaleryl-CoA dehydrogenase	Amino Acid Metabolism	-0.0654255	0.506771
+Met_vs_Placebo_RA_user	KYAT3	kynurenine aminotransferase 3	Amino Acid Metabolism	-0.261357	0.157577
+Met_vs_Placebo_RA_user	LAP3	leucine aminopeptidase 3	Amino Acid Metabolism	0.000668336	0.997197
+Met_vs_Placebo_RA_user	MAOA	monoamine oxidase A	Amino Acid Metabolism	0.291962	0.283455
+Met_vs_Placebo_RA_user	MAOB	monoamine oxidase B	Amino Acid Metabolism	-0.27115	0.0768316
+Met_vs_Placebo_RA_user	MCCC1	methylcrotonoyl-CoA carboxylase 1	Amino Acid Metabolism	-0.0589629	0.766383
+Met_vs_Placebo_RA_user	MCCC2	methylcrotonoyl-CoA carboxylase 2	Amino Acid Metabolism	0.353132	0.0401103
+Met_vs_Placebo_RA_user	MCEE	methylmalonyl-CoA epimerase	Amino Acid Metabolism	-0.321119	0.0232824
+Met_vs_Placebo_RA_user	MMUT	methylmalonyl-CoA mutase	Amino Acid Metabolism	0.235988	0.0102728
+Met_vs_Placebo_RA_user	MPST	mercaptopyruvate sulfurtransferase	Amino Acid Metabolism	-0.430594	0.00031116
+Met_vs_Placebo_RA_user	NADK2	NAD kinase 2, mitochondrial	Amino Acid Metabolism	0.305023	0.0010557
+Met_vs_Placebo_RA_user	NIT1	nitrilase 1	Amino Acid Metabolism	-0.42459	0.0104458
+Met_vs_Placebo_RA_user	NIT2	nitrilase family member 2	Amino Acid Metabolism	-0.0157496	0.915333
+Met_vs_Placebo_RA_user	OAT	ornithine aminotransferase	Amino Acid Metabolism	-0.0605813	0.674032
+Met_vs_Placebo_RA_user	OXCT1	3-oxoacid CoA-transferase 1	Amino Acid Metabolism	0.141369	0.412079
+Met_vs_Placebo_RA_user	OXCT2	3-oxoacid CoA-transferase 2	Amino Acid Metabolism	-0.382252	0.400893
+Met_vs_Placebo_RA_user	PCCA	propionyl-CoA carboxylase subunit alpha	Amino Acid Metabolism	-0.102813	0.572636
+Met_vs_Placebo_RA_user	PDF	peptide deformylase, mitochondrial	Amino Acid Metabolism	-0.236035	0.0866795
+Met_vs_Placebo_RA_user	PHYKPL	5-phosphohydroxy-L-lysine phospho-lyase	Amino Acid Metabolism	-0.488321	0.0246482
+Met_vs_Placebo_RA_user	PPM1K	protein phosphatase, Mg2+/Mn2+ dependent 1K	Amino Acid Metabolism	1.01619	0.0000346035
+Met_vs_Placebo_RA_user	PYCR1	pyrroline-5-carboxylate reductase 1	Amino Acid Metabolism	-0.567278	0.127709
+Met_vs_Placebo_RA_user	PYCR2	pyrroline-5-carboxylate reductase 2	Amino Acid Metabolism	-0.403567	0.00610684
+Met_vs_Placebo_RA_user	QDPR	quinoid dihydropteridine reductase	Amino Acid Metabolism	-0.233086	0.0449491
+Met_vs_Placebo_RA_user	SQOR	sulfide quinone oxidoreductase	Amino Acid Metabolism	-0.284545	0.122468
+Met_vs_Placebo_RA_user	SUGCT	succinyl-CoA:glutarate-CoA transferase	Amino Acid Metabolism	0.0627246	0.766414
+Met_vs_Placebo_RA_user	SUOX	sulfite oxidase	Amino Acid Metabolism	-0.0673744	0.58594
+Met_vs_Placebo_RA_user	TST	thiosulfate sulfurtransferase	Amino Acid Metabolism	-0.638905	0.00119602
+Met_vs_Placebo_RA_user	AIFM1	apoptosis inducing factor mitochondria associated 1	Apoptosis	-0.133304	0.152682
+Met_vs_Placebo_RA_user	AIFM2	apoptosis inducing factor mitochondria associated 2	Apoptosis	-0.172754	0.193801
+Met_vs_Placebo_RA_user	ALKBH7	alkB homolog 7	Apoptosis	-0.515415	0.0000276697
+Met_vs_Placebo_RA_user	APAF1	apoptotic peptidase activating factor 1	Apoptosis	0.475054	0.0293776
+Met_vs_Placebo_RA_user	ARMC10	armadillo repeat containing 10	Apoptosis	-0.190529	0.109193
+Met_vs_Placebo_RA_user	BAD	BCL2 associated agonist of cell death	Apoptosis	-0.601466	0.0000367669
+Met_vs_Placebo_RA_user	BAK1	BCL2 antagonist/killer 1	Apoptosis	-0.19428	0.209786
+Met_vs_Placebo_RA_user	BAX	BCL2 associated X, apoptosis regulator	Apoptosis	-0.449971	0.0152881
+Met_vs_Placebo_RA_user	BCL2	BCL2 apoptosis regulator	Apoptosis	0.514174	0.00123409
+Met_vs_Placebo_RA_user	BCL2L1	BCL2 like 1	Apoptosis	-0.0527939	0.78017
+Met_vs_Placebo_RA_user	BCL2L11	BCL2 like 11	Apoptosis	0.399627	0.256205
+Met_vs_Placebo_RA_user	BCL2L13	BCL2 like 13	Apoptosis	0.390999	0.0000072598
+Met_vs_Placebo_RA_user	BID	BH3 interacting domain death agonist	Apoptosis	-0.187949	0.148927
+Met_vs_Placebo_RA_user	BNIP1	BCL2 interacting protein 1	Apoptosis	-0.00574595	0.980373
+Met_vs_Placebo_RA_user	BNIP3	BCL2 interacting protein 3	Apoptosis	-0.0732052	0.504895
+Met_vs_Placebo_RA_user	BNIP3L	BCL2 interacting protein 3 like	Apoptosis	0.105572	0.369027
+Met_vs_Placebo_RA_user	BOK	BCL2 family apoptosis regulator BOK	Apoptosis	-0.554183	0.0921141
+Met_vs_Placebo_RA_user	CASP2	caspase 2	Apoptosis	0.41678	0.0126508
+Met_vs_Placebo_RA_user	CASP3	caspase 3	Apoptosis	-0.0811963	0.803372
+Met_vs_Placebo_RA_user	CASP7	caspase 7	Apoptosis	-0.0832857	0.745962
+Met_vs_Placebo_RA_user	CASP9	caspase 9	Apoptosis	-0.0507951	0.847527
+Met_vs_Placebo_RA_user	CLIC4	chloride intracellular channel 4	Apoptosis	0.573928	0.0000058902
+Met_vs_Placebo_RA_user	CTSB	cathepsin B	Apoptosis	-0.160354	0.289895
+Met_vs_Placebo_RA_user	DELE1	DAP3 binding cell death enhancer 1	Apoptosis	-0.185961	0.142618
+Met_vs_Placebo_RA_user	DIABLO	diablo IAP-binding mitochondrial protein	Apoptosis	-0.372596	0.000305109
+Met_vs_Placebo_RA_user	FAM162A	family with sequence similarity 162 member A	Apoptosis	-0.240228	0.0202172
+Met_vs_Placebo_RA_user	GFER	growth factor, augmenter of liver regeneration	Apoptosis	-0.420763	0.00140137
+Met_vs_Placebo_RA_user	GHITM	growth hormone inducible transmembrane protein	Apoptosis	-0.0169691	0.860284
+Met_vs_Placebo_RA_user	HTRA2	HtrA serine peptidase 2	Apoptosis	-0.216022	0.0939439
+Met_vs_Placebo_RA_user	LETMD1	LETM1 domain containing 1	Apoptosis	0.100059	0.449241
+Met_vs_Placebo_RA_user	MAPK1	mitogen-activated protein kinase 1	Apoptosis	0.720366	0.000657378
+Met_vs_Placebo_RA_user	MAPK3	mitogen-activated protein kinase 3	Apoptosis	0.0492551	0.713231
+Met_vs_Placebo_RA_user	MAPK8	mitogen-activated protein kinase 8 	Apoptosis	0.73794	0.0000409136
+Met_vs_Placebo_RA_user	MCL1	MCL1 apoptosis regulator, BCL2 family member	Apoptosis	0.0625259	0.715862
+Met_vs_Placebo_RA_user	MTCH1	mitochondrial carrier 1	Apoptosis	-0.215088	0.00300542
+Met_vs_Placebo_RA_user	MTCH2	mitochondrial carrier 2	Apoptosis	0.100258	0.294103
+Met_vs_Placebo_RA_user	PARL	presenilin associated rhomboid like	Apoptosis	-0.273915	0.00931844
+Met_vs_Placebo_RA_user	PRELID1	PRELI domain containing 1	Apoptosis	-0.48989	0.020752
+Met_vs_Placebo_RA_user	RPS6KB1	ribosomal protein S6 kinase B1	Apoptosis	0.441334	0.0013445
+Met_vs_Placebo_RA_user	TRAP1	TNF receptor associated protein 1	Apoptosis	-0.23141	0.039376
+Met_vs_Placebo_RA_user	TSPO	translocator protein	Apoptosis	-0.363381	0.102113
+Met_vs_Placebo_RA_user	XIAP	X-linked inhibitor of apoptosis	Apoptosis	0.564237	0.0000213789
+Met_vs_Placebo_RA_user	AMACR	alpha-methylacyl-CoA racemase	Bile Acid Synthesis	-0.0591587	0.639011
+Met_vs_Placebo_RA_user	STAR	steroidogenic acute regulatory protein	Bile Acid Synthesis	-0.474058	0.000254271
+Met_vs_Placebo_RA_user	CCDC90B	coiled-coil domain containing 90B	Calcium Signaling & Transport	-0.291592	0.0468051
+Met_vs_Placebo_RA_user	EFHD1	EF-hand domain family member D1	Calcium Signaling & Transport	0.207426	0.537021
+Met_vs_Placebo_RA_user	HINT2	histidine triad nucleotide binding protein 2	Calcium Signaling & Transport	-0.460289	0.0000718654
+Met_vs_Placebo_RA_user	ITPR1	inositol 1,4,5-trisphosphate receptor type 1	Calcium Signaling & Transport	0.204065	0.429947
+Met_vs_Placebo_RA_user	ITPR2	inositol 1,4,5-trisphosphate receptor type 2	Calcium Signaling & Transport	1.0441	0.0000081463
+Met_vs_Placebo_RA_user	ITPR3	inositol 1,4,5-trisphosphate receptor type 3	Calcium Signaling & Transport	0.216576	0.356893
+Met_vs_Placebo_RA_user	LETM1	leucine zipper and EF-hand containing transmembrane protein 1	Calcium Signaling & Transport	0.125904	0.148963
+Met_vs_Placebo_RA_user	MAIP1	matrix AAA peptidase interacting protein 1	Calcium Signaling & Transport	-0.167365	0.321655
+Met_vs_Placebo_RA_user	MCU	mitochondrial calcium uniporter	Calcium Signaling & Transport	0.02411	0.852201
+Met_vs_Placebo_RA_user	MCUR1	mitochondrial calcium uniporter regulator 1	Calcium Signaling & Transport	0.381038	0.000413038
+Met_vs_Placebo_RA_user	MICU1	mitochondrial calcium uptake 1	Calcium Signaling & Transport	0.987089	4.7e-9
+Met_vs_Placebo_RA_user	MICU2	mitochondrial calcium uptake 2	Calcium Signaling & Transport	-0.0957791	0.271919
+Met_vs_Placebo_RA_user	PACS2	phosphofurin acidic cluster sorting protein 2	Calcium Signaling & Transport	0.0120973	0.915126
+Met_vs_Placebo_RA_user	PML	promyelocytic leukemia	Calcium Signaling & Transport	-0.26386	0.308729
+Met_vs_Placebo_RA_user	SLC25A12	solute carrier family 25 member 12	Calcium Signaling & Transport	-0.0935191	0.256673
+Met_vs_Placebo_RA_user	SLC25A13	solute carrier family 25 member 13	Calcium Signaling & Transport	-0.0461762	0.737181
+Met_vs_Placebo_RA_user	SLC8B1	solute carrier family 8 member B1	Calcium Signaling & Transport	-0.315587	0.261235
+Met_vs_Placebo_RA_user	TCHP	trichoplein keratin filament binding	Calcium Signaling & Transport	-0.0136151	0.948634
+Met_vs_Placebo_RA_user	TMEM65	transmembrane protein 65	Calcium Signaling & Transport	0.241672	0.0187317
+Met_vs_Placebo_RA_user	CDS1	CDP-diacylglycerol synthase 1	Cardiolipin Biosynthesis	0.54746	0.00293544
+Met_vs_Placebo_RA_user	CRLS1	cardiolipin synthase 1	Cardiolipin Biosynthesis	-0.281093	0.0148434
+Met_vs_Placebo_RA_user	LCLAT1	lysocardiolipin acyltransferase 1	Cardiolipin Biosynthesis	0.129515	0.350708
+Met_vs_Placebo_RA_user	PGS1	phosphatidylglycerophosphate synthase 1	Cardiolipin Biosynthesis	0.232624	0.0508184
+Met_vs_Placebo_RA_user	PTPMT1	protein tyrosine phosphatase mitochondrial 1	Cardiolipin Biosynthesis	-0.55217	0.0000119568
+Met_vs_Placebo_RA_user	ACSL1	acyl-CoA synthetase long chain family member 1	Fatty Acid Biosynthesis & Elongation	0.288445	0.0222151
+Met_vs_Placebo_RA_user	ACSL5	acyl-CoA synthetase long chain family member 5	Fatty Acid Biosynthesis & Elongation	-0.047124	0.887605
+Met_vs_Placebo_RA_user	ACSL6	acyl-CoA synthetase long chain family member 6	Fatty Acid Biosynthesis & Elongation	0.50289	0.118536
+Met_vs_Placebo_RA_user	ACSM3	acyl-CoA synthetase medium chain family member 3	Fatty Acid Biosynthesis & Elongation	-0.121953	0.806285
+Met_vs_Placebo_RA_user	CBR4	carbonyl reductase 4	Fatty Acid Biosynthesis & Elongation	0.324307	0.00484862
+Met_vs_Placebo_RA_user	ECH1	enoyl-CoA hydratase 1	Fatty Acid Biosynthesis & Elongation	-0.332649	0.000474016
+Met_vs_Placebo_RA_user	ECHDC1	ethylmalonyl-CoA decarboxylase 1	Fatty Acid Biosynthesis & Elongation	-0.138243	0.0756649
+Met_vs_Placebo_RA_user	ECHDC2	enoyl-CoA hydratase domain containing 2	Fatty Acid Biosynthesis & Elongation	-0.461176	0.00188799
+Met_vs_Placebo_RA_user	ECHDC3	enoyl-CoA hydratase domain containing 3	Fatty Acid Biosynthesis & Elongation	0.193826	0.0932557
+Met_vs_Placebo_RA_user	ECHS1	enoyl-CoA hydratase, short chain 1	Fatty Acid Biosynthesis & Elongation	-0.375071	0.00259007
+Met_vs_Placebo_RA_user	HSD17B8	hydroxysteroid 17-beta dehydrogenase 8	Fatty Acid Biosynthesis & Elongation	-0.420944	0.0000260685
+Met_vs_Placebo_RA_user	MCAT	malonyl-CoA-acyl carrier protein transacylase	Fatty Acid Biosynthesis & Elongation	-0.476753	0.0000085002
+Met_vs_Placebo_RA_user	MECR	mitochondrial trans-2-enoyl-CoA reductase	Fatty Acid Biosynthesis & Elongation	-0.122515	0.345787
+Met_vs_Placebo_RA_user	OXSM	3-oxoacyl-ACP synthase, mitochondrial	Fatty Acid Biosynthesis & Elongation	0.147836	0.284752
+Met_vs_Placebo_RA_user	THEM4	thioesterase superfamily member 4	Fatty Acid Biosynthesis & Elongation	0.330089	0.207538
+Met_vs_Placebo_RA_user	ACAA2	acetyl-CoA acyltransferase 2	Fatty Acid Degradation & Beta-oxidation	0.118384	0.230678
+Met_vs_Placebo_RA_user	ACACB	acetyl-CoA carboxylase beta	Fatty Acid Degradation & Beta-oxidation	0.205729	0.147975
+Met_vs_Placebo_RA_user	ACAD10	acyl-CoA dehydrogenase family member 10	Fatty Acid Degradation & Beta-oxidation	-0.0446659	0.782988
+Met_vs_Placebo_RA_user	ACAD11	acyl-CoA dehydrogenase family member 11	Fatty Acid Degradation & Beta-oxidation	-0.056413	0.779166
+Met_vs_Placebo_RA_user	ACAD8	acyl-CoA dehydrogenase family member 8	Fatty Acid Degradation & Beta-oxidation	0.0990009	0.318492
+Met_vs_Placebo_RA_user	ACAD9	acyl-CoA dehydrogenase family member 9	Fatty Acid Degradation & Beta-oxidation	-0.0926557	0.318449
+Met_vs_Placebo_RA_user	ACADL	acyl-CoA dehydrogenase long chain	Fatty Acid Degradation & Beta-oxidation	0.0367333	0.844949
+Met_vs_Placebo_RA_user	ACADM	acyl-CoA dehydrogenase medium chain	Fatty Acid Degradation & Beta-oxidation	-0.0213723	0.882432
+Met_vs_Placebo_RA_user	ACADS	acyl-CoA dehydrogenase short chain	Fatty Acid Degradation & Beta-oxidation	-0.293115	0.00170489
+Met_vs_Placebo_RA_user	ACADVL	acyl-CoA dehydrogenase very long chain	Fatty Acid Degradation & Beta-oxidation	-0.241801	0.0201748
+Met_vs_Placebo_RA_user	ACSL3	acyl-CoA synthetase long chain family member 3	Fatty Acid Degradation & Beta-oxidation	-0.0892386	0.649553
+Met_vs_Placebo_RA_user	ACSL4	acyl-CoA synthetase long chain family member 4	Fatty Acid Degradation & Beta-oxidation	0.501418	0.00783558
+Met_vs_Placebo_RA_user	ALDH2	aldehyde dehydrogenase 2 family member	Fatty Acid Degradation & Beta-oxidation	-0.126295	0.178798
+Met_vs_Placebo_RA_user	ALDH3A2	aldehyde dehydrogenase 3 family member A2	Fatty Acid Degradation & Beta-oxidation	0.0717437	0.494537
+Met_vs_Placebo_RA_user	CPT1A	carnitine palmitoyltransferase 1A	Fatty Acid Degradation & Beta-oxidation	0.635943	0.0288238
+Met_vs_Placebo_RA_user	CPT1B	carnitine palmitoyltransferase 1B	Fatty Acid Degradation & Beta-oxidation	0.00575239	0.966377
+Met_vs_Placebo_RA_user	CPT2	carnitine palmitoyltransferase 2	Fatty Acid Degradation & Beta-oxidation	-0.110107	0.20675
+Met_vs_Placebo_RA_user	CRAT	carnitine O-acetyltransferase	Fatty Acid Degradation & Beta-oxidation	0.0568065	0.582086
+Met_vs_Placebo_RA_user	DECR1	2,4-dienoyl-CoA reductase 1	Fatty Acid Degradation & Beta-oxidation	-0.129929	0.186808
+Met_vs_Placebo_RA_user	ECI1	enoyl-CoA delta isomerase 1	Fatty Acid Degradation & Beta-oxidation	-0.234537	0.0295295
+Met_vs_Placebo_RA_user	ECI2	enoyl-CoA delta isomerase 2	Fatty Acid Degradation & Beta-oxidation	-0.335974	0.0146294
+Met_vs_Placebo_RA_user	GCDH	glutaryl-CoA dehydrogenase	Fatty Acid Degradation & Beta-oxidation	-0.373118	0.000404906
+Met_vs_Placebo_RA_user	HADHA	hydroxyacyl-CoA dehydrogenase trifunctional multienzyme complex subunit alpha	Fatty Acid Degradation & Beta-oxidation	-0.0437916	0.657901
+Met_vs_Placebo_RA_user	HADHB	hydroxyacyl-CoA dehydrogenase trifunctional multienzyme complex subunit beta	Fatty Acid Degradation & Beta-oxidation	0.132285	0.211213
+Met_vs_Placebo_RA_user	ACOT9	acyl-CoA thioesterase 9	Fatty Acid Metabolism	-0.0607402	0.657637
+Met_vs_Placebo_RA_user	ACSF2	acyl-CoA synthetase family member 2	Fatty Acid Metabolism	-0.245722	0.0223467
+Met_vs_Placebo_RA_user	ACSF3	acyl-CoA synthetase family member 3	Fatty Acid Metabolism	-0.239	0.100093
+Met_vs_Placebo_RA_user	AGK	acylglycerol kinase	Fatty Acid Metabolism	-0.183251	0.119329
+Met_vs_Placebo_RA_user	BDH1	3-hydroxybutyrate dehydrogenase 1	Fatty Acid Metabolism	-0.53488	0.00211553
+Met_vs_Placebo_RA_user	HDHD5	haloacid dehalogenase like hydrolase domain containing 5	Fatty Acid Metabolism	-0.0961882	0.398893
+Met_vs_Placebo_RA_user	LYPLA1	lysophospholipase 1	Fatty Acid Metabolism	0.130828	0.18179
+Met_vs_Placebo_RA_user	LYPLAL1	lysophospholipase like 1	Fatty Acid Metabolism	-0.419717	0.0391295
+Met_vs_Placebo_RA_user	MLYCD	malonyl-CoA decarboxylase	Fatty Acid Metabolism	0.0629308	0.72908
+Met_vs_Placebo_RA_user	PCCB	propionyl-CoA carboxylase subunit beta	Fatty Acid Metabolism	-0.0520804	0.70264
+Met_vs_Placebo_RA_user	PNPLA8	patatin like phospholipase domain containing 8	Fatty Acid Metabolism	0.272697	0.00651736
+Met_vs_Placebo_RA_user	TMLHE	trimethyllysine hydroxylase, epsilon	Fatty Acid Metabolism	0.129803	0.172485
+Met_vs_Placebo_RA_user	BOLA1	bolA family member 1	Fe-S Cluster Biosynthesis	-0.418746	0.000621271
+Met_vs_Placebo_RA_user	BOLA3	bolA family member 3	Fe-S Cluster Biosynthesis	0.173207	0.313415
+Met_vs_Placebo_RA_user	CIAO1	cytosolic iron-sulfur assembly component 1	Fe-S Cluster Biosynthesis	0.106966	0.189608
+Met_vs_Placebo_RA_user	CIAO2A	cytosolic iron-sulfur assembly component 2A	Fe-S Cluster Biosynthesis	-0.282396	0.0168771
+Met_vs_Placebo_RA_user	CIAO2B	cytosolic iron-sulfur assembly component 2B	Fe-S Cluster Biosynthesis	-0.300843	0.0248268
+Met_vs_Placebo_RA_user	CIAPIN1	cytokine induced apoptosis inhibitor 1	Fe-S Cluster Biosynthesis	-0.132288	0.251507
+Met_vs_Placebo_RA_user	FDX1	ferredoxin 1	Fe-S Cluster Biosynthesis	-0.163976	0.143649
+Met_vs_Placebo_RA_user	FDX2	ferredoxin 2	Fe-S Cluster Biosynthesis	-0.467743	0.000868866
+Met_vs_Placebo_RA_user	FDXR	ferredoxin reductase	Fe-S Cluster Biosynthesis	-0.598856	0.0167019
+Met_vs_Placebo_RA_user	FXN	frataxin	Fe-S Cluster Biosynthesis	-0.166841	0.238985
+Met_vs_Placebo_RA_user	HSCB	HscB mitochondrial iron-sulfur cluster cochaperone	Fe-S Cluster Biosynthesis	-0.3897	0.0411532
+Met_vs_Placebo_RA_user	IBA57	iron-sulfur cluster assembly factor IBA57	Fe-S Cluster Biosynthesis	-0.310277	0.00209378
+Met_vs_Placebo_RA_user	ISCA2	iron-sulfur cluster assembly 2	Fe-S Cluster Biosynthesis	0.350346	0.00684921
+Met_vs_Placebo_RA_user	ISCU	iron-sulfur cluster assembly enzyme	Fe-S Cluster Biosynthesis	-0.425798	0.0041441
+Met_vs_Placebo_RA_user	MMS19	MMS19 homolog, cytosolic iron-sulfur assembly component	Fe-S Cluster Biosynthesis	-0.0682163	0.575788
+Met_vs_Placebo_RA_user	NARF	nuclear prelamin A recognition factor	Fe-S Cluster Biosynthesis	0.0505943	0.610835
+Met_vs_Placebo_RA_user	NFS1	NFS1 cysteine desulfurase	Fe-S Cluster Biosynthesis	-0.128322	0.17198
+Met_vs_Placebo_RA_user	NUBP1	nucleotide binding protein 1	Fe-S Cluster Biosynthesis	-0.214345	0.217528
+Met_vs_Placebo_RA_user	NUBP2	nucleotide binding protein 2	Fe-S Cluster Biosynthesis	-0.348564	0.0119918
+Met_vs_Placebo_RA_user	SLC25A28	solute carrier family 25 member 28	Fe-S Cluster Biosynthesis	-0.2868	0.00141262
+Met_vs_Placebo_RA_user	SLC25A37	solute carrier family 25 member 37	Fe-S Cluster Biosynthesis	-0.0515986	0.710048
+Met_vs_Placebo_RA_user	ALDH1L1	aldehyde dehydrogenase 1 family member L1	Folate & Pterin Metabolism	-0.472221	0.0578167
+Met_vs_Placebo_RA_user	ALDH1L2	aldehyde dehydrogenase 1 family member L2	Folate & Pterin Metabolism	0.276722	0.36419
+Met_vs_Placebo_RA_user	FPGS	folylpolyglutamate synthase	Folate & Pterin Metabolism	-0.303539	0.0710004
+Met_vs_Placebo_RA_user	MTHFD1	methylenetetrahydrofolate dehydrogenase, cyclohydrolase and formyltetrahydrofolate synthetase 1	Folate & Pterin Metabolism	0.0480003	0.636098
+Met_vs_Placebo_RA_user	MTHFD2	methylenetetrahydrofolate dehydrogenase (NADP+ dependent) 2, methenyltetrahydrofolate cyclohydrolase	Folate & Pterin Metabolism	0.22091	0.316398
+Met_vs_Placebo_RA_user	MTHFD2L	methylenetetrahydrofolate dehydrogenase (NADP+ dependent) 2 like	Folate & Pterin Metabolism	0.235005	0.493447
+Met_vs_Placebo_RA_user	MTHFS	methenyltetrahydrofolate synthetase	Folate & Pterin Metabolism	0.65983	0.00153017
+Met_vs_Placebo_RA_user	PTS	6-pyruvoyltetrahydropterin synthase	Folate & Pterin Metabolism	-0.237785	0.0785697
+Met_vs_Placebo_RA_user	SHMT2	serine hydroxymethyltransferase 2	Folate & Pterin Metabolism	-0.236944	0.0356011
+Met_vs_Placebo_RA_user	SLC25A32	solute carrier family 25 member 32	Folate & Pterin Metabolism	0.369463	0.0234167
+Met_vs_Placebo_RA_user	AKR1B1	aldo-keto reductase family 1 member B	Fructose Metabolism	-0.318744	0.00103438
+Met_vs_Placebo_RA_user	ALDH1A1	aldehyde dehydrogenase 1 family member A1	Fructose Metabolism	-0.340662	0.161665
+Met_vs_Placebo_RA_user	GLYCTK	glycerate kinase	Fructose Metabolism	-0.179084	0.242486
+Met_vs_Placebo_RA_user	KHK	ketohexokinase	Fructose Metabolism	-0.650058	0.0122614
+Met_vs_Placebo_RA_user	SORD	sorbitol dehydrogenase	Fructose Metabolism	-0.350408	0.00690133
+Met_vs_Placebo_RA_user	TKFC	triokinase and FMN cyclase	Fructose Metabolism	-0.56855	0.0179376
+Met_vs_Placebo_RA_user	ALDOA	aldolase, fructose-bisphosphate A	Glycolysis	-0.229603	0.000449612
+Met_vs_Placebo_RA_user	ALDOC	aldolase, fructose-bisphosphate C	Glycolysis	-0.524325	0.0176763
+Met_vs_Placebo_RA_user	ENO1	enolase 1	Glycolysis	-0.235507	0.0766512
+Met_vs_Placebo_RA_user	ENO3	enolase 3	Glycolysis	-0.176925	0.134218
+Met_vs_Placebo_RA_user	GAPDH	glyceraldehyde-3-phosphate dehydrogenase	Glycolysis	-0.456871	0.0000024076
+Met_vs_Placebo_RA_user	GCK	glucokinase	Glycolysis	-0.886325	0.00227942
+Met_vs_Placebo_RA_user	GPI	glucose-6-phosphate isomerase	Glycolysis	-0.168109	0.023969
+Met_vs_Placebo_RA_user	HK1	hexokinase 1	Glycolysis	-0.0814049	0.42415
+Met_vs_Placebo_RA_user	LDHA	lactate dehydrogenase A	Glycolysis	-0.253257	0.0587306
+Met_vs_Placebo_RA_user	LDHB	lactate dehydrogenase B	Glycolysis	-0.491943	0.000129796
+Met_vs_Placebo_RA_user	PC	pyruvate carboxylase	Glycolysis	-0.49411	0.0438999
+Met_vs_Placebo_RA_user	PFKL	phosphofructokinase, liver type	Glycolysis	-0.348925	0.0052729
+Met_vs_Placebo_RA_user	PFKM	phosphofructokinase, muscle	Glycolysis	0.124157	0.144305
+Met_vs_Placebo_RA_user	PFKP	phosphofructokinase, platelet	Glycolysis	-0.0591462	0.817496
+Met_vs_Placebo_RA_user	PGAM1	phosphoglycerate mutase 1	Glycolysis	-0.326363	0.0439212
+Met_vs_Placebo_RA_user	PGAM2	phosphoglycerate mutase 2	Glycolysis	-0.46666	0.0000346256
+Met_vs_Placebo_RA_user	PGK1	phosphoglycerate kinase 1	Glycolysis	-0.116911	0.097324
+Met_vs_Placebo_RA_user	PKM	pyruvate kinase M1/2	Glycolysis	-0.118604	0.286033
+Met_vs_Placebo_RA_user	SLC2A1	solute carrier family 2 member 1	Glycolysis	-0.138804	0.52317
+Met_vs_Placebo_RA_user	SLC2A4	solute carrier family 2 member 4	Glycolysis	-0.00432543	0.975738
+Met_vs_Placebo_RA_user	TPI1	triosephosphate isomerase 1	Glycolysis	-0.243971	0.0135916
+Met_vs_Placebo_RA_user	ALAS1	5'-aminolevulinate synthase 1	Heme Biosynthesis	-0.010694	0.93328
+Met_vs_Placebo_RA_user	CPOX	coproporphyrinogen oxidase	Heme Biosynthesis	0.213596	0.0658844
+Met_vs_Placebo_RA_user	FECH	ferrochelatase	Heme Biosynthesis	-0.133808	0.131863
+Met_vs_Placebo_RA_user	FTMT	ferritin mitochondrial	Heme Biosynthesis	0.447905	0.31032
+Met_vs_Placebo_RA_user	HMBS	hydroxymethylbilane synthase	Heme Biosynthesis	-0.399128	0.0000769587
+Met_vs_Placebo_RA_user	UROD	uroporphyrinogen decarboxylase	Heme Biosynthesis	-0.325419	0.00338292
+Met_vs_Placebo_RA_user	UROS	uroporphyrinogen III synthase	Heme Biosynthesis	-0.000254832	0.998866
+Met_vs_Placebo_RA_user	CHCHD4	coiled-coil-helix-coiled-coil-helix domain containing 4	Import & Sorting	-0.215488	0.0780867
+Met_vs_Placebo_RA_user	CHCHD5	coiled-coil-helix-coiled-coil-helix domain containing 5	Import & Sorting	-0.194955	0.0949529
+Met_vs_Placebo_RA_user	CMC2	C-X9-C motif containing 2	Import & Sorting	-0.703577	0.0000721201
+Met_vs_Placebo_RA_user	DNAJC15	DnaJ heat shock protein family (Hsp40) member C15	Import & Sorting	0.0621994	0.685689
+Met_vs_Placebo_RA_user	DNAJC19	DnaJ heat shock protein family (Hsp40) member C19	Import & Sorting	-0.427519	0.0000365581
+Met_vs_Placebo_RA_user	GRPEL1	GrpE like 1, mitochondrial	Import & Sorting	-0.239177	0.00495164
+Met_vs_Placebo_RA_user	GRPEL2	GrpE like 2, mitochondrial	Import & Sorting	0.253519	0.00324396
+Met_vs_Placebo_RA_user	HSPA9	heat shock protein family A (Hsp70) member 9	Import & Sorting	0.128791	0.125989
+Met_vs_Placebo_RA_user	HSPE1	heat shock protein family E (Hsp10) member 1	Import & Sorting	-0.397647	0.000695485
+Met_vs_Placebo_RA_user	IMMP1L	inner mitochondrial membrane peptidase subunit 1	Import & Sorting	-0.220356	0.241476
+Met_vs_Placebo_RA_user	IMMP2L	inner mitochondrial membrane peptidase subunit 2	Import & Sorting	-0.18097	0.175307
+Met_vs_Placebo_RA_user	METAP1D	methionyl aminopeptidase type 1D, mitochondrial	Import & Sorting	-0.297559	0.0421004
+Met_vs_Placebo_RA_user	MIPEP	mitochondrial intermediate peptidase	Import & Sorting	-0.212169	0.147711
+Met_vs_Placebo_RA_user	MTX1	metaxin 1	Import & Sorting	-0.490406	0.000252858
+Met_vs_Placebo_RA_user	MTX2	metaxin 2	Import & Sorting	-0.314053	0.00348866
+Met_vs_Placebo_RA_user	MTX3	metaxin 3	Import & Sorting	1.33086	0.0000171893
+Met_vs_Placebo_RA_user	PAM16	presequence translocase associated motor 16	Import & Sorting	-0.509836	0.00332355
+Met_vs_Placebo_RA_user	PMPCA	peptidase, mitochondrial processing alpha subunit	Import & Sorting	0.02107	0.851247
+Met_vs_Placebo_RA_user	PMPCB	peptidase, mitochondrial processing beta subunit	Import & Sorting	-0.00388815	0.975738
+Met_vs_Placebo_RA_user	PPIF	peptidylprolyl isomerase F	Import & Sorting	-0.15788	0.107521
+Met_vs_Placebo_RA_user	SAMM50	SAMM50 sorting and assembly machinery component	Import & Sorting	-0.0804941	0.507634
+Met_vs_Placebo_RA_user	TAMM41	TAM41 mitochondrial translocator assembly and maintenance homolog	Import & Sorting	0.064117	0.770182
+Met_vs_Placebo_RA_user	TIMM10	translocase of inner mitochondrial membrane 10	Import & Sorting	-0.571324	0.0000105089
+Met_vs_Placebo_RA_user	TIMM10B	translocase of inner mitochondrial membrane 10B	Import & Sorting	-0.10403	0.452886
+Met_vs_Placebo_RA_user	TIMM17A	translocase of inner mitochondrial membrane 17A	Import & Sorting	-0.0485064	0.628198
+Met_vs_Placebo_RA_user	TIMM17B	translocase of inner mitochondrial membrane 17B	Import & Sorting	-0.507205	0.0000048618
+Met_vs_Placebo_RA_user	TIMM21	translocase of inner mitochondrial membrane 21	Import & Sorting	-0.151977	0.217263
+Met_vs_Placebo_RA_user	TIMM22	translocase of inner mitochondrial membrane 22	Import & Sorting	-0.399632	0.000987684
+Met_vs_Placebo_RA_user	TIMM23	translocase of inner mitochondrial membrane 23	Import & Sorting	-0.293506	0.000211404
+Met_vs_Placebo_RA_user	TIMM44	translocase of inner mitochondrial membrane 44	Import & Sorting	-0.377695	0.0000491433
+Met_vs_Placebo_RA_user	TIMM50	translocase of inner mitochondrial membrane 50	Import & Sorting	-0.323165	0.0036179
+Met_vs_Placebo_RA_user	TIMM8B	translocase of inner mitochondrial membrane 8 homolog B	Import & Sorting	-0.475003	0.000973471
+Met_vs_Placebo_RA_user	TIMM9	translocase of inner mitochondrial membrane 9	Import & Sorting	-0.259033	0.015864
+Met_vs_Placebo_RA_user	TIMMDC1	translocase of inner mitochondrial membrane domain containing 1	Import & Sorting	0.19588	0.136373
+Met_vs_Placebo_RA_user	TOMM20	translocase of outer mitochondrial membrane 20	Import & Sorting	-0.0129099	0.892669
+Met_vs_Placebo_RA_user	TOMM22	translocase of outer mitochondrial membrane 22	Import & Sorting	-0.252572	0.000614549
+Met_vs_Placebo_RA_user	TOMM34	translocase of outer mitochondrial membrane 34	Import & Sorting	-0.347997	0.0424774
+Met_vs_Placebo_RA_user	TOMM40	translocase of outer mitochondrial membrane 40	Import & Sorting	-0.352401	0.000410979
+Met_vs_Placebo_RA_user	TOMM40L	translocase of outer mitochondrial membrane 40 like	Import & Sorting	-0.197935	0.023014
+Met_vs_Placebo_RA_user	TOMM7	translocase of outer mitochondrial membrane 7	Import & Sorting	-0.516095	0.0000767945
+Met_vs_Placebo_RA_user	TOMM70	translocase of outer mitochondrial membrane 70	Import & Sorting	-0.0748582	0.354238
+Met_vs_Placebo_RA_user	YME1L1	YME1 like 1 ATPase	Import & Sorting	0.115759	0.0731137
+Met_vs_Placebo_RA_user	LIAS	lipoic acid synthetase	Lipoic Acid Metabolism	-0.0914892	0.366035
+Met_vs_Placebo_RA_user	LIPT1	lipoyltransferase 1	Lipoic Acid Metabolism	-0.177464	0.24067
+Met_vs_Placebo_RA_user	LIPT2	lipoyl(octanoyl) transferase 2	Lipoic Acid Metabolism	-0.46279	0.0129767
+Met_vs_Placebo_RA_user	ABCD1	ATP binding cassette subfamily D member 1	Metabolism of Lipids & Lipoproteins	-0.0701824	0.598669
+Met_vs_Placebo_RA_user	ACACA	acetyl-CoA carboxylase alpha	Metabolism of Lipids & Lipoproteins	0.264826	0.0149351
+Met_vs_Placebo_RA_user	ACP6	acid phosphatase 6, lysophosphatidic	Metabolism of Lipids & Lipoproteins	0.162701	0.438668
+Met_vs_Placebo_RA_user	ACSS3	acyl-CoA synthetase short chain family member 3	Metabolism of Lipids & Lipoproteins	0.13855	0.301856
+Met_vs_Placebo_RA_user	AGPAT5	1-acylglycerol-3-phosphate O-acyltransferase 5	Metabolism of Lipids & Lipoproteins	0.231919	0.00263538
+Met_vs_Placebo_RA_user	CDS2	CDP-diacylglycerol synthase 2	Metabolism of Lipids & Lipoproteins	0.394742	0.000712977
+Met_vs_Placebo_RA_user	CYB5R1	cytochrome b5 reductase 1	Metabolism of Lipids & Lipoproteins	-0.118203	0.389318
+Met_vs_Placebo_RA_user	CYB5R3	cytochrome b5 reductase 3	Metabolism of Lipids & Lipoproteins	-0.254871	0.0264319
+Met_vs_Placebo_RA_user	CYP27A1	cytochrome P450 family 27 subfamily A member 1	Metabolism of Lipids & Lipoproteins	-0.360696	0.156797
+Met_vs_Placebo_RA_user	FDPS	farnesyl diphosphate synthase	Metabolism of Lipids & Lipoproteins	-0.213656	0.361651
+Met_vs_Placebo_RA_user	GPAM	glycerol-3-phosphate acyltransferase, mitochondrial	Metabolism of Lipids & Lipoproteins	0.462649	0.00170535
+Met_vs_Placebo_RA_user	LACTB	lactamase beta	Metabolism of Lipids & Lipoproteins	0.153819	0.29584
+Met_vs_Placebo_RA_user	NUDT19	nudix hydrolase 19	Metabolism of Lipids & Lipoproteins	-0.127802	0.302777
+Met_vs_Placebo_RA_user	OPA3	OPA3 outer mitochondrial membrane lipid metabolism regulator	Metabolism of Lipids & Lipoproteins	0.0922675	0.318356
+Met_vs_Placebo_RA_user	PISD	phosphatidylserine decarboxylase	Metabolism of Lipids & Lipoproteins	-0.0792023	0.564877
+Met_vs_Placebo_RA_user	PRELID3A	PRELI domain containing 3A	Metabolism of Lipids & Lipoproteins	0.0856168	0.698445
+Met_vs_Placebo_RA_user	PRELID3B	PRELI domain containing 3B	Metabolism of Lipids & Lipoproteins	0.0814732	0.499473
+Met_vs_Placebo_RA_user	SARDH	sarcosine dehydrogenase	Metabolism of Lipids & Lipoproteins	0.130882	0.603398
+Met_vs_Placebo_RA_user	SERAC1	serine active site containing 1	Metabolism of Lipids & Lipoproteins	0.0597589	0.762351
+Met_vs_Placebo_RA_user	SLC27A3	solute carrier family 27 member 3	Metabolism of Lipids & Lipoproteins	0.23502	0.470982
+Met_vs_Placebo_RA_user	STARD7	StAR related lipid transfer domain containing 7	Metabolism of Lipids & Lipoproteins	0.0696022	0.345787
+Met_vs_Placebo_RA_user	CLYBL	citrate lyase beta like	Metabolism of Vitamins & Co-Factors	0.156822	0.276693
+Met_vs_Placebo_RA_user	COASY	Coenzyme A synthase	Metabolism of Vitamins & Co-Factors	-0.293942	0.00715872
+Met_vs_Placebo_RA_user	CYB5A	cytochrome b5 type A	Metabolism of Vitamins & Co-Factors	-0.0508346	0.715275
+Met_vs_Placebo_RA_user	CYB5B	cytochrome b5 type B	Metabolism of Vitamins & Co-Factors	0.341917	0.0115265
+Met_vs_Placebo_RA_user	MMAA	metabolism of cobalamin associated A	Metabolism of Vitamins & Co-Factors	0.0386156	0.89495
+Met_vs_Placebo_RA_user	MMAB	metabolism of cobalamin associated B	Metabolism of Vitamins & Co-Factors	-0.0198902	0.944696
+Met_vs_Placebo_RA_user	MMADHC	metabolism of cobalamin associated D	Metabolism of Vitamins & Co-Factors	-0.138968	0.144157
+Met_vs_Placebo_RA_user	NAXD	NAD(P)HX dehydratase	Metabolism of Vitamins & Co-Factors	-0.106858	0.183775
+Met_vs_Placebo_RA_user	NAXE	NAD(P)HX epimerase	Metabolism of Vitamins & Co-Factors	-0.350049	0.000122195
+Met_vs_Placebo_RA_user	NMNAT3	nicotinamide nucleotide adenylyltransferase 3	Metabolism of Vitamins & Co-Factors	-0.131096	0.260735
+Met_vs_Placebo_RA_user	PANK2	pantothenate kinase 2	Metabolism of Vitamins & Co-Factors	-0.0775593	0.620278
+Met_vs_Placebo_RA_user	RDH13	retinol dehydrogenase 13	Metabolism of Vitamins & Co-Factors	-0.190195	0.267934
+Met_vs_Placebo_RA_user	SLC22A4	solute carrier family 22 member 4	Mitochondrial Carrier	1.15317	0.0000790502
+Met_vs_Placebo_RA_user	SLC25A10	solute carrier family 25 member 10	Mitochondrial Carrier	-0.409187	0.0124001
+Met_vs_Placebo_RA_user	SLC25A11	solute carrier family 25 member 11	Mitochondrial Carrier	-0.20371	0.00192498
+Met_vs_Placebo_RA_user	SLC25A14	solute carrier family 25 member 14	Mitochondrial Carrier	-0.644718	0.0197259
+Met_vs_Placebo_RA_user	SLC25A16	solute carrier family 25 member 16	Mitochondrial Carrier	0.251085	0.195764
+Met_vs_Placebo_RA_user	SLC25A19	solute carrier family 25 member 19	Mitochondrial Carrier	-0.0377576	0.858142
+Met_vs_Placebo_RA_user	SLC25A20	solute carrier family 25 member 20	Mitochondrial Carrier	-0.114906	0.481785
+Met_vs_Placebo_RA_user	SLC25A21	solute carrier family 25 member 21	Mitochondrial Carrier	-0.105487	0.622218
+Met_vs_Placebo_RA_user	SLC25A23	solute carrier family 25 member 23	Mitochondrial Carrier	-0.135356	0.350966
+Met_vs_Placebo_RA_user	SLC25A24	solute carrier family 25 member 24	Mitochondrial Carrier	0.306212	0.018573
+Met_vs_Placebo_RA_user	SLC25A25	solute carrier family 25 member 25	Mitochondrial Carrier	-0.189145	0.551346
+Met_vs_Placebo_RA_user	SLC25A26	solute carrier family 25 member 26	Mitochondrial Carrier	-0.252013	0.0213297
+Met_vs_Placebo_RA_user	SLC25A27	solute carrier family 25 member 27	Mitochondrial Carrier	0.324235	0.0564776
+Met_vs_Placebo_RA_user	SLC25A29	solute carrier family 25 member 29	Mitochondrial Carrier	0.0114348	0.959992
+Met_vs_Placebo_RA_user	SLC25A3	solute carrier family 25 member 3	Mitochondrial Carrier	-0.134146	0.0268365
+Met_vs_Placebo_RA_user	SLC25A30	solute carrier family 25 member 30	Mitochondrial Carrier	0.0978603	0.450786
+Met_vs_Placebo_RA_user	SLC25A33	solute carrier family 25 member 33	Mitochondrial Carrier	-0.39609	0.0108672
+Met_vs_Placebo_RA_user	SLC25A34	solute carrier family 25 member 34	Mitochondrial Carrier	0.0103275	0.97221
+Met_vs_Placebo_RA_user	SLC25A36	solute carrier family 25 member 36	Mitochondrial Carrier	0.454642	0.00120652
+Met_vs_Placebo_RA_user	SLC25A38	solute carrier family 25 member 38	Mitochondrial Carrier	-0.396907	0.000819776
+Met_vs_Placebo_RA_user	SLC25A39	solute carrier family 25 member 39	Mitochondrial Carrier	-0.233754	0.0104641
+Met_vs_Placebo_RA_user	SLC25A40	solute carrier family 25 member 40	Mitochondrial Carrier	0.0234143	0.902863
+Met_vs_Placebo_RA_user	SLC25A42	solute carrier family 25 member 42	Mitochondrial Carrier	-0.0529178	0.811666
+Met_vs_Placebo_RA_user	SLC25A44	solute carrier family 25 member 44	Mitochondrial Carrier	0.189081	0.0263404
+Met_vs_Placebo_RA_user	SLC25A47	solute carrier family 25 member 47	Mitochondrial Carrier	-0.259795	0.428683
+Met_vs_Placebo_RA_user	SLC27A1	solute carrier family 27 member 1	Mitochondrial Carrier	-0.119079	0.19087
+Met_vs_Placebo_RA_user	SLC29A1	solute carrier family 29 member 1 (Augustine blood group)	Mitochondrial Carrier	0.164946	0.342646
+Met_vs_Placebo_RA_user	SLC3A1	solute carrier family 3 member 1	Mitochondrial Carrier	0.647415	0.0259312
+Met_vs_Placebo_RA_user	SLC44A1	solute carrier family 44 member 1	Mitochondrial Carrier	0.494512	0.0288916
+Met_vs_Placebo_RA_user	UCP2	uncoupling protein 2	Mitochondrial Carrier	-0.774215	0.0221718
+Met_vs_Placebo_RA_user	ACTR2	actin related protein 2	Mitochondrial Dynamics	0.286789	0.0013445
+Met_vs_Placebo_RA_user	AFG3L2	AFG3 like matrix AAA peptidase subunit 2	Mitochondrial Dynamics	0.0356264	0.792886
+Met_vs_Placebo_RA_user	AGTPBP1	ATP/GTP binding protein 1	Mitochondrial Dynamics	0.215535	0.131163
+Met_vs_Placebo_RA_user	APOO	apolipoprotein O	Mitochondrial Dynamics	-0.275883	0.0110473
+Met_vs_Placebo_RA_user	ARPC3	actin related protein 2/3 complex subunit 3	Mitochondrial Dynamics	-0.318948	0.0308226
+Met_vs_Placebo_RA_user	ARPC5	actin related protein 2/3 complex subunit 5	Mitochondrial Dynamics	-0.157754	0.438574
+Met_vs_Placebo_RA_user	ATAD3A	ATPase family AAA domain containing 3A	Mitochondrial Dynamics	-0.303206	0.024574
+Met_vs_Placebo_RA_user	CHCHD10	coiled-coil-helix-coiled-coil-helix domain containing 10	Mitochondrial Dynamics	-0.441193	0.0000262088
+Met_vs_Placebo_RA_user	CHCHD3	coiled-coil-helix-coiled-coil-helix domain containing 3	Mitochondrial Dynamics	-0.153971	0.18648
+Met_vs_Placebo_RA_user	CHCHD6	coiled-coil-helix-coiled-coil-helix domain containing 6	Mitochondrial Dynamics	-0.289302	0.177879
+Met_vs_Placebo_RA_user	DNM1L	dynamin 1 like	Mitochondrial Dynamics	0.15504	0.0643437
+Met_vs_Placebo_RA_user	FIS1	fission, mitochondrial 1	Mitochondrial Dynamics	-0.603764	0.0000072562
+Met_vs_Placebo_RA_user	FUNDC1	FUN14 domain containing 1	Mitochondrial Dynamics	0.150103	0.212588
+Met_vs_Placebo_RA_user	FUNDC2	FUN14 domain containing 2	Mitochondrial Dynamics	-0.127578	0.142524
+Met_vs_Placebo_RA_user	GDAP1	ganglioside induced differentiation associated protein 1	Mitochondrial Dynamics	0.395568	0.19726
+Met_vs_Placebo_RA_user	IMMT	inner membrane mitochondrial protein	Mitochondrial Dynamics	0.2051	0.0613731
+Met_vs_Placebo_RA_user	KIF1B	kinesin family member 1B	Mitochondrial Dynamics	0.578417	4.978e-7
+Met_vs_Placebo_RA_user	KIF5B	kinesin family member 5B	Mitochondrial Dynamics	0.379178	0.000393616
+Met_vs_Placebo_RA_user	LYRM1	LYR motif containing 1	Mitochondrial Dynamics	-0.00588139	0.966826
+Met_vs_Placebo_RA_user	MFF	mitochondrial fission factor	Mitochondrial Dynamics	-0.110161	0.226114
+Met_vs_Placebo_RA_user	MFN1	mitofusin 1	Mitochondrial Dynamics	0.266111	0.00129192
+Met_vs_Placebo_RA_user	MFN2	mitofusin 2	Mitochondrial Dynamics	0.194562	0.00486176
+Met_vs_Placebo_RA_user	MICOS10	mitochondrial contact site and cristae organizing system subunit 10	Mitochondrial Dynamics	-0.542561	0.000178404
+Met_vs_Placebo_RA_user	MICOS13	mitochondrial contact site and cristae organizing system subunit 13	Mitochondrial Dynamics	-0.640549	0.0000076686
+Met_vs_Placebo_RA_user	MIEF1	mitochondrial elongation factor 1	Mitochondrial Dynamics	-0.114931	0.257412
+Met_vs_Placebo_RA_user	MIEF2	mitochondrial elongation factor 2	Mitochondrial Dynamics	-0.345648	0.00300424
+Met_vs_Placebo_RA_user	MSTO1	misato mitochondrial distribution and morphology regulator 1	Mitochondrial Dynamics	-0.299513	0.0060832
+Met_vs_Placebo_RA_user	MTFP1	mitochondrial fission process 1	Mitochondrial Dynamics	-0.637698	0.0000025206
+Met_vs_Placebo_RA_user	MTFR1	mitochondrial fission regulator 1	Mitochondrial Dynamics	0.217225	0.226387
+Met_vs_Placebo_RA_user	MTFR1L	mitochondrial fission regulator 1 like	Mitochondrial Dynamics	-0.0741975	0.297848
+Met_vs_Placebo_RA_user	OMA1	OMA1 zinc metallopeptidase	Mitochondrial Dynamics	0.0224279	0.886917
+Met_vs_Placebo_RA_user	OPA1	OPA1 mitochondrial dynamin like GTPase	Mitochondrial Dynamics	0.25318	0.00207567
+Met_vs_Placebo_RA_user	PHB2	prohibitin 2	Mitochondrial Dynamics	-0.208516	0.192196
+Met_vs_Placebo_RA_user	PKIA	cAMP-dependent protein kinase inhibitor alpha	Mitochondrial Dynamics	0.250073	0.0521728
+Met_vs_Placebo_RA_user	RHOT1	ras homolog family member T1	Mitochondrial Dynamics	0.0570199	0.570582
+Met_vs_Placebo_RA_user	RHOT2	ras homolog family member T2	Mitochondrial Dynamics	-0.439671	0.0798991
+Met_vs_Placebo_RA_user	SH3GLB1	SH3 domain containing GRB2 like, endophilin B1	Mitochondrial Dynamics	0.449692	0.0000037661
+Met_vs_Placebo_RA_user	SLC25A4	solute carrier family 25 member 4	Mitochondrial Dynamics	-0.175055	0.00945809
+Met_vs_Placebo_RA_user	SLC25A46	solute carrier family 25 member 46	Mitochondrial Dynamics	0.378102	0.000258479
+Met_vs_Placebo_RA_user	SLC25A5	solute carrier family 25 member 5	Mitochondrial Dynamics	-0.171069	0.175647
+Met_vs_Placebo_RA_user	SPG7	SPG7 matrix AAA peptidase subunit, paraplegin	Mitochondrial Dynamics	-0.121148	0.126208
+Met_vs_Placebo_RA_user	SQSTM1	sequestosome 1	Mitochondrial Dynamics	-0.183722	0.0811918
+Met_vs_Placebo_RA_user	STOML2	stomatin like 2	Mitochondrial Dynamics	-0.304391	0.000236684
+Met_vs_Placebo_RA_user	SYBU	syntabulin	Mitochondrial Dynamics	0.151205	0.666366
+Met_vs_Placebo_RA_user	TCAIM	T cell activation inhibitor, mitochondrial	Mitochondrial Dynamics	-0.124158	0.320745
+Met_vs_Placebo_RA_user	TMEM11	transmembrane protein 11	Mitochondrial Dynamics	-0.304423	0.00195003
+Met_vs_Placebo_RA_user	TRAK1	trafficking kinesin protein 1	Mitochondrial Dynamics	0.217616	0.00499912
+Met_vs_Placebo_RA_user	TRAK2	trafficking kinesin protein 2	Mitochondrial Dynamics	0.746143	0.000002798
+Met_vs_Placebo_RA_user	USP30	ubiquitin specific peptidase 30	Mitochondrial Dynamics	-0.0417453	0.808157
+Met_vs_Placebo_RA_user	WDR81	WD repeat domain 81	Mitochondrial Dynamics	0.143442	0.336184
+Met_vs_Placebo_RA_user	AKAP1	A-kinase anchoring protein 1	Mitochondrial Signaling	0.436156	0.000263057
+Met_vs_Placebo_RA_user	AKAP10	A-kinase anchoring protein 10	Mitochondrial Signaling	0.363138	0.0111912
+Met_vs_Placebo_RA_user	AKT1	AKT serine/threonine kinase 1	Mitochondrial Signaling	-0.0375636	0.693776
+Met_vs_Placebo_RA_user	CHCHD2	coiled-coil-helix-coiled-coil-helix domain containing 2	Mitochondrial Signaling	-0.365138	0.000918186
+Met_vs_Placebo_RA_user	GSK3B	glycogen synthase kinase 3 beta	Mitochondrial Signaling	0.778533	0.0000025298
+Met_vs_Placebo_RA_user	IDE	insulin degrading enzyme	Mitochondrial Signaling	0.129286	0.119655
+Met_vs_Placebo_RA_user	MAVS	mitochondrial antiviral signaling protein	Mitochondrial Signaling	-0.119535	0.182553
+Met_vs_Placebo_RA_user	MTOR	mechanistic target of rapamycin kinase	Mitochondrial Signaling	0.254043	0.00434776
+Met_vs_Placebo_RA_user	NLRX1	NLR family member X1	Mitochondrial Signaling	0.0539515	0.699958
+Met_vs_Placebo_RA_user	PRKACA	protein kinase cAMP-activated catalytic subunit alpha	Mitochondrial Signaling	0.0183596	0.852889
+Met_vs_Placebo_RA_user	SHC1	SHC adaptor protein 1	Mitochondrial Signaling	0.00618388	0.975738
+Met_vs_Placebo_RA_user	SIRT1	sirtuin 1	Mitochondrial Signaling	0.26439	0.0278486
+Met_vs_Placebo_RA_user	SIRT2	sirtuin 2	Mitochondrial Signaling	-0.293043	0.000960848
+Met_vs_Placebo_RA_user	SIRT3	sirtuin 3	Mitochondrial Signaling	-0.287813	0.0101041
+Met_vs_Placebo_RA_user	SIRT4	sirtuin 4	Mitochondrial Signaling	0.022013	0.931869
+Met_vs_Placebo_RA_user	SIRT5	sirtuin 5	Mitochondrial Signaling	-0.208536	0.0290399
+Met_vs_Placebo_RA_user	SYNJ2BP	synaptojanin 2 binding protein	Mitochondrial Signaling	0.754855	4.583e-7
+Met_vs_Placebo_RA_user	AMBRA1	autophagy and beclin 1 regulator 1 	Mitophagy	0.0580999	0.652251
+Met_vs_Placebo_RA_user	ATG5	autophagy related 5 	Mitophagy	-0.00550584	0.967943
+Met_vs_Placebo_RA_user	BECN1	beclin 1	Mitophagy	0.0904914	0.514006
+Met_vs_Placebo_RA_user	CALCOCO2	calcium binding and coiled-coil domain 2 	Mitophagy	0.0504578	0.469418
+Met_vs_Placebo_RA_user	CITED2	Cbp/p300 interacting transactivator with Glu/Asp rich carboxy-terminal domain 2 	Mitophagy	-0.0347834	0.873261
+Met_vs_Placebo_RA_user	NBR1	NBR1 autophagy cargo receptor 	Mitophagy	0.193912	0.00699054
+Met_vs_Placebo_RA_user	OPTN	optineurin 	Mitophagy	0.121384	0.130065
+Met_vs_Placebo_RA_user	PGAM5	PGAM family member 5, mitochondrial serine/threonine protein phosphatase 	Mitophagy	-0.108581	0.267159
+Met_vs_Placebo_RA_user	PINK1	PTEN induced kinase 1 	Mitophagy	-0.0766374	0.4743
+Met_vs_Placebo_RA_user	PRKN	parkin RBR E3 ubiquitin protein ligase 	Mitophagy	-0.0153001	0.902599
+Met_vs_Placebo_RA_user	RAB7B	RAB7B, member RAS oncogene family 	Mitophagy	-0.688755	0.132046
+Met_vs_Placebo_RA_user	RRAS2	RAS related 2 	Mitophagy	0.111855	0.458355
+Met_vs_Placebo_RA_user	TAX1BP1	Tax1 binding protein 1 	Mitophagy	0.0677123	0.391376
+Met_vs_Placebo_RA_user	TBC1D15	TBC1 domain family member 15 	Mitophagy	0.174173	0.20653
+Met_vs_Placebo_RA_user	TBK1	TANK binding kinase 1 	Mitophagy	0.113037	0.417333
+Met_vs_Placebo_RA_user	ULK1	unc-51 like autophagy activating kinase 1 	Mitophagy	-0.00811788	0.948944
+Met_vs_Placebo_RA_user	USP15	ubiquitin specific peptidase 15 	Mitophagy	0.273376	0.00204774
+Met_vs_Placebo_RA_user	USP8	ubiquitin specific peptidase 8 	Mitophagy	-0.128378	0.194524
+Met_vs_Placebo_RA_user	ARG2	arginase 2	Nitrogen Metabolism	-0.418963	0.129031
+Met_vs_Placebo_RA_user	ASL	argininosuccinate lyase	Nitrogen Metabolism	-0.205358	0.175647
+Met_vs_Placebo_RA_user	CA5B	carbonic anhydrase 5B	Nitrogen Metabolism	-0.0446824	0.892093
+Met_vs_Placebo_RA_user	DDAH1	dimethylarginine dimethylaminohydrolase 1	Nitrogen Metabolism	0.687522	0.000161754
+Met_vs_Placebo_RA_user	OTC	ornithine carbamoyltransferase	Nitrogen Metabolism	-0.270897	0.211695
+Met_vs_Placebo_RA_user	AK2	adenylate kinase 2	Nucleotide Metabolism	-0.338246	0.000393911
+Met_vs_Placebo_RA_user	AK3	adenylate kinase 3	Nucleotide Metabolism	0.263827	0.00252836
+Met_vs_Placebo_RA_user	AK4	adenylate kinase 4	Nucleotide Metabolism	1.20444	3.741e-7
+Met_vs_Placebo_RA_user	ATIC	5-aminoimidazole-4-carboxamide ribonucleotide formyltransferase/IMP cyclohydrolase	Nucleotide Metabolism	-0.0339034	0.838587
+Met_vs_Placebo_RA_user	DHODH	dihydroorotate dehydrogenase (quinone)	Nucleotide Metabolism	-0.0920244	0.55793
+Met_vs_Placebo_RA_user	NME4	NME/NM23 nucleoside diphosphate kinase 4	Nucleotide Metabolism	0.0540501	0.654688
+Met_vs_Placebo_RA_user	NME6	NME/NM23 nucleoside diphosphate kinase 6	Nucleotide Metabolism	-0.230311	0.101171
+Met_vs_Placebo_RA_user	NUDT13	nudix hydrolase 13	Nucleotide Metabolism	-0.0248225	0.889276
+Met_vs_Placebo_RA_user	NUDT9	nudix hydrolase 9	Nucleotide Metabolism	-0.153595	0.147006
+Met_vs_Placebo_RA_user	TYMS	thymidylate synthetase	Nucleotide Metabolism	-0.291502	0.00972385
+Met_vs_Placebo_RA_user	ADCK1	aarF domain containing kinase 1	Oxidative Phosphorylation	0.105091	0.503812
+Met_vs_Placebo_RA_user	ATP5F1A	ATP synthase F1 subunit alpha	Oxidative Phosphorylation	-0.0992357	0.150252
+Met_vs_Placebo_RA_user	ATP5F1B	ATP synthase F1 subunit beta	Oxidative Phosphorylation	-0.0721618	0.236649
+Met_vs_Placebo_RA_user	ATP5F1C	ATP synthase F1 subunit gamma	Oxidative Phosphorylation	-0.255343	0.00200483
+Met_vs_Placebo_RA_user	ATP5F1D	ATP synthase F1 subunit delta	Oxidative Phosphorylation	-0.477542	0.0000134726
+Met_vs_Placebo_RA_user	ATP5IF1	ATP synthase inhibitory factor subunit 1	Oxidative Phosphorylation	-0.458658	0.0000214417
+Met_vs_Placebo_RA_user	ATP5MC1	ATP synthase membrane subunit c locus 1	Oxidative Phosphorylation	-0.456839	0.0000026502
+Met_vs_Placebo_RA_user	ATP5MC2	ATP synthase membrane subunit c locus 2	Oxidative Phosphorylation	-0.393146	0.000225626
+Met_vs_Placebo_RA_user	ATP5MC3	ATP synthase membrane subunit c locus 3	Oxidative Phosphorylation	-0.314436	0.000506794
+Met_vs_Placebo_RA_user	ATP5MF	ATP synthase membrane subunit f	Oxidative Phosphorylation	-0.468104	0.000133637
+Met_vs_Placebo_RA_user	ATP5PB	ATP synthase peripheral stalk-membrane subunit b	Oxidative Phosphorylation	-0.274467	0.000472091
+Met_vs_Placebo_RA_user	ATP5PD	ATP synthase peripheral stalk subunit d	Oxidative Phosphorylation	-0.336174	0.000508843
+Met_vs_Placebo_RA_user	ATP5PO	ATP synthase peripheral stalk subunit OSCP	Oxidative Phosphorylation	-0.552385	0.0000035164
+Met_vs_Placebo_RA_user	ATP6V1E1	ATPase H+ transporting V1 subunit E1	Oxidative Phosphorylation	-0.30672	0.000665778
+Met_vs_Placebo_RA_user	ATPAF1	ATP synthase mitochondrial F1 complex assembly factor 1	Oxidative Phosphorylation	0.145335	0.0735821
+Met_vs_Placebo_RA_user	ATPAF2	ATP synthase mitochondrial F1 complex assembly factor 2	Oxidative Phosphorylation	-0.332169	0.00439483
+Met_vs_Placebo_RA_user	BCS1L	BCS1 homolog, ubiquinol-cytochrome c reductase complex chaperone	Oxidative Phosphorylation	-0.351699	0.00506489
+Met_vs_Placebo_RA_user	CISD1	CDGSH iron sulfur domain 1	Oxidative Phosphorylation	0.257924	0.00515912
+Met_vs_Placebo_RA_user	CISD2	CDGSH iron sulfur domain 2	Oxidative Phosphorylation	-0.184148	0.087352
+Met_vs_Placebo_RA_user	CISD3	CDGSH iron sulfur domain 3	Oxidative Phosphorylation	-0.416675	0.00196465
+Met_vs_Placebo_RA_user	CMC1	C-X9-C motif containing 1	Oxidative Phosphorylation	-0.657087	0.0000060876
+Met_vs_Placebo_RA_user	COA1	cytochrome c oxidase assembly factor 1 homolog	Oxidative Phosphorylation	-0.429945	0.00395158
+Met_vs_Placebo_RA_user	COA4	cytochrome c oxidase assembly factor 4 homolog	Oxidative Phosphorylation	-0.226622	0.339045
+Met_vs_Placebo_RA_user	COA7	cytochrome c oxidase assembly factor 7 (putative)	Oxidative Phosphorylation	-0.232819	0.0860678
+Met_vs_Placebo_RA_user	COQ10A	coenzyme Q10A	Oxidative Phosphorylation	-0.21493	0.0209694
+Met_vs_Placebo_RA_user	COQ10B	coenzyme Q10B	Oxidative Phosphorylation	-0.130039	0.288556
+Met_vs_Placebo_RA_user	COQ8A	coenzyme Q8A	Oxidative Phosphorylation	-0.329442	0.00195622
+Met_vs_Placebo_RA_user	COQ8B	coenzyme Q8B	Oxidative Phosphorylation	-0.272137	0.039784
+Met_vs_Placebo_RA_user	COX10	cytochrome c oxidase assembly factor heme A:farnesyltransferase COX10	Oxidative Phosphorylation	0.118795	0.493154
+Met_vs_Placebo_RA_user	COX11	cytochrome c oxidase copper chaperone COX11	Oxidative Phosphorylation	0.0173649	0.896251
+Met_vs_Placebo_RA_user	COX15	cytochrome c oxidase assembly homolog COX15	Oxidative Phosphorylation	0.269899	0.00176965
+Met_vs_Placebo_RA_user	COX16	cytochrome c oxidase assembly factor COX16	Oxidative Phosphorylation	-0.436041	0.00117962
+Met_vs_Placebo_RA_user	COX18	cytochrome c oxidase assembly factor COX18	Oxidative Phosphorylation	-0.104213	0.42875
+Met_vs_Placebo_RA_user	COX20	cytochrome c oxidase assembly factor COX20	Oxidative Phosphorylation	-0.440833	0.00191932
+Met_vs_Placebo_RA_user	COX4I1	cytochrome c oxidase subunit 4I1	Oxidative Phosphorylation	-0.410828	0.0000822669
+Met_vs_Placebo_RA_user	COX4I2	cytochrome c oxidase subunit 4I2	Oxidative Phosphorylation	-0.280626	0.42893
+Met_vs_Placebo_RA_user	COX5A	cytochrome c oxidase subunit 5A	Oxidative Phosphorylation	-0.279858	0.000862307
+Met_vs_Placebo_RA_user	COX5B	cytochrome c oxidase subunit 5B	Oxidative Phosphorylation	-0.418437	0.0000955125
+Met_vs_Placebo_RA_user	COX6A1	cytochrome c oxidase subunit 6A1	Oxidative Phosphorylation	-0.432809	0.000497256
+Met_vs_Placebo_RA_user	COX7A1	cytochrome c oxidase subunit 7A1	Oxidative Phosphorylation	-0.452363	0.0153921
+Met_vs_Placebo_RA_user	COX7A2	cytochrome c oxidase subunit 7A2	Oxidative Phosphorylation	-0.578737	0.0000405704
+Met_vs_Placebo_RA_user	COX7A2L	cytochrome c oxidase subunit 7A2 like	Oxidative Phosphorylation	-0.3237	0.000683584
+Met_vs_Placebo_RA_user	COX7B	cytochrome c oxidase subunit 7B	Oxidative Phosphorylation	-0.476916	0.000119912
+Met_vs_Placebo_RA_user	CYC1	cytochrome c1	Oxidative Phosphorylation	-0.35975	0.0000335815
+Met_vs_Placebo_RA_user	CYCS	cytochrome c, somatic	Oxidative Phosphorylation	-0.15588	0.0323225
+Met_vs_Placebo_RA_user	D2HGDH	D-2-hydroxyglutarate dehydrogenase	Oxidative Phosphorylation	-0.0537579	0.739379
+Met_vs_Placebo_RA_user	DMAC2	distal membrane arm assembly complex 2	Oxidative Phosphorylation	-0.157568	0.0602811
+Met_vs_Placebo_RA_user	DMAC2L	distal membrane arm assembly complex 2 like	Oxidative Phosphorylation	-0.156334	0.132853
+Met_vs_Placebo_RA_user	DONSON	downstream neighbor of SON	Oxidative Phosphorylation	0.0181597	0.942768
+Met_vs_Placebo_RA_user	ECSIT	ECSIT signalling integrator	Oxidative Phosphorylation	-0.367744	0.0000692255
+Met_vs_Placebo_RA_user	ETFA	electron transfer flavoprotein subunit alpha	Oxidative Phosphorylation	-0.260263	0.0510828
+Met_vs_Placebo_RA_user	ETFB	electron transfer flavoprotein subunit beta	Oxidative Phosphorylation	-0.310924	0.00141788
+Met_vs_Placebo_RA_user	ETFDH	electron transfer flavoprotein dehydrogenase	Oxidative Phosphorylation	0.369463	0.00988663
+Met_vs_Placebo_RA_user	ETFRF1	electron transfer flavoprotein regulatory factor 1	Oxidative Phosphorylation	-0.101496	0.399938
+Met_vs_Placebo_RA_user	FOXRED1	FAD dependent oxidoreductase domain containing 1	Oxidative Phosphorylation	-0.274715	0.00457335
+Met_vs_Placebo_RA_user	GPD1	glycerol-3-phosphate dehydrogenase 1	Oxidative Phosphorylation	-0.375684	0.0235147
+Met_vs_Placebo_RA_user	GPD2	glycerol-3-phosphate dehydrogenase 2	Oxidative Phosphorylation	0.543423	0.000004016
+Met_vs_Placebo_RA_user	HCCS	holocytochrome c synthase	Oxidative Phosphorylation	-0.102822	0.393583
+Met_vs_Placebo_RA_user	LYRM7	LYR motif containing 7	Oxidative Phosphorylation	-0.354839	0.0872699
+Met_vs_Placebo_RA_user	NDUFA10	NADH:ubiquinone oxidoreductase subunit A10	Oxidative Phosphorylation	-0.182783	0.0314199
+Met_vs_Placebo_RA_user	NDUFA12	NADH:ubiquinone oxidoreductase subunit A12	Oxidative Phosphorylation	-0.455484	0.0000049758
+Met_vs_Placebo_RA_user	NDUFA6	NADH:ubiquinone oxidoreductase subunit A6	Oxidative Phosphorylation	-0.522354	0.0000065706
+Met_vs_Placebo_RA_user	NDUFA7	NADH:ubiquinone oxidoreductase subunit A7	Oxidative Phosphorylation	-0.450807	0.00101928
+Met_vs_Placebo_RA_user	NDUFA9	NADH:ubiquinone oxidoreductase subunit A9	Oxidative Phosphorylation	-0.276926	0.000725719
+Met_vs_Placebo_RA_user	NDUFAB1	NADH:ubiquinone oxidoreductase subunit AB1	Oxidative Phosphorylation	-0.283229	0.0139852
+Met_vs_Placebo_RA_user	NDUFAF1	NADH:ubiquinone oxidoreductase complex assembly factor 1	Oxidative Phosphorylation	-0.160765	0.063099
+Met_vs_Placebo_RA_user	NDUFAF2	NADH:ubiquinone oxidoreductase complex assembly factor 2	Oxidative Phosphorylation	-0.499501	0.000115875
+Met_vs_Placebo_RA_user	NDUFAF3	NADH:ubiquinone oxidoreductase complex assembly factor 3	Oxidative Phosphorylation	-0.356201	0.0000348919
+Met_vs_Placebo_RA_user	NDUFAF4	NADH:ubiquinone oxidoreductase complex assembly factor 4	Oxidative Phosphorylation	-0.0759946	0.521156
+Met_vs_Placebo_RA_user	NDUFAF5	NADH:ubiquinone oxidoreductase complex assembly factor 5	Oxidative Phosphorylation	-0.356945	0.0454913
+Met_vs_Placebo_RA_user	NDUFAF6	NADH:ubiquinone oxidoreductase complex assembly factor 6	Oxidative Phosphorylation	0.208257	0.185634
+Met_vs_Placebo_RA_user	NDUFAF7	NADH:ubiquinone oxidoreductase complex assembly factor 7	Oxidative Phosphorylation	0.0211924	0.924441
+Met_vs_Placebo_RA_user	NDUFB10	NADH:ubiquinone oxidoreductase subunit B10	Oxidative Phosphorylation	-0.443564	0.0000317994
+Met_vs_Placebo_RA_user	NDUFB11	NADH:ubiquinone oxidoreductase subunit B11	Oxidative Phosphorylation	-0.502289	8.001e-7
+Met_vs_Placebo_RA_user	NDUFB3	NADH:ubiquinone oxidoreductase subunit B3	Oxidative Phosphorylation	-0.356978	0.000345106
+Met_vs_Placebo_RA_user	NDUFB4	NADH:ubiquinone oxidoreductase subunit B4	Oxidative Phosphorylation	-0.297023	0.000875146
+Met_vs_Placebo_RA_user	NDUFB5	NADH:ubiquinone oxidoreductase subunit B5	Oxidative Phosphorylation	-0.318006	0.00393927
+Met_vs_Placebo_RA_user	NDUFB7	NADH:ubiquinone oxidoreductase subunit B7	Oxidative Phosphorylation	-0.581772	0.000003891
+Met_vs_Placebo_RA_user	NDUFB9	NADH:ubiquinone oxidoreductase subunit B9	Oxidative Phosphorylation	-0.392208	0.000460629
+Met_vs_Placebo_RA_user	NDUFC1	NADH:ubiquinone oxidoreductase subunit C1	Oxidative Phosphorylation	-0.489612	0.00897429
+Met_vs_Placebo_RA_user	NDUFC2	NADH:ubiquinone oxidoreductase subunit C2	Oxidative Phosphorylation	-0.389948	0.00022533
+Met_vs_Placebo_RA_user	NDUFS1	NADH:ubiquinone oxidoreductase core subunit S1	Oxidative Phosphorylation	0.148196	0.0375337
+Met_vs_Placebo_RA_user	NDUFS2	NADH:ubiquinone oxidoreductase core subunit S2	Oxidative Phosphorylation	-0.197501	0.00402477
+Met_vs_Placebo_RA_user	NDUFS3	NADH:ubiquinone oxidoreductase core subunit S3	Oxidative Phosphorylation	-0.379459	0.0000346035
+Met_vs_Placebo_RA_user	NDUFS4	NADH:ubiquinone oxidoreductase subunit S4	Oxidative Phosphorylation	-0.37592	0.000363086
+Met_vs_Placebo_RA_user	NDUFS5	NADH:ubiquinone oxidoreductase subunit S5	Oxidative Phosphorylation	-0.662012	0.0000069828
+Met_vs_Placebo_RA_user	NDUFS6	NADH:ubiquinone oxidoreductase subunit S6	Oxidative Phosphorylation	-0.482857	0.0000061389
+Met_vs_Placebo_RA_user	NDUFS7	NADH:ubiquinone oxidoreductase core subunit S7	Oxidative Phosphorylation	-0.545007	0.0000641192
+Met_vs_Placebo_RA_user	NDUFS8	NADH:ubiquinone oxidoreductase core subunit S8	Oxidative Phosphorylation	-0.501953	0.0000015439
+Met_vs_Placebo_RA_user	NDUFV1	NADH:ubiquinone oxidoreductase core subunit V1	Oxidative Phosphorylation	-0.257728	0.0157728
+Met_vs_Placebo_RA_user	NDUFV2	NADH:ubiquinone oxidoreductase core subunit V2	Oxidative Phosphorylation	-0.185382	0.0249173
+Met_vs_Placebo_RA_user	NDUFV3	NADH:ubiquinone oxidoreductase subunit V3	Oxidative Phosphorylation	-0.344891	0.000302669
+Met_vs_Placebo_RA_user	NIPSNAP1	nipsnap homolog 1	Oxidative Phosphorylation	-0.0502323	0.762114
+Met_vs_Placebo_RA_user	NIPSNAP2	nipsnap homolog 2	Oxidative Phosphorylation	-0.0852227	0.273548
+Met_vs_Placebo_RA_user	NUBPL	nucleotide binding protein like	Oxidative Phosphorylation	0.252133	0.0498395
+Met_vs_Placebo_RA_user	OXA1L	OXA1L mitochondrial inner membrane protein	Oxidative Phosphorylation	-0.0744967	0.469514
+Met_vs_Placebo_RA_user	PET117	PET117 cytochrome c oxidase chaperone	Oxidative Phosphorylation	0.0445716	0.782383
+Met_vs_Placebo_RA_user	PTCD2	pentatricopeptide repeat domain 2	Oxidative Phosphorylation	0.251636	0.0390627
+Met_vs_Placebo_RA_user	RTN4IP1	reticulon 4 interacting protein 1	Oxidative Phosphorylation	0.121018	0.325849
+Met_vs_Placebo_RA_user	SCO1	SCO cytochrome c oxidase assembly protein 1	Oxidative Phosphorylation	-0.115595	0.341214
+Met_vs_Placebo_RA_user	SCO2	SCO cytochrome c oxidase assembly protein 2	Oxidative Phosphorylation	-0.341755	0.0262741
+Met_vs_Placebo_RA_user	SDHA	succinate dehydrogenase complex flavoprotein subunit A	Oxidative Phosphorylation	0.0669675	0.352917
+Met_vs_Placebo_RA_user	SDHAF2	succinate dehydrogenase complex assembly factor 2	Oxidative Phosphorylation	-0.018788	0.908859
+Met_vs_Placebo_RA_user	SDHB	succinate dehydrogenase complex iron sulfur subunit B	Oxidative Phosphorylation	-0.239671	0.00653804
+Met_vs_Placebo_RA_user	SDHC	succinate dehydrogenase complex subunit C	Oxidative Phosphorylation	-0.196292	0.0121312
+Met_vs_Placebo_RA_user	SDHD	succinate dehydrogenase complex subunit D	Oxidative Phosphorylation	-0.161694	0.0255794
+Met_vs_Placebo_RA_user	SURF1	SURF1 cytochrome c oxidase assembly factor	Oxidative Phosphorylation	-0.340882	0.0179693
+Met_vs_Placebo_RA_user	TBRG4	transforming growth factor beta regulator 4	Oxidative Phosphorylation	-0.166533	0.0769278
+Met_vs_Placebo_RA_user	TMEM126B	transmembrane protein 126B	Oxidative Phosphorylation	-0.213422	0.0629631
+Met_vs_Placebo_RA_user	TMEM186	transmembrane protein 186	Oxidative Phosphorylation	0.0722187	0.451788
+Met_vs_Placebo_RA_user	TMEM70	transmembrane protein 70	Oxidative Phosphorylation	-0.207461	0.0180654
+Met_vs_Placebo_RA_user	TTC19	tetratricopeptide repeat domain 19	Oxidative Phosphorylation	-0.0788379	0.391371
+Met_vs_Placebo_RA_user	UQCC1	ubiquinol-cytochrome c reductase complex assembly factor 1	Oxidative Phosphorylation	-0.104526	0.195179
+Met_vs_Placebo_RA_user	UQCC3	ubiquinol-cytochrome c reductase complex assembly factor 3	Oxidative Phosphorylation	-0.249362	0.0415726
+Met_vs_Placebo_RA_user	UQCRB	ubiquinol-cytochrome c reductase binding protein	Oxidative Phosphorylation	-0.310478	0.000665778
+Met_vs_Placebo_RA_user	UQCRC2	ubiquinol-cytochrome c reductase core protein 2	Oxidative Phosphorylation	-0.112282	0.0848191
+Met_vs_Placebo_RA_user	UQCRFS1	ubiquinol-cytochrome c reductase, Rieske iron-sulfur polypeptide 1	Oxidative Phosphorylation	-0.322299	0.0000172404
+Met_vs_Placebo_RA_user	MT-ATP6	mitochondrially encoded ATP synthase 6	Oxidative Phosphorylation (mt)	-0.226309	0.184295
+Met_vs_Placebo_RA_user	MT-ATP8	mitochondrially encoded ATP synthase 8	Oxidative Phosphorylation (mt)	0.308138	0.000801968
+Met_vs_Placebo_RA_user	MT-CO1	mitochondrially encoded cytochrome c oxidase I	Oxidative Phosphorylation (mt)	0.00562386	0.957364
+Met_vs_Placebo_RA_user	MT-CO2	mitochondrially encoded cytochrome c oxidase II	Oxidative Phosphorylation (mt)	-0.193098	0.108372
+Met_vs_Placebo_RA_user	MT-CO3	mitochondrially encoded cytochrome c oxidase III	Oxidative Phosphorylation (mt)	-0.21043	0.824585
+Met_vs_Placebo_RA_user	MT-CYB	mitochondrially encoded cytochrome b	Oxidative Phosphorylation (mt)	-0.176664	0.167953
+Met_vs_Placebo_RA_user	MT-ND1	mitochondrially encoded NADH dehydrogenase 1	Oxidative Phosphorylation (mt)	-0.127879	0.336946
+Met_vs_Placebo_RA_user	MT-ND2	mitochondrially encoded NADH dehydrogenase 2	Oxidative Phosphorylation (mt)	0.035906	0.789679
+Met_vs_Placebo_RA_user	MT-ND3	mitochondrially encoded NADH dehydrogenase 3	Oxidative Phosphorylation (mt)	-0.117813	0.438267
+Met_vs_Placebo_RA_user	MT-ND4	mitochondrially encoded NADH dehydrogenase 4	Oxidative Phosphorylation (mt)	-0.188745	0.723162
+Met_vs_Placebo_RA_user	MT-ND5	mitochondrially encoded NADH dehydrogenase 5	Oxidative Phosphorylation (mt)	0.149494	0.722731
+Met_vs_Placebo_RA_user	MT-ND6	mitochondrially encoded NADH dehydrogenase 6	Oxidative Phosphorylation (mt)	-0.861773	0.0829873
+Met_vs_Placebo_RA_user	G6PD	glucose-6-phosphate dehydrogenase	Pentose Phosphate Pathway	-0.566729	0.00458645
+Met_vs_Placebo_RA_user	PGD	phosphogluconate dehydrogenase	Pentose Phosphate Pathway	-0.0071731	0.949839
+Met_vs_Placebo_RA_user	PGLS	6-phosphogluconolactonase	Pentose Phosphate Pathway	-0.580152	0.0000037223
+Met_vs_Placebo_RA_user	RPIA	ribose 5-phosphate isomerase A	Pentose Phosphate Pathway	-0.0828974	0.662165
+Met_vs_Placebo_RA_user	TALDO1	transaldolase 1	Pentose Phosphate Pathway	-0.397923	0.00010078
+Met_vs_Placebo_RA_user	TKT	transketolase	Pentose Phosphate Pathway	-0.350196	0.0356312
+Met_vs_Placebo_RA_user	AFG1L	AFG1 like ATPase	Protein Stability & Degradation	0.200774	0.333178
+Met_vs_Placebo_RA_user	ATAD1	ATPase family AAA domain containing 1	Protein Stability & Degradation	0.108397	0.238483
+Met_vs_Placebo_RA_user	ATP23	ATP23 metallopeptidase and ATP synthase assembly factor homolog	Protein Stability & Degradation	-0.165174	0.464952
+Met_vs_Placebo_RA_user	CLPB	ClpB homolog, mitochondrial AAA ATPase chaperonin	Protein Stability & Degradation	0.26402	0.00713475
+Met_vs_Placebo_RA_user	CLPP	caseinolytic mitochondrial matrix peptidase proteolytic subunit	Protein Stability & Degradation	-0.474518	0.0000549689
+Met_vs_Placebo_RA_user	CLPX	caseinolytic mitochondrial matrix peptidase chaperone subunit	Protein Stability & Degradation	0.251186	0.0113729
+Met_vs_Placebo_RA_user	DNAJA3	DnaJ heat shock protein family (Hsp40) member A3	Protein Stability & Degradation	0.000372505	0.997197
+Met_vs_Placebo_RA_user	DNAJC11	DnaJ heat shock protein family (Hsp40) member C11	Protein Stability & Degradation	-0.166887	0.0432249
+Met_vs_Placebo_RA_user	DNAJC30	DnaJ heat shock protein family (Hsp40) member C30	Protein Stability & Degradation	-0.23728	0.0480042
+Met_vs_Placebo_RA_user	DNAJC4	DnaJ heat shock protein family (Hsp40) member C4	Protein Stability & Degradation	-0.496751	0.0000866478
+Met_vs_Placebo_RA_user	FBXL4	F-box and leucine rich repeat protein 4	Protein Stability & Degradation	0.0846211	0.448341
+Met_vs_Placebo_RA_user	FKBP8	FKBP prolyl isomerase 8	Protein Stability & Degradation	-0.294908	0.00283577
+Met_vs_Placebo_RA_user	HSPA1A	heat shock protein family A (Hsp70) member 1A	Protein Stability & Degradation	-0.022661	0.841537
+Met_vs_Placebo_RA_user	HSPD1	heat shock protein family D (Hsp60) member 1	Protein Stability & Degradation	-0.146071	0.073817
+Met_vs_Placebo_RA_user	LONP1	lon peptidase 1, mitochondrial	Protein Stability & Degradation	-0.156294	0.204986
+Met_vs_Placebo_RA_user	MUL1	mitochondrial E3 ubiquitin protein ligase 1	Protein Stability & Degradation	-0.160508	0.0393142
+Met_vs_Placebo_RA_user	NLN	neurolysin	Protein Stability & Degradation	0.248527	0.0120834
+Met_vs_Placebo_RA_user	NRDC	nardilysin convertase	Protein Stability & Degradation	0.129012	0.0787069
+Met_vs_Placebo_RA_user	PET100	PET100 cytochrome c oxidase chaperone	Protein Stability & Degradation	-0.596916	0.000458766
+Met_vs_Placebo_RA_user	PITRM1	pitrilysin metallopeptidase 1	Protein Stability & Degradation	0.113097	0.608558
+Met_vs_Placebo_RA_user	RNF185	ring finger protein 185	Protein Stability & Degradation	-0.00328964	0.978281
+Met_vs_Placebo_RA_user	RNF5	ring finger protein 5	Protein Stability & Degradation	-0.258459	0.00845916
+Met_vs_Placebo_RA_user	TMEM177	transmembrane protein 177	Protein Stability & Degradation	-0.284791	0.0858725
+Met_vs_Placebo_RA_user	UBA1	ubiquitin like modifier activating enzyme 1	Protein Stability & Degradation	0.0162099	0.859999
+Met_vs_Placebo_RA_user	XPNPEP3	X-prolyl aminopeptidase 3	Protein Stability & Degradation	0.220068	0.184082
+Met_vs_Placebo_RA_user	ACSS1	acyl-CoA synthetase short chain family member 1	Pyruvate Metabolism	-0.19144	0.271337
+Met_vs_Placebo_RA_user	ACSS2	acyl-CoA synthetase short chain family member 2	Pyruvate Metabolism	0.0914106	0.426714
+Met_vs_Placebo_RA_user	ADHFE1	alcohol dehydrogenase iron containing 1	Pyruvate Metabolism	0.0823352	0.524272
+Met_vs_Placebo_RA_user	ALDH7A1	aldehyde dehydrogenase 7 family member A1	Pyruvate Metabolism	0.20362	0.036973
+Met_vs_Placebo_RA_user	DLAT	dihydrolipoamide S-acetyltransferase	Pyruvate Metabolism	0.201108	0.027271
+Met_vs_Placebo_RA_user	HAGH	hydroxyacylglutathione hydrolase	Pyruvate Metabolism	-0.366287	0.000891339
+Met_vs_Placebo_RA_user	HOGA1	4-hydroxy-2-oxoglutarate aldolase 1	Pyruvate Metabolism	-0.0463128	0.713686
+Met_vs_Placebo_RA_user	L2HGDH	L-2-hydroxyglutarate dehydrogenase	Pyruvate Metabolism	0.188742	0.0761138
+Met_vs_Placebo_RA_user	LDHD	lactate dehydrogenase D	Pyruvate Metabolism	-0.231806	0.0987555
+Met_vs_Placebo_RA_user	ME1	malic enzyme 1	Pyruvate Metabolism	-0.0337617	0.877971
+Met_vs_Placebo_RA_user	ME2	malic enzyme 2	Pyruvate Metabolism	0.0592087	0.62629
+Met_vs_Placebo_RA_user	ME3	malic enzyme 3	Pyruvate Metabolism	-0.273171	0.0109183
+Met_vs_Placebo_RA_user	MPC1	mitochondrial pyruvate carrier 1	Pyruvate Metabolism	-0.338904	0.00412035
+Met_vs_Placebo_RA_user	PCK2	phosphoenolpyruvate carboxykinase 2, mitochondrial	Pyruvate Metabolism	-0.339582	0.266233
+Met_vs_Placebo_RA_user	PDHA1	pyruvate dehydrogenase E1 alpha 1 subunit	Pyruvate Metabolism	-0.0425025	0.657358
+Met_vs_Placebo_RA_user	PDHB	pyruvate dehydrogenase E1 beta subunit	Pyruvate Metabolism	-0.105826	0.0901513
+Met_vs_Placebo_RA_user	PDK1	pyruvate dehydrogenase kinase 1	Pyruvate Metabolism	0.13878	0.257119
+Met_vs_Placebo_RA_user	PDK2	pyruvate dehydrogenase kinase 2	Pyruvate Metabolism	-0.295958	0.00124858
+Met_vs_Placebo_RA_user	PDK3	pyruvate dehydrogenase kinase 3	Pyruvate Metabolism	0.966477	7.157e-7
+Met_vs_Placebo_RA_user	PDK4	pyruvate dehydrogenase kinase 4	Pyruvate Metabolism	0.858397	0.00178994
+Met_vs_Placebo_RA_user	PDP1	pyruvate dehyrogenase phosphatase catalytic subunit 1	Pyruvate Metabolism	0.277901	0.0997354
+Met_vs_Placebo_RA_user	PDP2	pyruvate dehyrogenase phosphatase catalytic subunit 2	Pyruvate Metabolism	0.1437	0.378195
+Met_vs_Placebo_RA_user	PDPR	pyruvate dehydrogenase phosphatase regulatory subunit	Pyruvate Metabolism	0.684799	0.0000044869
+Met_vs_Placebo_RA_user	CAT	catalase	ROS Defense	-0.26839	0.0825903
+Met_vs_Placebo_RA_user	GCLC	glutamate-cysteine ligase catalytic subunit	ROS Defense	-0.0154926	0.956476
+Met_vs_Placebo_RA_user	GCLM	glutamate-cysteine ligase modifier subunit	ROS Defense	0.251553	0.0265244
+Met_vs_Placebo_RA_user	GLRX2	glutaredoxin 2	ROS Defense	-0.57791	0.000987684
+Met_vs_Placebo_RA_user	GPX4	glutathione peroxidase 4	ROS Defense	-0.505202	0.0001636
+Met_vs_Placebo_RA_user	GSR	glutathione-disulfide reductase	ROS Defense	-0.0216127	0.907933
+Met_vs_Placebo_RA_user	GSS	glutathione synthetase	ROS Defense	-0.671182	0.00668932
+Met_vs_Placebo_RA_user	GSTA4	glutathione S-transferase alpha 4	ROS Defense	-0.0869874	0.382319
+Met_vs_Placebo_RA_user	MPV17	mitochondrial inner membrane protein MPV17	ROS Defense	-0.290633	0.0314736
+Met_vs_Placebo_RA_user	MPV17L	MPV17 mitochondrial inner membrane protein like	ROS Defense	-0.385013	0.318559
+Met_vs_Placebo_RA_user	MSRA	methionine sulfoxide reductase A	ROS Defense	-0.188227	0.219404
+Met_vs_Placebo_RA_user	MSRB3	methionine sulfoxide reductase B3	ROS Defense	0.276001	0.000747911
+Met_vs_Placebo_RA_user	NUDT2	nudix hydrolase 2	ROS Defense	-0.427577	0.000790138
+Met_vs_Placebo_RA_user	OGG1	8-oxoguanine DNA glycosylase	ROS Defense	-0.432609	0.0350391
+Met_vs_Placebo_RA_user	OXR1	oxidation resistance 1	ROS Defense	0.245277	0.00278508
+Met_vs_Placebo_RA_user	PARK7	Parkinsonism associated deglycase	ROS Defense	-0.350615	0.00174934
+Met_vs_Placebo_RA_user	PRDX1	peroxiredoxin 1	ROS Defense	-0.415782	0.000237309
+Met_vs_Placebo_RA_user	PRDX3	peroxiredoxin 3	ROS Defense	-0.11765	0.190241
+Met_vs_Placebo_RA_user	PRDX5	peroxiredoxin 5	ROS Defense	-0.445669	0.000211231
+Met_vs_Placebo_RA_user	SOD1	superoxide dismutase 1	ROS Defense	-0.508974	0.00003545
+Met_vs_Placebo_RA_user	SOD2	superoxide dismutase 2	ROS Defense	0.256818	0.000824962
+Met_vs_Placebo_RA_user	TXN	thioredoxin	ROS Defense	-0.510612	0.00146339
+Met_vs_Placebo_RA_user	TXN2	thioredoxin 2	ROS Defense	-0.340403	0.000439044
+Met_vs_Placebo_RA_user	TXNRD1	thioredoxin reductase 1	ROS Defense	0.0642966	0.588857
+Met_vs_Placebo_RA_user	TXNRD2	thioredoxin reductase 2	ROS Defense	-0.547037	0.00794295
+Met_vs_Placebo_RA_user	ALKBH1	alkB homolog 1, histone H2A dioxygenase	Replication & Transcription	-0.006362	0.976142
+Met_vs_Placebo_RA_user	APEX1	apurinic/apyrimidinic endodeoxyribonuclease 1	Replication & Transcription	-0.368186	0.0000399577
+Met_vs_Placebo_RA_user	APEX2	apurinic/apyrimidinic endodeoxyribonuclease 2	Replication & Transcription	-0.0819211	0.546233
+Met_vs_Placebo_RA_user	CMPK2	cytidine/uridine monophosphate kinase 2	Replication & Transcription	-0.772331	0.0366134
+Met_vs_Placebo_RA_user	DGUOK	deoxyguanosine kinase	Replication & Transcription	-0.00278123	0.992454
+Met_vs_Placebo_RA_user	DHX29	DExH-box helicase 29	Replication & Transcription	0.253669	0.0195364
+Met_vs_Placebo_RA_user	DHX30	DExH-box helicase 30	Replication & Transcription	-0.0688712	0.463445
+Met_vs_Placebo_RA_user	ENDOG	endonuclease G	Replication & Transcription	-0.435246	0.00143471
+Met_vs_Placebo_RA_user	EXOG	exo/endonuclease G	Replication & Transcription	0.0718773	0.664791
+Met_vs_Placebo_RA_user	FEN1	flap structure-specific endonuclease 1	Replication & Transcription	-0.201723	0.242534
+Met_vs_Placebo_RA_user	LIG1	DNA ligase 1	Replication & Transcription	-0.242214	0.323592
+Met_vs_Placebo_RA_user	LIG3	DNA ligase 3	Replication & Transcription	0.0816444	0.49529
+Met_vs_Placebo_RA_user	MGME1	mitochondrial genome maintenance exonuclease 1	Replication & Transcription	-0.301088	0.303185
+Met_vs_Placebo_RA_user	MSH5	mutS homolog 5	Replication & Transcription	0.203856	0.38539
+Met_vs_Placebo_RA_user	MTERF1	mitochondrial transcription termination factor 1	Replication & Transcription	0.209355	0.374535
+Met_vs_Placebo_RA_user	MTERF2	mitochondrial transcription termination factor 2	Replication & Transcription	0.225595	0.0783327
+Met_vs_Placebo_RA_user	MUTYH	mutY DNA glycosylase	Replication & Transcription	-0.262881	0.20668
+Met_vs_Placebo_RA_user	NFE2L2	nuclear factor, erythroid 2 like 2	Replication & Transcription	0.0668369	0.686928
+Met_vs_Placebo_RA_user	NIF3L1	NGG1 interacting factor 3 like 1	Replication & Transcription	-0.086756	0.538967
+Met_vs_Placebo_RA_user	NSUN2	NOP2/Sun RNA methyltransferase 2	Replication & Transcription	-0.0849834	0.507387
+Met_vs_Placebo_RA_user	NT5M	5',3'-nucleotidase, mitochondrial	Replication & Transcription	0.0211248	0.857088
+Met_vs_Placebo_RA_user	NTHL1	nth like DNA glycosylase 1	Replication & Transcription	-0.167159	0.427589
+Met_vs_Placebo_RA_user	POLDIP2	DNA polymerase delta interacting protein 2	Replication & Transcription	-0.196427	0.00523726
+Met_vs_Placebo_RA_user	POLG	DNA polymerase gamma, catalytic subunit	Replication & Transcription	0.118507	0.261239
+Met_vs_Placebo_RA_user	POLRMT	RNA polymerase mitochondrial	Replication & Transcription	-0.191829	0.0893662
+Met_vs_Placebo_RA_user	RAD51	RAD51 recombinase	Replication & Transcription	0.0619388	0.811177
+Met_vs_Placebo_RA_user	RNASEH1	ribonuclease H1	Replication & Transcription	0.0372206	0.81785
+Met_vs_Placebo_RA_user	RRM2B	ribonucleotide reductase regulatory TP53 inducible subunit M2B	Replication & Transcription	0.547918	0.0000783979
+Met_vs_Placebo_RA_user	SSBP1	single stranded DNA binding protein 1	Replication & Transcription	-0.0665624	0.767391
+Met_vs_Placebo_RA_user	SUPV3L1	Suv3 like RNA helicase	Replication & Transcription	-0.192784	0.12866
+Met_vs_Placebo_RA_user	TEFM	transcription elongation factor, mitochondrial	Replication & Transcription	-0.142585	0.160682
+Met_vs_Placebo_RA_user	TFB1M	transcription factor B1, mitochondrial	Replication & Transcription	-0.218967	0.256936
+Met_vs_Placebo_RA_user	TFB2M	transcription factor B2, mitochondrial	Replication & Transcription	0.00849187	0.957438
+Met_vs_Placebo_RA_user	TK2	thymidine kinase 1	Replication & Transcription	-0.218499	0.0103649
+Met_vs_Placebo_RA_user	TOP1MT	DNA topoisomerase I mitochondrial	Replication & Transcription	0.471839	0.0528807
+Met_vs_Placebo_RA_user	TOP3A	DNA topoisomerase III alpha	Replication & Transcription	0.0077856	0.949262
+Met_vs_Placebo_RA_user	TRUB2	TruB pseudouridine synthase family member 2	Replication & Transcription	-0.165584	0.115462
+Met_vs_Placebo_RA_user	TWNK	twinkle mtDNA helicase	Replication & Transcription	0.0532937	0.767853
+Met_vs_Placebo_RA_user	UNG	uracil DNA glycosylase	Replication & Transcription	-0.18339	0.229011
+Met_vs_Placebo_RA_user	YRDC	yrdC N6-threonylcarbamoyltransferase domain containing	Replication & Transcription	-0.0227615	0.888593
+Met_vs_Placebo_RA_user	ARNT	aryl hydrocarbon receptor nuclear translocator	Transcription (nuclear)	0.358755	0.0042661
+Met_vs_Placebo_RA_user	ATF4	activating transcription factor 4 	Transcription (nuclear)	-0.52059	0.00614809
+Met_vs_Placebo_RA_user	CREB1	cAMP responsive element binding protein 1	Transcription (nuclear)	0.770788	0.000082294
+Met_vs_Placebo_RA_user	ESRRA	estrogen related receptor alpha	Transcription (nuclear)	-0.143828	0.0382427
+Met_vs_Placebo_RA_user	FOXO3	forkhead box O3 	Transcription (nuclear)	0.446057	0.00171584
+Met_vs_Placebo_RA_user	GABPA	GA binding protein transcription factor subunit alpha	Transcription (nuclear)	0.597296	0.000333694
+Met_vs_Placebo_RA_user	HIF1A	hypoxia inducible factor 1 subunit alpha 	Transcription (nuclear)	0.252193	0.200974
+Met_vs_Placebo_RA_user	JUN	Jun proto-oncogene, AP-1 transcription factor subunit	Transcription (nuclear)	0.158569	0.614101
+Met_vs_Placebo_RA_user	MITF	melanocyte inducing transcription factor 	Transcription (nuclear)	0.323464	0.00290254
+Met_vs_Placebo_RA_user	MYC	MYC proto-oncogene, bHLH transcription factor	Transcription (nuclear)	-0.127314	0.765155
+Met_vs_Placebo_RA_user	NRF1	nuclear respiratory factor 1	Transcription (nuclear)	-0.0138071	0.950058
+Met_vs_Placebo_RA_user	PPARG	peroxisome proliferator activated receptor gamma	Transcription (nuclear)	0.196823	0.310533
+Met_vs_Placebo_RA_user	PPARGC1A	PPARG coactivator 1 alpha	Transcription (nuclear)	1.20505	0.0000097057
+Met_vs_Placebo_RA_user	PPARGC1B	PPARG coactivator 1 beta	Transcription (nuclear)	0.550729	0.00265286
+Met_vs_Placebo_RA_user	PPRC1	PPARG related coactivator 1	Transcription (nuclear)	0.137589	0.490503
+Met_vs_Placebo_RA_user	RELA	RELA proto-oncogene, NF-kB subunit 	Transcription (nuclear)	-0.00733774	0.965073
+Met_vs_Placebo_RA_user	SP1	Sp1 transcription factor	Transcription (nuclear)	1.26082	0.0000025206
+Met_vs_Placebo_RA_user	TFE3	transcription factor binding to IGHM enhancer 3	Transcription (nuclear)	-0.0511557	0.715773
+Met_vs_Placebo_RA_user	TFEB	transcription factor EB	Transcription (nuclear)	-0.249172	0.0437635
+Met_vs_Placebo_RA_user	TP53	tumor protein p53	Transcription (nuclear)	-0.190796	0.272755
+Met_vs_Placebo_RA_user	YAP1	Yes associated protein 1	Transcription (nuclear)	0.608335	0.0000096948
+Met_vs_Placebo_RA_user	YY1	YY1 transcription factor	Transcription (nuclear)	0.047132	0.63239
+Met_vs_Placebo_RA_user	ABCB10	ATP binding cassette subfamily B member 10	Transmembrane Transport	0.174066	0.110177
+Met_vs_Placebo_RA_user	ABCB6	ATP binding cassette subfamily B member 6 (Langereis blood group)	Transmembrane Transport	-0.420407	0.00360548
+Met_vs_Placebo_RA_user	ABCB7	ATP binding cassette subfamily B member 7	Transmembrane Transport	0.0691077	0.519494
+Met_vs_Placebo_RA_user	ABCB8	ATP binding cassette subfamily B member 8	Transmembrane Transport	0.00411164	0.975738
+Met_vs_Placebo_RA_user	ABCD3	ATP binding cassette subfamily D member 3	Transmembrane Transport	0.2032	0.0796868
+Met_vs_Placebo_RA_user	ABCE1	ATP binding cassette subfamily E member 1	Transmembrane Transport	0.195163	0.0494517
+Met_vs_Placebo_RA_user	ABCF2	ATP binding cassette subfamily F member 2	Transmembrane Transport	-0.00374555	0.977285
+Met_vs_Placebo_RA_user	FAM210B	family with sequence similarity 210 member B	Transmembrane Transport	-0.0610941	0.586396
+Met_vs_Placebo_RA_user	MRS2	magnesium transporter MRS2	Transmembrane Transport	0.116251	0.179006
+Met_vs_Placebo_RA_user	NIPSNAP3A	nipsnap homolog 3A	Transmembrane Transport	0.0718818	0.791643
+Met_vs_Placebo_RA_user	NIPSNAP3B	nipsnap homolog 3B	Transmembrane Transport	0.0187245	0.897399
+Met_vs_Placebo_RA_user	SFXN1	sideroflexin 1	Transmembrane Transport	0.134815	0.756201
+Met_vs_Placebo_RA_user	SFXN3	sideroflexin 3	Transmembrane Transport	-0.241958	0.386671
+Met_vs_Placebo_RA_user	SFXN4	sideroflexin 4	Transmembrane Transport	-0.200017	0.146578
+Met_vs_Placebo_RA_user	SFXN5	sideroflexin 5	Transmembrane Transport	-0.218935	0.312704
+Met_vs_Placebo_RA_user	VDAC1	voltage dependent anion channel 1	Transmembrane Transport	-0.0815863	0.283319
+Met_vs_Placebo_RA_user	VDAC2	voltage dependent anion channel 2	Transmembrane Transport	-0.089623	0.128227
+Met_vs_Placebo_RA_user	VDAC3	voltage dependent anion channel 3	Transmembrane Transport	-0.212605	0.0463755
+Met_vs_Placebo_RA_user	ACO1	aconitase 1	Tricarboxylic Acid Cycle	-0.00459773	0.975738
+Met_vs_Placebo_RA_user	ACO2	aconitase 2	Tricarboxylic Acid Cycle	0.090652	0.324839
+Met_vs_Placebo_RA_user	CS	citrate synthase	Tricarboxylic Acid Cycle	0.107651	0.102094
+Met_vs_Placebo_RA_user	DLD	dihydrolipoamide dehydrogenase	Tricarboxylic Acid Cycle	0.194492	0.013651
+Met_vs_Placebo_RA_user	DLST	dihydrolipoamide S-succinyltransferase	Tricarboxylic Acid Cycle	-0.0332377	0.663467
+Met_vs_Placebo_RA_user	FH	fumarate hydratase	Tricarboxylic Acid Cycle	-0.157122	0.0311667
+Met_vs_Placebo_RA_user	IDH1	isocitrate dehydrogenase (NADP(+)) 1, cytosolic	Tricarboxylic Acid Cycle	-0.343547	0.0331607
+Met_vs_Placebo_RA_user	IDH2	isocitrate dehydrogenase (NADP(+)) 2, mitochondrial	Tricarboxylic Acid Cycle	-0.237309	0.00179322
+Met_vs_Placebo_RA_user	IDH3A	isocitrate dehydrogenase 3 (NAD(+)) alpha	Tricarboxylic Acid Cycle	-0.0215862	0.794987
+Met_vs_Placebo_RA_user	IDH3B	isocitrate dehydrogenase 3 (NAD(+)) beta	Tricarboxylic Acid Cycle	-0.281986	0.00019723
+Met_vs_Placebo_RA_user	IDH3G	isocitrate dehydrogenase 3 (NAD(+)) gamma	Tricarboxylic Acid Cycle	-0.339682	0.0000478665
+Met_vs_Placebo_RA_user	MDH1	malate dehydrogenase 1	Tricarboxylic Acid Cycle	-0.167155	0.0225375
+Met_vs_Placebo_RA_user	MDH2	malate dehydrogenase 2	Tricarboxylic Acid Cycle	-0.164379	0.0373818
+Met_vs_Placebo_RA_user	NNT	nicotinamide nucleotide transhydrogenase	Tricarboxylic Acid Cycle	0.777086	0.0000028052
+Met_vs_Placebo_RA_user	OGDH	oxoglutarate dehydrogenase	Tricarboxylic Acid Cycle	0.0842882	0.305618
+Met_vs_Placebo_RA_user	OGDHL	oxoglutarate dehydrogenase like	Tricarboxylic Acid Cycle	0.576687	0.136875
+Met_vs_Placebo_RA_user	PDHX	pyruvate dehydrogenase complex component X	Tricarboxylic Acid Cycle	0.0438202	0.552285
+Met_vs_Placebo_RA_user	PPTC7	PTC7 protein phosphatase homolog	Tricarboxylic Acid Cycle	0.518004	0.000270426
+Met_vs_Placebo_RA_user	SUCLA2	succinate-CoA ligase ADP-forming beta subunit	Tricarboxylic Acid Cycle	0.129611	0.0765609
+Met_vs_Placebo_RA_user	SUCLG2	succinate-CoA ligase GDP-forming beta subunit	Tricarboxylic Acid Cycle	-0.0791342	0.333309
+Met_vs_Placebo_RA_user	ATF5	activating transcription factor 5	UPRmt	-0.267009	0.118584
+Met_vs_Placebo_RA_user	DDIT3	DNA damage inducible transcript 3	UPRmt	-0.342226	0.0492519
+Met_vs_Placebo_RA_user	KDM6B	lysine demethylase 6B	UPRmt	0.592699	0.12866
+Met_vs_Placebo_RA_user	PHF8	PHD finger protein 8	UPRmt	0.57315	0.00038752
+Met_vs_Placebo_RA_user	SATB1	SATB homeobox 1	UPRmt	0.722108	0.0000105089
+Met_vs_Placebo_RA_user	UBL5	ubiquitin like 5 	UPRmt	-0.463257	0.000205006
+Met_vs_Placebo_RA_user	COQ2	coenzyme Q2, polyprenyltransferase	Ubiquinone Biosynthesis	-0.269468	0.00176593
+Met_vs_Placebo_RA_user	COQ3	coenzyme Q3, methyltransferase	Ubiquinone Biosynthesis	0.0127797	0.95391
+Met_vs_Placebo_RA_user	COQ4	coenzyme Q4	Ubiquinone Biosynthesis	-0.299914	0.0063922
+Met_vs_Placebo_RA_user	COQ5	coenzyme Q5, methyltransferase	Ubiquinone Biosynthesis	-0.17289	0.0312571
+Met_vs_Placebo_RA_user	COQ6	coenzyme Q6, monooxygenase	Ubiquinone Biosynthesis	-0.206993	0.0201151
+Met_vs_Placebo_RA_user	COQ7	coenzyme Q7, hydroxylase	Ubiquinone Biosynthesis	-0.267023	0.0272953
+Met_vs_Placebo_RA_user	COQ9	coenzyme Q9	Ubiquinone Biosynthesis	-0.310659	0.00161175
+Met_vs_Placebo_RA_user	PDSS1	decaprenyl diphosphate synthase subunit 1	Ubiquinone Biosynthesis	0.132902	0.584433
+Met_vs_Placebo_RA_user	PDSS2	decaprenyl diphosphate synthase subunit 2	Ubiquinone Biosynthesis	-0.0927563	0.514535
+Met_vs_Placebo_RA_user	CHCHD7	coiled-coil-helix-coiled-coil-helix domain containing 7	Unknown	-0.273119	0.125178
+Met_vs_Placebo_RA_user	HSDL1	hydroxysteroid dehydrogenase like 1	Unknown	0.218305	0.0990073
+Met_vs_Placebo_RA_user	PNKD	PNKD metallo-beta-lactamase domain containing	Unknown	-0.221418	0.0364993
+Met_vs_Placebo_RA_user	RSAD1	radical S-adenosyl methionine domain containing 1	Unknown	-0.0549162	0.6414
+Met_vs_Placebo_RA_user	TMEM126A	transmembrane protein 126A	Unknown	-0.419347	0.0010424
+Met_vs_Placebo_RA_user	TMEM143	transmembrane protein 143	Unknown	-0.141701	0.208643

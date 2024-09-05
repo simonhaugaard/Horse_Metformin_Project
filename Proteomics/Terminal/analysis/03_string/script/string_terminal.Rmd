@@ -1,0 +1,98 @@
+---
+title: "String Terminal"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("edgeR")
+pacman::p_load("readr")
+pacman::p_load("readxl")
+pacman::p_load("biomaRt")
+pacman::p_load("magrittr")
+pacman::p_load("tibble")
+pacman::p_load("stringr")
+pacman::p_load("ggplot2")
+pacman::p_load("data.table")
+pacman::p_load("ggplot2", "patchwork")
+pacman::p_load("openxlsx")
+library(dplyr)
+library(missForest)
+library(RColorBrewer)
+library(STRINGdb)
+
+
+```
+
+#Read and Convert data
+```{r}
+# Define file paths
+#string_db <- "../../../data/gene_annotation/9796.protein.links.full.v12.0.txt.gz"
+filtered_string_db <- "../../../data/gene_annotation/filtered_9796.protein.links.full.v12.0.txt.gz"
+geneinfo_file <- "../../../data/gene_annotation/horse_gene_annotation.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+string_alias_file <- "../../../data/gene_annotation/9796.protein.aliases.v12.0.txt.gz"
+
+# Read and filter STRING database for high-confidence P-P interactions
+# This is the code I used
+#string <- fread(string_db)
+#filtered_string <- string[combined_score > 600]
+#filtered_string[, protein1 := sub("^9796\\.", "", protein1)]
+#filtered_string[, protein2 := sub("^9796\\.", "", protein2)]
+#filtered_string <- filtered_string[, .(protein1, protein2, combined_score)]
+#fwrite(filtered_string, "../../../data/gene_annotation/filtered_9796.protein.links.full.v12.0.txt.gz", sep = "\t")
+
+# Read filtered STRING data
+filtered_string <- fread(filtered_string_db)
+
+# Read and clean gene annotation file
+geneinfo <- fread(geneinfo_file)
+setnames(geneinfo, new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
+                           "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
+geneinfo <- geneinfo[, .(ENSEMBL, GENENAME, ENTREZID)]
+geneinfo <- geneinfo[!duplicated(ENSEMBL), ]
+
+# Read and process DGE results
+dge <- fread(dge_file)
+dge[, Direction := ifelse(logFC > 0, "up", "down")]
+dge[, GENENAME := sub(".*_", "", GeneName)]
+dge <- merge(dge, geneinfo[, .(ENSEMBL, GENENAME, ENTREZID)], by = "GENENAME", all.x = TRUE)
+setcolorder(dge, c("ENSEMBL", "GENENAME", "ENTREZID", setdiff(names(dge), c("ENSEMBL", "GENENAME", "ENTREZID"))))
+dge[, ENTREZID := as.character(ENTREZID)]
+
+# Subset relevant contrasts and filter by P-value
+relevant_contrasts <- c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_RA", "Metformin_vs_AF_LA", "AverageTreatmentEffect", "AverageDiseaseEffect")
+dge <- dge[Contrast %in% relevant_contrasts & P.Value < 0.05]
+
+# Map GeneIDs to proteinIDs using STRING protein aliases
+string_alias <- fread(string_alias_file)
+string_alias_filtered <- string_alias[source == "Ensembl_gene", .(`#string_protein_id`, alias)]
+string_alias_filtered[, ProteinID := sub("^9796\\.", "", `#string_protein_id`)]
+setnames(string_alias_filtered, old = "alias", new = "ENSEMBL")
+string_alias_filtered[, `#string_protein_id` := NULL]
+
+# Check and remove NA values in ENSEMBL column of DGE data
+num_na_ensembl <- sum(is.na(dge$ENSEMBL))
+cat("Number of NA values in ENSEMBL column:", num_na_ensembl, "\n")
+
+if (num_na_ensembl > 0) {
+  dge <- dge[!is.na(ENSEMBL)]
+}
+
+# Merge DGE data with filtered STRING alias data
+dge <- merge(dge, string_alias_filtered, by = "ENSEMBL", all.x = TRUE)
+```
+

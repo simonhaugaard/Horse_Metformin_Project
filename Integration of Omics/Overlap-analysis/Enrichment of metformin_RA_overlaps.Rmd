@@ -1,0 +1,334 @@
+---
+title: "Enrichments of overlap"
+author: "Simon Haugaard"
+date: "2024-08-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Gene enrichment analysis
+
+## Required R libraries
+```{r libraries}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("magrittr")
+pacman::p_load("data.table")
+pacman::p_load("clusterProfiler")
+library(jsonlite)
+library(httr)
+library(data.table)
+library(stringi)
+```
+
+
+## Read data
+```{r read_data}
+# read data
+dge_file <- ("C:/Users/nks882/OneDrive - University of Copenhagen/Documents/GitHub/Horse_AF_project/RNA-seq/analysis/01_dge/output/dge_results.tsv.gz")
+dge <- fread(dge_file)
+dge[, Direction := ifelse(logFC > 0, "up", "down")]
+dge[, ENTREZID := as.character(ENTREZID)]
+
+# subset relevant contrasts
+contrasts <- c("AF_vs_sham_RA", "AF_vs_sham_LA", "met_vs_placebo_RA", "met_vs_placebo_LA", "AverageTreatmentEffect", "AverageDiseaseEffect")
+dge <- dge[Contrast %in% contrasts]
+# TODO: Feel free to update this part accordingly
+
+# DGE results with only valid Entrez IDs
+dge_entrez <- dge[!is.na(ENTREZID),]
+
+# significance cut-off
+dge_cut <- 0.05
+enrich_cut <- 0.05
+```
+
+The analysis will be performed according to following statistical cutoffs.
+
+- *Differential gene expression:* adjusted p-value (FDR) < `r dge_cut`
+- *Enrichment analysis:* adjusted p-value (Q-value) < `r enrich_cut`
+
+# GO
+
+We can use "ENSEMBL" IDs for **GO** enrichment analysis as the downloaded ontology information has more ENSEMBL IDs within a GO ontology more than ENTREZ (NCBI Gene) IDs. Normally, majority of ontology databases still use ENTREZ IDs. 
+
+```{r go}
+# Read & clean GO data
+go_file <- "../../RNA-seq/data/gene_annotation/horse_GO.tsv.gz"
+go <- fread(go_file)
+go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
+setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
+go <- go[GOdomain != "", ]
+
+term2gene <- split(go[,c("GOID", "ENSEMBL")], f = go$GOdomain)
+term2name <- split(go[,c("GOID", "Description")], f = go$GOdomain)
+```
+
+#Metformin_Vs_placebo_RA
+```{r go_ora}
+# Define overlap genes
+overlap_sig_up <- c("CLIP1", "ATE1", "GPR155", "DDAH1", "NAPG", "GNAO1", "EPB41L3", "PPM1A", "SLC45A2", "SYAP1", "UBAP2L", "CAST", "SERPINB1", "WDR82")
+overlap_sig_down <- c("RPL10A", "RPL18A", "RTRAF", "MRPS27", "RPS9", "RPL8", "RPL7", "BCAP31", "RPL3L", "MRPS18B", "EIF3I", "RRAS", "RUNDC1", "RPS11", "RPS26", "COQ8A", "MTX2", "LIMS2", "MRPS7", "SIRT3", "PSMB3", "APOE")
+
+#Upregulated genes
+dge_split <- split(dge, f = dge$Contrast)
+# Filter for the contrast 'metformin_vs_placebo_RA'
+contrast_data <- dge_split[["met_vs_placebo_RA"]]
+
+# Subset to include both upregulated and downregulated overlap genes
+subset_data <- contrast_data[(GENENAME %in% overlap_sig_up & Direction == "up") |
+                             (GENENAME %in% overlap_sig_down & Direction == "down")]
+
+
+# Get the universe of genes for 'met_vs_placebo_RA'
+universe <- contrast_data[, ENSEMBL]
+
+# Prepare the ORA results list
+go_ora <- list()
+
+# Run the ORA for the overlap genes using the universe, keeping the structure of the existing code
+for (j in names(term2gene)) {
+  for (k in c("all", "up", "down")) {
+    message(paste0("Running GO ORA for 'met_vs_placebo_RA' within ", j, " ('", k, "' genes)"))
+
+    if (k == "all") {
+      gene <- subset_data[adj.P.Val < dge_cut, ENSEMBL]
+    } else if (k == "up") {
+      gene <- subset_data[adj.P.Val < dge_cut & Direction == "up", ENSEMBL]
+    } else if (k == "down") {
+      gene <- subset_data[adj.P.Val < dge_cut & Direction == "down", ENSEMBL]
+    }
+
+    if (length(gene) == 0) {
+      warning("No DEG found, skipping...\n")
+      next
+    }
+
+    go_ora[["met_vs_placebo_RA"]][[j]][[k]] <- enricher(gene = gene,
+                                                        TERM2GENE = term2gene[[j]],
+                                                        TERM2NAME = term2name[[j]],
+                                                        pAdjustMethod = "BH",
+                                                        pvalueCutoff = 1,
+                                                        qvalueCutoff = 1,
+                                                        minGSSize = 10,
+                                                        maxGSSize = 500,
+                                                        universe = universe
+    )@result
+    go_ora[["met_vs_placebo_RA"]][[j]][[k]]$Contrast <- "met_vs_placebo_RA"
+    go_ora[["met_vs_placebo_RA"]][[j]][[k]]$Database <- j
+    go_ora[["met_vs_placebo_RA"]][[j]][[k]]$Direction <- k
+  }
+}
+
+go_ora_res <- do.call(rbind, go_ora %>% unlist(recursive=FALSE) %>% unlist(recursive = F)) %>% setDT
+head(go_ora_res)
+go_ora_res[qvalue < enrich_cut,]
+
+
+#Create output data
+fwrite(x = go_ora_res, file = "../Overlap-analysis/GO_ora_metformin_vs_placebo_RA.tsv.gz", sep = "\t")
+go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
+openxlsx::write.xlsx(x = go_ora_split, file = "../Overlap-analysis/GO_ora_metformin_vs_placebo_RA.xlsx", asTable = TRUE)
+
+#Plot results
+aamisc::dotplotEnrich(dt = go_ora_res, 
+                      topn = 10, 
+                      topn.pref = "qval", 
+                      qcut = enrich_cut, 
+                      nchar = 60, 
+                      direction = "Direction", 
+                      group = "Contrast", 
+                      dot = "GeneRatio", 
+                      qval = "qvalue", 
+                      term.id = "ID",
+                      term.name = "Description")
+
+# Plot results without "all" direction as it seems redundant
+filtered_go_ora_res <- go_ora_res[Direction != "all"]
+aamisc::dotplotEnrich(dt = filtered_go_ora_res[Contrast == "met_vs_placebo_RA"],
+                      topn = 10,
+                      topn.pref = "qval",
+                      qcut = enrich_cut,
+                      nchar = 60,
+                      direction = "Direction",
+                      group = "Contrast",
+                      dot = "GeneRatio",
+                      qval = "qvalue",
+                      term.id = "ID",
+                      term.name = "Description")
+
+```
+
+
+#Treatment effect
+```{r go_ora}
+# Define overlap genes
+overlap_sig_up <- c("AAK1", "DDAH1", "GPR155", "UBE3A", "GBE1", "PDE1C", "PREPL", "CLIC4", "UCHL3", "IGF2R", "OGDHL", "SERPINB1") 
+overlap_sig_down <- c("PSMB10", "RNLS", "NDUFS7", "MRPS27", "PMM2") 
+
+#Upregulated genes
+dge_split <- split(dge, f = dge$Contrast)
+# Filter for the contrast 'metformin_vs_placebo_RA'
+contrast_data <- dge_split[["met_vs_placebo_RA"]]
+
+# Subset to include both upregulated and downregulated overlap genes
+subset_data <- contrast_data[(GENENAME %in% PC1_neg & Direction == "up") |
+                             (GENENAME %in% overlap_sig_down & Direction == "down")]
+
+
+# Get the universe of genes for 'met_vs_placebo_RA'
+universe <- contrast_data[, ENSEMBL]
+
+# Prepare the ORA results list
+go_ora <- list()
+
+# Run the ORA for the overlap genes using the universe, keeping the structure of the existing code
+for (j in names(term2gene)) {
+  for (k in c("all", "up", "down")) {
+    message(paste0("Running GO ORA for 'met_vs_placebo_RA' within ", j, " ('", k, "' genes)"))
+
+    if (k == "all") {
+      gene <- subset_data[adj.P.Val < dge_cut, ENSEMBL]
+    } else if (k == "up") {
+      gene <- subset_data[adj.P.Val < dge_cut & Direction == "up", ENSEMBL]
+    } else if (k == "down") {
+      gene <- subset_data[adj.P.Val < dge_cut & Direction == "down", ENSEMBL]
+    }
+
+    if (length(gene) == 0) {
+      warning("No DEG found, skipping...\n")
+      next
+    }
+
+    go_ora[["met_vs_placebo_RA"]][[j]][[k]] <- enricher(gene = gene,
+                                                        TERM2GENE = term2gene[[j]],
+                                                        TERM2NAME = term2name[[j]],
+                                                        pAdjustMethod = "BH",
+                                                        pvalueCutoff = 1,
+                                                        qvalueCutoff = 1,
+                                                        minGSSize = 10,
+                                                        maxGSSize = 500,
+                                                        universe = universe
+    )@result
+    go_ora[["met_vs_placebo_RA"]][[j]][[k]]$Contrast <- "met_vs_placebo_RA"
+    go_ora[["met_vs_placebo_RA"]][[j]][[k]]$Database <- j
+    go_ora[["met_vs_placebo_RA"]][[j]][[k]]$Direction <- k
+  }
+}
+
+go_ora_res <- do.call(rbind, go_ora %>% unlist(recursive=FALSE) %>% unlist(recursive = F)) %>% setDT
+head(go_ora_res)
+go_ora_res[qvalue < enrich_cut,]
+
+
+#Create output data
+fwrite(x = go_ora_res, file = "../Overlap-analysis/GO_ora_treatment_effect_overlap.tsv.gz", sep = "\t")
+go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
+openxlsx::write.xlsx(x = go_ora_split, file = "../Overlap-analysis/GO_ora_treatment_effect_overlap.xlsx", asTable = TRUE)
+
+#Plot results
+aamisc::dotplotEnrich(dt = go_ora_res, 
+                      topn = 10, 
+                      topn.pref = "qval", 
+                      qcut = enrich_cut, 
+                      nchar = 60, 
+                      direction = "Direction", 
+                      group = "Contrast", 
+                      dot = "GeneRatio", 
+                      qval = "qvalue", 
+                      term.id = "ID",
+                      term.name = "Description")
+
+# Plot results without "all" direction as it seems redundant
+filtered_go_ora_res <- go_ora_res[Direction != "all"]
+aamisc::dotplotEnrich(dt = filtered_go_ora_res[Contrast == "met_vs_placebo_RA"],
+                      topn = 10,
+                      topn.pref = "qval",
+                      qcut = enrich_cut,
+                      nchar = 60,
+                      direction = "Direction",
+                      group = "Contrast",
+                      dot = "GeneRatio",
+                      qval = "qvalue",
+                      term.id = "ID",
+                      term.name = "Description")
+
+```
+
+
+#GSEA on loadings from MCIA (Supplementary File_MultiOmics)
+```{r}
+#Load MCIA
+loadings_MCIA <- fread("../data/loading_result_mcia_condition_RA")
+
+# Convert Loading1 to numeric
+loadings_MCIA[, Loading1 := as.numeric(gsub(",", ".", Loading1))]
+
+# Extract the maximum loading (considering absolute value) for each gene
+max_loadings <- loadings_MCIA[, .SD[which.max(abs(Loading1))], by = label]
+
+# View the resulting table with 'label' and maximum 'Loading1'
+result <- max_loadings[, .(Gene, Loading1, label)]
+print(result)
+
+gene_list <- result$Loading1
+names(gene_list) <- result$label
+
+# Sort gene list by Loading1 values (important for GSEA)
+gene_list <- sort(gene_list, decreasing = TRUE)
+
+
+# Read gene annotation data
+geneinfo_file <- "../../Proteomics/terminal/data/gene_annotation/horse_gene_annotation.tsv.gz"
+geneinfo <- fread(geneinfo_file)
+setnames(geneinfo, new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
+                           "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
+
+# Map GENENAME to ENSEMBL
+mapped_ensembl <- geneinfo$ENSEMBL[match(names(gene_list), geneinfo$GENENAME)]
+
+# Create a new gene list where names are ENSEMBL IDs
+gene_list_mapped <- gene_list
+names(gene_list_mapped) <- mapped_ensembl
+
+# Remove entries where mapping failed (i.e., NA values)
+gene_list_mapped <- gene_list_mapped[!is.na(names(gene_list_mapped))]
+
+
+# Initialize the list to store GSEA results
+go_gsea <- list()
+
+# Loop over each GO domain (biological_process, molecular_function, cellular_component)
+for (j in names(term2gene)) {
+    message(paste0("Running GO GSEA for the gene list within ", j))
+    
+    # Ensure the gene list is sorted for GSEA
+    gene_list_mapped <- sort(gene_list_mapped, decreasing = TRUE)
+    
+    # Run GSEA
+    go_gsea[[j]] <- GSEA(geneList = gene_list_mapped, 
+                         TERM2GENE = term2gene[[j]], 
+                         TERM2NAME = term2name[[j]], 
+                         pvalueCutoff = 0.05,   # Adjust as needed
+                         minGSSize = 10, 
+                         maxGSSize = 500, 
+                         eps = 0, 
+                         nPermSimple = 10000)@result  # Adjust 'nPermSimple' based on your needs
+    
+    # Add domain information to the results
+    go_gsea[[j]]$Database <- j
+}
+
+go_gsea_res <- do.call(rbind, go_gsea) %>% setDT()
+head(go_gsea_res)
+go_gsea_res[qvalue < 0.05,]
+go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
+
+openxlsx::write.xlsx(x = go_gsea_res, file = "../Overlap-analysis/GO_gsea_loadings_MCIA.xlsx", asTable = TRUE)
+
+
+
+```
+

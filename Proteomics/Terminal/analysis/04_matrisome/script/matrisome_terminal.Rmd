@@ -1,0 +1,362 @@
+---
+title: "String Terminal"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("edgeR")
+pacman::p_load("readr")
+pacman::p_load("readxl")
+pacman::p_load("biomaRt")
+pacman::p_load("magrittr")
+pacman::p_load("tibble")
+pacman::p_load("stringr")
+pacman::p_load("ggplot2")
+pacman::p_load("data.table")
+pacman::p_load("ggplot2", "patchwork")
+pacman::p_load("openxlsx")
+library(dplyr)
+library(missForest)
+library(RColorBrewer)
+library(STRINGdb)
+library(ggplot2)
+library(ggpubr)
+library(tidyr)
+library(SummarizedExperiment)
+library(pheatmap)
+
+
+```
+
+#Read and Convert data
+```{r}
+# Define file paths
+matrisome <- "../../../data/gene_annotation/Hs_Matrisome_Masterlist_downloaded_08_09_2024.csv"
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+matrisome <- fread(matrisome)
+dge <- fread(dge_file)
+dge[, Direction := ifelse(logFC > 0, "up", "down")]
+
+
+# Subset relevant contrasts and filter by P-value
+relevant_contrasts <- c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_RA", "Metformin_vs_AF_LA", "AverageTreatmentEffect", "AverageDiseaseEffect")
+dge <- dge[Contrast %in% relevant_contrasts]
+
+# Ensure that the Gene Symbol column in matrisome data is clean and consistent
+matrisome <- matrisome %>%
+  dplyr::rename(GeneSymbol = `Gene Symbol`) %>%  # Rename for consistency
+  dplyr::mutate(GeneSymbol = trimws(GeneSymbol))  # Remove any leading/trailing whitespace
+
+# Merge dge with matrisome data to annotate ECM proteins
+ecm_dge <- dge %>%
+  dplyr::inner_join(matrisome, by = c("GeneName" = "GeneSymbol"))
+
+# Save the annotated ECM data to a CSV file
+write.csv(ecm_dge, file = "ECM_Annotated_DGE.csv", row.names = FALSE)
+openxlsx::write.xlsx(x = ecm_dge, file = "../../../../Terminal/analysis/04_matrisome/output/ECM_Annotated_DGE.xlsx", asTable = TRUE)
+
+#Subset to include only ECM proteins
+ecm_core <- ecm_dge %>%
+  dplyr::filter(`Matrisome Division` == "Core matrisome")
+
+# Split the ecm_core data into a list by the 'Contrast' column
+ecm_core_list <- split(ecm_core, ecm_core$Contrast)
+
+generate_pheatmap_for_matrisome <- function(contrast1, contrast2, region1, region2) {
+  # Subset logCounts data for the first region
+  region1_subset_logCounts <- logCounts_batchRemoved[rownames(logCounts_batchRemoved) %in% significant_matrisome_genes$GeneName, meta$Region == region1]
+  region1_subset_logCounts <- as.matrix(region1_subset_logCounts)
+
+  # Reorder the meta data frame to match the order of columns in region1_subset_logCounts
+  meta_ordered1 <- meta[match(colnames(region1_subset_logCounts), meta$`Sample ID`), ]
+  annotation_col1 <- meta_ordered1[, "Group", drop=FALSE]
+  rownames(annotation_col1) <- meta_ordered1$`Sample ID`
+
+  # Generate heatmap for the first region with annotations and gene names
+  pheatmap(region1_subset_logCounts,
+           annotation_col = annotation_col1,
+           annotation_colors = list(Group = publication_colors),
+           scale = "row",
+           show_rownames = TRUE,
+           fontsize = 10,
+           fontsize_row = 8,
+           fontsize_col = 8,
+           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+           main = paste("Heatmap for Significant Matrisome Proteins", "in", region1))
+
+  # Subset logCounts data for the second region
+  region2_subset_logCounts <- logCounts_batchRemoved[rownames(logCounts_batchRemoved) %in% significant_matrisome_genes$GeneName, meta$Region == region2]
+  region2_subset_logCounts <- as.matrix(region2_subset_logCounts)
+
+  # Reorder the meta data frame to match the order of columns in region2_subset_logCounts
+  meta_ordered2 <- meta[match(colnames(region2_subset_logCounts), meta$`Sample ID`), ]
+  annotation_col2 <- meta_ordered2[, "Group", drop=FALSE]
+  rownames(annotation_col2) <- meta_ordered2$`Sample ID`
+
+  # Generate heatmap for the second region with annotations and gene names
+  pheatmap(region2_subset_logCounts,
+           annotation_col = annotation_col2,
+           annotation_colors = list(Group = publication_colors),
+           scale = "row",
+           show_rownames = TRUE,
+           fontsize = 10,
+           fontsize_row = 8,
+           fontsize_col = 8,
+           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+           main = paste("Heatmap for Significant Matrisome Proteins", "in", region2))
+}
+
+generate_pheatmap_for_matrisome(
+  contrast1 = "AF_vs_Sham_RA",  # Example Contrast 1
+  contrast2 = "AF_vs_Sham_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+```
+#Overall look at matrisome between groups
+```{r fig.width=20, fig.height=10, out.width='100%', echo=FALSE}
+# Categorize proteins by significance
+ecm_dge <- ecm_dge %>%
+  mutate(Significance = case_when(
+    P.Value < 0.05 & logFC > 0 ~ "Upregulated",
+    P.Value < 0.05 & logFC < 0 ~ "Downregulated",
+    TRUE ~ "Non-significant"
+  ))
+# Summarize the data by counting the number of proteins in each category and significance level
+ecm_summary <- ecm_dge %>%
+  group_by(`Matrisome Category`, Significance, Contrast) %>%
+  summarise(Count = n()) %>%
+  ungroup()
+
+# Create the dot plot
+ggplot(ecm_summary, aes(x = `Matrisome Category`, y = Significance, size = Count, color = Significance)) +
+  geom_point(alpha = 0.7) +
+  facet_wrap(~ Contrast, scales = "free_x", nrow = 1) +
+  scale_size_continuous(range = c(3, 15)) +  # Adjust the size range for points based on count
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue", "Non-significant" = "grey")) +
+  labs(title = "Dot Plot of ECM Proteins by Category and Contrast",
+       x = "Matrisome Category", y = "Regulation", size = "Number of Proteins") +
+  theme_minimal(base_size = 16) +  # Increase base font size for readability
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 14),  # Increase x-axis text size and angle
+    axis.text.y = element_text(size = 14),  # Increase y-axis text size
+    axis.title.x = element_text(size = 18, face = "bold"),  # Larger and bold x-axis title
+    axis.title.y = element_text(size = 18, face = "bold"),  # Larger and bold y-axis title
+    plot.title = element_text(size = 24, face = "bold", hjust = 0.5),  # Larger and centered title
+    legend.title = element_text(size = 18, face = "bold"),  # Larger legend title
+    legend.text = element_text(size = 16),  # Larger legend text
+    legend.position = "top",  # Position the legend at the top
+    panel.grid.major = element_line(color = "grey80"),  # Soft grid lines for better visibility
+    panel.grid.minor = element_blank(),  # Remove minor grid lines for a cleaner look
+    strip.text = element_text(size = 18, face = "bold")  # Larger and bold facet labels
+  )
+
+# Ensure the summarise warning doesn't affect your plot
+ecm_summary <- ecm_dge %>%
+  mutate(Significance = case_when(
+    P.Value < 0.05 & logFC > 0 ~ "Upregulated",
+    P.Value < 0.05 & logFC < 0 ~ "Downregulated",
+    TRUE ~ "Non-significant"
+  )) %>%
+  group_by(`Matrisome Category`, Significance, Contrast) %>%
+  summarise(Count = n(), .groups = 'drop')  # Include '.groups = 'drop'' to avoid the warning
+
+# Create the dot plot
+ggplot(ecm_summary, aes(x = `Matrisome Category`, y = Significance, size = Count, color = Significance)) +
+  geom_point(alpha = 0.8) +  # Slightly increase the opacity for better visibility
+  facet_wrap(~ Contrast, scales = "free_x", nrow = 1) +
+  scale_size_continuous(range = c(3, 20), guide = guide_legend(title = "Number of Proteins")) +  # Larger size range for points
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue", "Non-significant" = "grey")) +  # Color palette
+  labs(title = "Differential Regulation of ECM Proteins by Category and Contrast",
+       x = "Matrisome Category", y = "Regulation Status") +
+  theme_pubr(base_size = 18, border = TRUE) +  # Use ggpubr's theme for a clean look
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16, face = "bold"),  # Bold and larger x-axis text
+    axis.text.y = element_text(size = 16, face = "bold"),  # Bold and larger y-axis text
+    axis.title.x = element_text(size = 20, face = "bold"),  # Larger and bold x-axis title
+    axis.title.y = element_text(size = 20, face = "bold"),  # Larger and bold y-axis title
+    plot.title = element_text(size = 26, face = "bold", hjust = 0.5),  # Larger and centered title
+    legend.title = element_text(size = 18, face = "bold"),  # Larger legend title
+    legend.text = element_text(size = 16),  # Larger legend text
+    legend.position = "top",  # Keep legend at the top
+    panel.grid.major = element_line(color = "grey90"),  # Softer grid lines for a cleaner look
+    panel.grid.minor = element_blank(),  # Remove minor grid lines
+    strip.text = element_text(size = 18, face = "bold")  # Larger and bold facet labels
+  )
+
+# Extract significant upregulated and downregulated proteins for each contrast
+ecm_dge <- ecm_dge %>%
+  mutate(Significance = case_when(
+    P.Value < 0.05 & logFC > 0 ~ "Upregulated",
+    P.Value < 0.05 & logFC < 0 ~ "Downregulated",
+    TRUE ~ "Non-significant"
+  ))
+
+# Extract significant upregulated proteins with Matrisome Category
+significant_up <- ecm_dge %>%
+  filter(Significance == "Upregulated") %>%
+  group_by(Contrast, `Matrisome Category`) %>%
+  summarise(Upregulated_Proteins = paste(GeneName, collapse = ", "), .groups = 'drop')
+
+# Extract significant downregulated proteins with Matrisome Category
+significant_down <- ecm_dge %>%
+  filter(Significance == "Downregulated") %>%
+  group_by(Contrast, `Matrisome Category`) %>%
+  summarise(Downregulated_Proteins = paste(GeneName, collapse = ", "), .groups = 'drop')
+
+# Print out the results
+cat("Significant Upregulated Proteins:\n")
+print(significant_up)
+
+cat("\nSignificant Downregulated Proteins:\n")
+print(significant_down)
+
+```
+
+
+#Seperate plots for publication
+```{r fig.width=10, fig.height=10, out.width='100%', echo=FALSE}
+# Filter for LA contrasts
+ecm_summary_LA <- ecm_summary %>%
+  filter(grepl("_LA", Contrast))
+
+# Filter for RA contrasts
+ecm_summary_RA <- ecm_summary %>%
+  filter(grepl("_RA", Contrast))
+
+# Filter for Average contrasts
+ecm_summary_Average <- ecm_summary %>%
+  filter(grepl("Average", Contrast))
+
+ggplot(ecm_summary_LA, aes(x = `Matrisome Category`, y = Significance, size = Count, color = Significance)) +
+  geom_point(alpha = 0.8) +
+  facet_wrap(~ Contrast, scales = "free_x", nrow = 1) +
+  scale_size_continuous(range = c(3, 20), guide = guide_legend(title = "Number of Proteins")) +
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue", "Non-significant" = "grey")) +
+  labs(title = "Differential Regulation of ECM Proteins in LA by Category and Contrast",
+       x = "Matrisome Category", y = "Regulation Status") +
+  theme_pubr(base_size = 18, border = TRUE) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16, face = "bold"),
+    axis.text.y = element_text(size = 16, face = "bold"),
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    plot.title = element_text(size = 26, face = "bold", hjust = 0.5),
+    legend.title = element_text(size = 18, face = "bold"),
+    legend.text = element_text(size = 16),
+    legend.position = "top",
+    panel.grid.major = element_line(color = "grey90"),
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(size = 18, face = "bold")
+  )
+
+ggplot(ecm_summary_RA, aes(x = `Matrisome Category`, y = Significance, size = Count, color = Significance)) +
+  geom_point(alpha = 0.8) +
+  facet_wrap(~ Contrast, scales = "free_x", nrow = 1) +
+  scale_size_continuous(range = c(3, 20), guide = guide_legend(title = "Number of Proteins")) +
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue", "Non-significant" = "grey")) +
+  labs(title = "Differential Regulation of ECM Proteins in RA by Category and Contrast",
+       x = "Matrisome Category", y = "Regulation Status") +
+  theme_pubr(base_size = 18, border = TRUE) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16, face = "bold"),
+    axis.text.y = element_text(size = 16, face = "bold"),
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    plot.title = element_text(size = 26, face = "bold", hjust = 0.5),
+    legend.title = element_text(size = 18, face = "bold"),
+    legend.text = element_text(size = 16),
+    legend.position = "top",
+    panel.grid.major = element_line(color = "grey90"),
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(size = 18, face = "bold")
+  )
+
+```
+
+
+#Heatmap
+```{r}
+data_imp_qrilc <- readRDS("../../../../../Proteomics/Terminal/analysis/01_dge/output/data_imp_qrilc.rds")
+# Extract the expression matrix from the SummarizedExperiment object
+expression_data <- assay(data_imp_qrilc)
+
+# Convert expression data to a data frame
+expression_df <- as.data.frame(expression_data)
+
+# Add the protein/gene names as a column
+expression_df$Gene.names <- rownames(expression_df)
+
+# Filter for ECM-related proteins using the matrisome data
+ecm_expression_df <- expression_df %>%
+  inner_join(matrisome, by = c("Gene.names" = "GeneSymbol"))
+
+# Assign sample groups
+sham_samples <- grep("Sham", colData(data_imp_qrilc)$condition)
+af_samples <- grep("Control", colData(data_imp_qrilc)$condition)
+metformin_samples <- grep("Metformin", colData(data_imp_qrilc)$condition)
+
+# Calculate mean expression for each condition group
+expression_df <- assay(data_imp_qrilc)
+expression_df <- as.data.frame(expression_df)
+expression_df$Gene.names <- rownames(expression_df)
+
+# Subset the data for LA (Left Atrium)
+ecm_expression_LA <- ecm_expression_df %>%
+  select(Gene.names, starts_with("LA_"))
+
+# Subset the data for RA (Right Atrium)
+ecm_expression_RA <- ecm_expression_df %>%
+  select(Gene.names, starts_with("RA_"))
+
+# Convert to matrices for heatmap plotting
+ecm_expression_matrix_LA <- as.matrix(ecm_expression_LA[,-1])
+rownames(ecm_expression_matrix_LA) <- ecm_expression_LA$Gene.names
+
+ecm_expression_matrix_RA <- as.matrix(ecm_expression_RA[,-1])
+rownames(ecm_expression_matrix_RA) <- ecm_expression_RA$Gene.names
+
+# Create heatmap for LA using pheatmap
+pheatmap(
+  ecm_expression_matrix_LA,
+  scale = "row",  # Scale each row to have mean=0 and sd=1
+  clustering_distance_rows = "euclidean",
+  clustering_distance_cols = "euclidean",
+  clustering_method = "complete",
+  show_rownames = TRUE,
+  show_colnames = TRUE,
+  color = colorRampPalette(c("blue", "white", "red"))(100),
+  main = "Heatmap of ECM Protein Expression in LA"
+)
+
+# Create heatmap for RA using pheatmap
+pheatmap(
+  ecm_expression_matrix_RA,
+  scale = "row",  # Scale each row to have mean=0 and sd=1
+  clustering_distance_rows = "euclidean",
+  clustering_distance_cols = "euclidean",
+  clustering_method = "complete",
+  show_rownames = TRUE,
+  show_colnames = TRUE,
+  color = colorRampPalette(c("blue", "white", "red"))(100),
+  main = "Heatmap of ECM Protein Expression in RA"
+)
+
+```
+
+

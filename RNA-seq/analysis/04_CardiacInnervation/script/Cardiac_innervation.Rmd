@@ -1,0 +1,106 @@
+---
+title: "String Terminal"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("edgeR")
+pacman::p_load("readr")
+pacman::p_load("readxl")
+pacman::p_load("biomaRt")
+pacman::p_load("magrittr")
+pacman::p_load("tibble")
+pacman::p_load("stringr")
+pacman::p_load("ggplot2")
+pacman::p_load("data.table")
+pacman::p_load("ggplot2", "patchwork")
+pacman::p_load("openxlsx")
+library(dplyr)
+library(missForest)
+library(RColorBrewer)
+library(ggplot2)
+library(ggpubr)
+library(tidyr)
+library(SummarizedExperiment)
+library(pheatmap)
+
+```
+
+```{r}
+if (!requireNamespace("org.Hs.eg.db", quietly = TRUE))
+  BiocManager::install("org.Hs.eg.db")
+if (!requireNamespace("GO.db", quietly = TRUE))
+  BiocManager::install("GO.db")
+if (!requireNamespace("AnnotationDbi", quietly = TRUE))
+  BiocManager::install("AnnotationDbi")
+
+library(org.Hs.eg.db)   # Human gene annotations
+library(GO.db)          # GO annotations
+library(AnnotationDbi)  # General annotation tools
+library(dplyr)          # Data manipulation
+library(data.table)     # Data manipulation
+```
+
+
+
+```{r}
+# Define your GO term for "sympathetic nervous system development"
+go_terms <- c("GO:0048485")
+
+# Check if the GO term exists in the GOBPOFFSPRING object
+if (all(go_terms %in% names(GOBPOFFSPRING))) {
+  # Get child GO terms
+  go_children <- unique(unlist(GOBPOFFSPRING[go_terms]))
+  
+  # Combine parent and child GO terms
+  all_go_terms <- c(go_terms, go_children)
+} else {
+  # If the GO term has no children or isn't found, use only the parent term
+  all_go_terms <- go_terms
+  warning("Some GO terms were not found or have no children in GOBPOFFSPRING.")
+}
+
+# Fetch genes associated with these GO terms
+genes <- AnnotationDbi::select(org.Hs.eg.db, 
+                               keys = all_go_terms, 
+                               keytype = "GO", 
+                               columns = c("SYMBOL", "GENENAME"))
+
+# Ensure that the genes are unique
+genes <- unique(genes)
+
+# Proceed with filtering the DGE data
+
+```
+```{r}
+# Load your DGE data
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+dge <- fread(dge_file)
+
+# Filter DGE data to keep only the genes associated with the GO terms
+innervation_dge <- dge[dge$GENENAME %in% genes$SYMBOL, ]
+
+# Filter for significant genes based on unadjusted P-value (e.g., P < 0.05)
+significant_innervation_dge <- innervation_dge %>% 
+  filter(P.Value < 0.05)
+
+# Display the first few rows of the significant genes
+head(significant_innervation_dge)
+
+#Conclusion no genes associated with sympathetic differentially expressed in LA
+
+```

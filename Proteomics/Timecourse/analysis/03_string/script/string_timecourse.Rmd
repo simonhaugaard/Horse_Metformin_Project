@@ -1,0 +1,142 @@
+---
+title: "String Terminal"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("edgeR")
+pacman::p_load("readr")
+pacman::p_load("readxl")
+pacman::p_load("biomaRt")
+pacman::p_load("magrittr")
+pacman::p_load("tibble")
+pacman::p_load("stringr")
+pacman::p_load("ggplot2")
+pacman::p_load("data.table")
+pacman::p_load("ggplot2", "patchwork")
+pacman::p_load("openxlsx")
+library(dplyr)
+library(missForest)
+library(RColorBrewer)
+library(STRINGdb)
+
+
+```
+
+#Read and Convert data
+```{r}
+# Define file paths
+#string_db <- "../../../data/gene_annotation/9796.protein.links.full.v12.0.txt.gz"
+filtered_string_db <- "../../../data/gene_annotation/filtered_9796.protein.links.full.v12.0.txt.gz"
+geneinfo_file <- "../../../data/gene_annotation/horse_gene_annotation.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+string_alias_file <- "../../../data/gene_annotation/9796.protein.aliases.v12.0.txt.gz"
+
+# Read and filter STRING database for high-confidence P-P interactions
+# This is the code I used
+#string <- fread(string_db)
+#filtered_string <- string[combined_score > 600]
+#filtered_string[, protein1 := sub("^9796\\.", "", protein1)]
+#filtered_string[, protein2 := sub("^9796\\.", "", protein2)]
+#filtered_string <- filtered_string[, .(protein1, protein2, combined_score)]
+#fwrite(filtered_string, "../../../data/gene_annotation/filtered_9796.protein.links.full.v12.0.txt.gz", sep = "\t")
+
+# Read filtered STRING data
+filtered_string <- fread(filtered_string_db)
+
+# Read and clean gene annotation file
+geneinfo <- fread(geneinfo_file)
+setnames(geneinfo, new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
+                           "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
+geneinfo <- geneinfo[, .(ENSEMBL, GENENAME, ENTREZID)]
+geneinfo <- geneinfo[!duplicated(ENSEMBL), ]
+
+# Read and process DGE results
+dge <- fread(dge_file)
+dge[, Direction := ifelse(logFC > 0, "up", "down")]
+dge[, GENENAME := sub(".*_", "", GeneName)]
+dge <- merge(dge, geneinfo[, .(ENSEMBL, GENENAME, ENTREZID)], by = "GENENAME", all.x = TRUE)
+setcolorder(dge, c("ENSEMBL", "GENENAME", "ENTREZID", setdiff(names(dge), c("ENSEMBL", "GENENAME", "ENTREZID"))))
+dge[, ENTREZID := as.character(ENTREZID)]
+
+# Subset relevant contrasts and filter by P-value
+relevant_contrasts <- c("Diff_Treatment", "Diff_Disease")
+dge <- dge[Contrast %in% relevant_contrasts & P.Value < 0.05]
+
+# Map GeneIDs to proteinIDs using STRING protein aliases
+string_alias <- fread(string_alias_file)
+string_alias_filtered <- string_alias[source == "Ensembl_gene", .(`#string_protein_id`, alias)]
+string_alias_filtered[, ProteinID := sub("^9796\\.", "", `#string_protein_id`)]
+setnames(string_alias_filtered, old = "alias", new = "ENSEMBL")
+string_alias_filtered[, `#string_protein_id` := NULL]
+
+# Check and remove NA values in ENSEMBL column of DGE data
+num_na_ensembl <- sum(is.na(dge$ENSEMBL))
+cat("Number of NA values in ENSEMBL column:", num_na_ensembl, "\n")
+
+if (num_na_ensembl > 0) {
+  dge <- dge[!is.na(ENSEMBL)]
+}
+
+# Merge DGE data with filtered STRING alias data
+dge <- merge(dge, string_alias_filtered, by = "ENSEMBL", all.x = TRUE)
+```
+
+#Define PP-pairs
+```{r}
+# Split the DGE data by Contrast
+dge_list <- split(dge, dge$Contrast)
+
+# Initialize a list to store results for each contrast
+pp_pairs_list <- list()
+
+# Process each contrast separately
+for (contrast in names(dge_list)) {
+  dge_contrast <- dge_list[[contrast]]
+  
+  # Create a set of DGE ProteinIDs for the current contrast
+  dge_protein_ids <- unique(dge_contrast$ProteinID)
+  
+  # Extract P-P pairs where both proteins are in the DGE list for the current contrast
+  pp_pairs <- filtered_string[protein1 %in% dge_protein_ids & protein2 %in% dge_protein_ids]
+  
+  # Merge with dge_contrast to include additional information
+  pp_pairs <- merge(pp_pairs, dge_contrast[, .(ProteinID, GENENAME, logFC, P.Value, adj.P.Val, Direction)], 
+                    by.x = "protein1", by.y = "ProteinID", all.x = TRUE)
+  setnames(pp_pairs, old = c("GENENAME", "logFC", "P.Value", "adj.P.Val", "Direction"), 
+                     new = c("GENENAME1", "logFC1", "P.Value1", "adj.P.Val1", "Direction1"))
+  
+  pp_pairs <- merge(pp_pairs, dge_contrast[, .(ProteinID, GENENAME, logFC, P.Value, adj.P.Val, Direction)], 
+                    by.x = "protein2", by.y = "ProteinID", all.x = TRUE)
+  setnames(pp_pairs, old = c("GENENAME", "logFC", "P.Value", "adj.P.Val", "Direction"), 
+                     new = c("GENENAME2", "logFC2", "P.Value2", "adj.P.Val2", "Direction2"))
+  
+  # Store the result in the list
+  pp_pairs_list[[contrast]] <- pp_pairs
+  
+  # Optionally, save the P-P pairs for the current contrast to a file
+  pp_pairs_file <- paste0("../../03_string/output/dge_pp_pairs_", contrast, ".tsv")
+  fwrite(pp_pairs, pp_pairs_file, sep = "\t")
+}
+
+# Print the structure of the P-P pairs for each contrast to verify
+for (contrast in names(pp_pairs_list)) {
+  cat("Contrast:", contrast, "\n")
+  str(pp_pairs_list[[contrast]])
+}
+```
+

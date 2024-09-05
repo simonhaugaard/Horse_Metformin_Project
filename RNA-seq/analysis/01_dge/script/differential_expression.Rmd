@@ -1,0 +1,760 @@
+---
+title: "Differential Gene Expression"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("edgeR")
+pacman::p_load("readr")
+pacman::p_load("readxl")
+pacman::p_load("biomaRt")
+pacman::p_load("magrittr")
+pacman::p_load("tibble")
+pacman::p_load("stringr")
+pacman::p_load("ggplot2")
+pacman::p_load("data.table")
+pacman::p_load("ggplot2", "patchwork")
+pacman::p_load("openxlsx")
+pacman::p_load("dplyr")
+pacman::p_load("data.table")
+pacman::p_load("ggvenn")
+pacman::p_load("pheatmap")
+pacman::p_load_gh("altintasali/aamisc")
+
+# install aamisc package for MDS and Volcano plots
+#pacman::p_load("qvalue", "rain", "limma", "devtools")
+#url <- "https://cran.r-project.org/src/contrib/Archive/HarmonicRegression/HarmonicRegression_1.0.tar.gz"
+#pkgFile <- "HarmonicRegression_1.0.tar.gz"
+#download.file(url = url, destfile = pkgFile)
+#install.packages(pkgs=pkgFile, type="source", repos=NULL)
+#file.remove(pkgFile)
+#pacman::p_load_gh("altintasali/aamisc")
+
+# Colours for publication
+publication_colors <- c("AF" = "#285291", "Metformin" = "#7C1516", "Sham" = "#9B9B9B")
+
+```
+
+# Read data
+## Count matrix and metadata
+```{r read_data}
+# Load count data from a local file and metadata through Excel
+count_file <- "../../../../RNA-seq/data/count/gene-expression-all-reverse-stranded-countReadPairs.tsv"
+count <- readr::read_delim(count_file)
+
+#remove natural AF horses
+count <- count%>%
+  select(-c(Dorado_LA, Dorado_RA, Im_A_Mets_Fan_LA, Im_A_Mets_Fan_RA, 
+            Jytte_LA, Jytte_RA, Kevin_Cook_LA, Kevin_Cook_RA, 
+            San_Diego_LA, San_Diego_RA, Styles_LA, Styles_RA))
+
+meta_file <- "../../../../RNA-seq/data/metadata/meta.xlsx" 
+meta <- readxl::read_excel(meta_file)
+
+# Gene annotation
+geneinfo_file <- "../../../../RNA-seq/data/gene_annotation/horse_gene_annotation.tsv.gz"
+geneinfo <- fread(geneinfo_file)
+colnames(geneinfo)
+
+setnames(geneinfo, new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
+                           "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
+geneinfo <- geneinfo[, c("ENSEMBLv", "Description_detailed") := NULL]
+geneinfo <- geneinfo[!duplicated(ENSEMBL), ]
+annot <- merge(x = count[,c("Geneid", "Length")], 
+               y = geneinfo, 
+               by.x = "Geneid",
+               by.y = "ENSEMBL", 
+               all.x = TRUE, 
+               all.y = FALSE)
+setnames(annot, old = "Geneid", new = "ENSEMBL")
+annot <- data.frame(annot)
+rownames(annot) <- annot$ENSEMBL
+
+fwrite(x = annot, 
+       file = "../../../../RNA-seq/data/gene_annotation/horse_gene_annotation_filtered.tsv.gz", 
+       sep = "\t")
+
+# Cleaning metadata and remove irrelevant columns
+meta <- meta %>% remove_rownames %>% column_to_rownames(var="Sample_ID")
+head(meta)
+
+count <- count[, -c(2:6)]
+count <- count %>% remove_rownames %>% column_to_rownames(var="Geneid")
+head(count)
+```
+
+
+# `edgeR` differential expression analysis for multilevel designs
+## Read count matrix
+
+```{r edgeR_read, warning=FALSE}
+#Remove the .## of the gene names - needed for later gene name annotation
+rownames(count) <- stringr::str_split_fixed(string = rownames(count), 
+                                        pattern = '[.]',
+                                        n = 2)[,1]
+
+column_order <- names(count)
+meta_reordered <- meta[column_order, , drop = FALSE]
+
+annot_order <- rownames(count)
+annot_reordered <- annot[annot_order, ]
+
+# DGEList object for edgeR
+d <- DGEList(counts = count, genes = annot_reordered, samples = meta_reordered)
+```
+
+## Filtering
+```{r edgeR_filter, warning=FALSE}
+keep <- filterByExpr(d)
+table(keep)
+
+y <- d[keep, ,keep.lib.sizes=FALSE]
+```
+
+## Normalization
+```{r edgeR_normalize, warning=FALSE}
+# calculate normalization factors
+y <- calcNormFactors(y)
+
+
+#Write filtered and normalized data for multiomics dataintegration
+norm_counts <- cpm(y, normalized.lib.sizes=TRUE)
+
+#write.table(norm_counts, file="../../../../RNA-seq/analysis/01_dge/output/rna_seq_data.txt", sep="\t", col.names=NA, quote=FALSE)
+
+## As above, but with genename for multi-omics integration
+norm_counts_genenames <- as.data.frame(norm_counts)
+norm_counts_genenames$ENSEMBL <- rownames(norm_counts_genenames)
+norm_counts_genenames <- merge(norm_counts_genenames, annot[, c("ENSEMBL", "GENENAME")], by = "ENSEMBL")
+norm_counts_genenames$ID <- ifelse(is.na(norm_counts_genenames$GENENAME) | norm_counts_genenames$GENENAME == "", 
+                                   norm_counts_genenames$ENSEMBL, 
+                                   norm_counts_genenames$GENENAME)
+duplicates <- norm_counts_genenames$ID[duplicated(norm_counts_genenames$ID)]
+norm_counts_genenames$ID <- ifelse(norm_counts_genenames$ID %in% duplicates, 
+                                   paste(norm_counts_genenames$ID, norm_counts_genenames$ENSEMBL, sep = "_"), 
+                                   norm_counts_genenames$ID)
+rownames(norm_counts_genenames) <- norm_counts_genenames$ID
+norm_counts_genenames <- norm_counts_genenames[, !colnames(norm_counts_genenames) %in% c("ENSEMBL", "GENENAME", "ID")]
+
+#write.table(norm_counts_genenames, file="../../../../RNA-seq/analysis/01_dge/output/rna_seq_data_genenames.txt", sep="\t", col.names=NA, quote=FALSE)
+
+
+# create design matrix
+design <- model.matrix(~0 + Condition , y$samples)
+colnames(design) <- gsub("Condition", "", colnames(design))
+design
+
+# estimate dispersions
+y <- estimateDisp(y, design)
+
+# normalized expression levels
+CPM <- cpm(y)
+logCPM <- cpm(y, log = TRUE)
+```
+
+### Count distributions
+```{r plot_distributions}
+# Prepare data
+logCPM_melted <- data.table::melt(logCPM)
+setnames(x = logCPM_melted, 
+         old = c("Var1", "Var2", "value"),
+         new = c("Gene", "Sample", "logCPM"))
+logCPM_melted <- data.table::merge.data.table(x = logCPM_melted, 
+                                              y = data.table(Sample = rownames(meta), meta), 
+                                              by = "Sample")
+# Box-plot
+ggplot(logCPM_melted, aes(x = Sample, y = logCPM)) + 
+  geom_boxplot(aes(color = Condition)) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  ggtitle("logCPM boxplots")
+
+# Density-plot
+ggplot(logCPM_melted, aes(x = logCPM)) + 
+  geom_density(aes(group = Sample, color = Condition)) +
+  theme_bw() +
+  ggtitle("logCPM density distributions")
+```
+
+## Dimension reduction
+### MDS plot
+```{r edgeR_mds}
+mds <- plotMDS(y, plot = FALSE)
+
+dims <- list(p1 = c(1,2), p2 = c(1,3), p3 = c(2,3))
+mds_plot <- list()
+
+# without labels
+for (i in seq_along(dims)){
+  mds_plot[[i]] <- aamisc::ggMDS(mds = mds,
+                                 meta = meta, 
+                                 dim = dims[[i]], 
+                                 color.by = "Group", 
+                                 shape.by = "Region",
+                                 legend.position = "right"
+                                 # text.by = "Horse",
+                                 # text.size = 1.5
+                                 )
+}
+
+
+patchwork::wrap_plots(mds_plot, ncol = 2) + patchwork::plot_layout(guides = 'collect')
+
+# with labels
+for (i in seq_along(dims)){
+  mds_plot[[i]] <- aamisc::ggMDS(mds = mds,
+                                 meta = meta, 
+                                 dim = dims[[i]], 
+                                 color.by = "Group", 
+                                 shape.by = "Region",
+                                 legend.position = "right",
+                                 text.by = "Horse",
+                                 text.size = 1.5
+                                 )
+}
+
+patchwork::wrap_plots(mds_plot, ncol = 2) + patchwork::plot_layout(guides = 'collect')
+```
+
+### MDS plot (batch "horse ID" removed)
+```{r edgeR_mds_batch}
+logCPM_batchRemoved <- removeBatchEffect(logCPM, 
+                                         batch = as.factor(y$samples$Horse), 
+                                         design = design)
+mds <- plotMDS(logCPM_batchRemoved, plot = FALSE)
+
+dims <- list(p1 = c(1,2), p2 = c(1,3), p3 = c(2,3))
+mds_plot <- list()
+meta$Group <- factor(meta$Group, levels = names(publication_colors))
+
+# without labels
+for (i in seq_along(dims)){
+  mds_plot[[i]] <- aamisc::ggMDS(mds = mds,
+                                 meta = meta, 
+                                 dim = dims[[i]], 
+                                 color.by = "Group", 
+                                 shape.by = "Region",
+                                 legend.position = "right"
+                                 # text.by = "Horse",
+                                 # text.size = 1.5
+                                 ) + 
+                  scale_color_manual(values = publication_colors)
+}
+
+patchwork::wrap_plots(mds_plot, ncol = 2) + patchwork::plot_layout(guides = 'collect')
+
+# with labels
+for (i in seq_along(dims)){
+  mds_plot[[i]] <- aamisc::ggMDS(mds = mds,
+                                 meta = meta, 
+                                 dim = dims[[i]], 
+                                 color.by = "Group", 
+                                 shape.by = "Region",
+                                 legend.position = "right",
+                                 text.by = "Horse",
+                                 text.size = 1.5
+                                 ) + 
+                  scale_color_manual(values = publication_colors)
+}
+mds_plot[1]
+
+patchwork::wrap_plots(mds_plot, ncol = 2) + patchwork::plot_layout(guides = 'collect')
+```
+```{r}
+library(ggplot2)
+
+# Define the colors
+publication_colors <- c("AF" = "#285291", "Metformin" = "#7C1516", "Sham" = "#9B9B9B")
+
+
+
+```
+
+
+
+
+# Differential expression analysis 
+## Create contrast for multilevel design
+```{r edgeR_contrast}
+# create contrasts to test
+colnames(design)
+con <- makeContrasts(
+  # Metformin vs Placebo contrasts
+  met_vs_placebo_RA = RA_Metformin - RA_AF,
+  met_vs_placebo_LA = LA_Metformin - LA_AF,
+  RA_vs_LA_placebo = RA_AF - LA_AF,
+  RA_vs_LA_met = RA_Metformin - LA_Metformin,
+  AverageTreatmentEffect = (LA_Metformin + RA_Metformin)/2 - (LA_AF + RA_AF)/2,
+  met.vs.placebo_vs_RA.LA = (RA_Metformin - RA_AF) - (LA_Metformin - LA_AF),
+  
+  # AF vs Sham contrasts
+  AF_vs_sham_RA = RA_AF - RA_Sham,
+  AF_vs_sham_LA = LA_AF - LA_Sham,
+  RA_vs_LA_sham = RA_Sham - LA_Sham,
+  RA_vs_LA_AF = RA_AF - LA_AF,
+  AverageDiseaseEffect = (LA_AF + RA_AF)/2 - (LA_Sham + RA_Sham)/2,
+  placebo.vs.sham_vs_RA.LA = (RA_AF - RA_Sham) - (LA_AF - LA_Sham),
+  
+  levels = design
+)
+
+con
+
+#Explanation:  The "average disease effect" is not the same as the main disease effect, but we will leave that for now as we are only interesting in the region-wise comparisons. 
+
+
+```
+
+## Differential analysis
+```{r voomLmFit, fig.height=7, fig.width=7}
+# V is the result of my linear model fitted using voom transformation
+y_raw <- d[keep, ,keep.lib.sizes=FALSE]
+v <- voomLmFit(counts = y_raw, 
+               design = design, 
+               block = as.factor(y_raw$samples$Horse), 
+               sample.weights = TRUE, 
+               plot = TRUE) 
+
+res <- list() # list for DGE results
+for (i in colnames(con)) {
+  fit <- contrasts.fit(v, contrasts = con)
+  fit <- eBayes(fit, robust = TRUE)
+  res[[i]] <- topTable(fit, coef = i, number = Inf)
+  res[[i]] <- data.frame(res[[i]], Contrast = i)
+  n <- res[[i]] %>% dplyr::filter(adj.P.Val < 0.05) %>% nrow 
+  print(paste('number of DE genes for',i, '=', n))
+}
+res_all <- do.call(rbind, res)
+
+# Create output Excel file
+openxlsx::write.xlsx(x = res, file = "../../../../RNA-seq/analysis/01_dge/output/dge_results.xlsx", asTable = TRUE)
+
+# Create output TSV file
+data.table::fwrite(x = res_all, file = "../../../../RNA-seq/analysis/01_dge/output/dge_results.tsv.gz", sep = "\t")
+```
+## Diagnostics for differential analysis
+### p-value histograms
+```{r pvalue_histograms, fig.height=10, fig.width=10}
+ggplot(res_all, aes(x = P.Value)) + 
+  geom_histogram(fill = "lightgray",
+                 color = "black",
+                 breaks = seq(0, 1, by = 0.05),
+                 closed = "right",
+                 lwd = 0.2) + 
+  facet_wrap(~ Contrast, nrow = 3, scales = "free") + 
+  theme_bw()
+```
+
+### Volcano plots
+```{r volcano_plots, fig.height=10, fig.width=10}
+volcano_plots <- list()
+for (i in names(res)){
+  volcano_plots[[i]] <- ggVolcano(x = res[[i]], 
+                                  fdr = 0.05,
+                                  fdr.column = "adj.P.Val", 
+                                  pvalue.column = "P.Value", 
+                                  logFC = 0, 
+                                  logFC.column = "logFC", 
+                                  text.size = 2) + 
+    theme_bw(base_size = 10) + 
+    ggtitle(i)
+}
+
+patchwork::wrap_plots(volcano_plots, ncol = 3)
+
+print(volcano_plots[["AF_vs_sham_RA"]])
+print(volcano_plots[["AF_vs_sham_LA"]])
+print(volcano_plots[["met_vs_placebo_RA"]])
+print(volcano_plots[["met_vs_placebo_LA"]])
+
+combined_plot <- ((volcano_plots[["AF_vs_sham_RA"]]) | (volcano_plots[["AF_vs_sham_LA"]])) / ((volcano_plots[["met_vs_placebo_RA"]]) | (volcano_plots[["met_vs_placebo_LA"]]))
+print(combined_plot)
+```
+# Heatmap Generator
+
+**#TODO:** Just suggestions below. It is up to you if you would like to organize accordingly. 
+
+- Starting from this section, it seems like you started running some exploratory data analysis. I would make a separate script for the section below as it is no more related to differential analysis. 
+- These sections are still relevant to keep in this document:
+    - Venn diagrams
+    - Heatmaps with only differentially expressed gene results
+
+```{r Heatmaps, fig.height=10, fig.width=10}
+
+generate_pheatmap_for_goid <- function(go_file, annot, logCPM_batchRemoved, res_all, meta, meta_reordered, goid, contrast1, contrast2, region1, region2) {
+  # Get GO annotation
+  go <- fread(go_file)
+  go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
+  setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
+  go <- go[GOdomain != "", ]
+  
+  # Filter for specified GO term
+  go_activity <- go[GOID == goid, "ENSEMBL"]
+  go_ensembl <- annot[annot$ENSEMBL %in% go_activity$ENSEMBL, c("GENENAME", "ENSEMBL")]
+  subset_logCPM <- logCPM_batchRemoved[rownames(logCPM_batchRemoved) %in% go_ensembl$ENSEMBL, ]
+  rownames(subset_logCPM) <- go_ensembl$GENENAME[match(rownames(subset_logCPM), go_ensembl$ENSEMBL)]
+  
+  # Significant genes
+  sig_genes <- res_all[res_all$ENSEMBL %in% go_ensembl$ENSEMBL & res_all$adj.P.Val < 0.05, ]
+  sig_contrast1_genes <- sig_genes[sig_genes$Contrast == contrast1, "GENENAME"]
+  sig_contrast2_genes <- sig_genes[sig_genes$Contrast == contrast2, "GENENAME"]
+  
+  # Generate heatmap for the first region
+  region1_subset_logCPM <- subset_logCPM[, row.names(meta)[meta$Region == region1]]
+  region1_subset_logCPM <- region1_subset_logCPM[row.names(region1_subset_logCPM) %in% sig_contrast1_genes, ]
+  pheatmap(region1_subset_logCPM,
+           annotation_col = meta_reordered[, "Group", drop=FALSE],
+                      annotation_colors = list(Group = publication_colors),
+           scale = "row",
+           show_rownames = TRUE,
+           fontsize = 10,
+           fontsize_row = 8,
+           fontsize_col = 8,
+           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+           main = paste("Heatmap for", goid, "in", region1))
+  
+  # Generate heatmap for the second region
+  region2_subset_logCPM <- subset_logCPM[, row.names(meta)[meta$Region == region2]]
+  region2_subset_logCPM <- region2_subset_logCPM[row.names(region2_subset_logCPM) %in% sig_contrast2_genes, ]
+  pheatmap(region2_subset_logCPM,
+           annotation_col = meta_reordered[, "Group", drop=FALSE],
+                      annotation_colors = list(Group = publication_colors),
+           scale = "row",
+           show_rownames = TRUE,
+           fontsize = 10,
+           fontsize_row = 8,
+           fontsize_col = 8,
+           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+           main = paste("Heatmap for", goid, "in", region2))
+}
+
+# Example usage for protein kinases
+generate_pheatmap_for_goid(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0004672",          # Example GOID
+  contrast1 = "AF_vs_sham_RA",  # Example Contrast 1
+  contrast2 = "AF_vs_sham_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+# Example usage
+generate_pheatmap_for_goid(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0004672",          # Example GOID
+  contrast1 = "AF_vs_sham_RA",  # Example Contrast 1
+  contrast2 = "AF_vs_sham_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+# Example usage for protein kinases
+generate_pheatmap_for_goid(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0004672",          # Example GOID
+  contrast1 = "AF_vs_sham_RA",  # Example Contrast 1
+  contrast2 = "AF_vs_sham_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+#Example for Collagen containing ECM GO:0062023
+generate_pheatmap_for_goid(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0062023",          # Example GOID
+  contrast1 = "AF_vs_sham_RA",  # Example Contrast 1
+  contrast2 = "AF_vs_sham_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+#Example for mitochondrial matrix GO:0005759
+generate_pheatmap_for_goid(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0005759",          # Example GOID
+  contrast1 = "AF_vs_sham_RA",  # Example Contrast 1
+  contrast2 = "AF_vs_sham_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+#Example for mitochondrial respiratory chain complex I assembly
+generate_pheatmap_for_goid(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0032981",          # Example GOID
+  contrast1 = "AF_vs_sham_RA",  # Example Contrast 1
+  contrast2 = "AF_vs_sham_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+
+
+
+#For Melodie
+generate_pheatmap_for_goid(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0098978",          # Example GOID
+  contrast1 = "AF_vs_sham_RA",  # Example Contrast 1
+  contrast2 = "AF_vs_sham_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+#Ion channel complex
+generate_pheatmap_for_goid(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0034702",          # Example GOID
+  contrast1 = "met_vs_placebo_RA",  # Example Contrast 1
+  contrast2 = "met_vs_placebo_LA",  # Example Contrast 2
+  region1 = "RA",               # Example Region 1
+  region2 = "LA"                # Example Region 2
+)
+
+```
+#Sanity check on SCN5A
+```{r}
+# Ensure SCN5A is in the dataset
+scn5a_ensembl <- annot %>% filter(GENENAME == "SCN5A") %>% pull(ENSEMBL)
+
+# Extract SCN5A raw expression data
+scn5a_raw <- count[scn5a_ensembl, ]
+
+# Convert row names to a column temporarily for merging
+meta_with_sample <- meta %>% rownames_to_column(var = "Sample")
+
+# Melt the raw data for ggplot2 using the "Sample" column created above
+scn5a_raw_melted <- data.frame(Sample = colnames(scn5a_raw), Expression = as.numeric(scn5a_raw)) %>%
+  left_join(meta_with_sample, by = "Sample")
+
+# Plot the raw data, split by Region (RA and LA)
+ggplot(scn5a_raw_melted, aes(x = Group, y = Expression, fill = Group)) +
+  geom_violin(trim = FALSE) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.6) +
+  theme_bw() +
+  labs(title = "SCN5A Expression - Raw Data (by Region)",
+       x = "Condition",
+       y = "Raw Expression",
+       fill = "Condition") +
+  scale_fill_manual(values = publication_colors) +
+  facet_wrap(~ Region)
+
+# Extract SCN5A logCPM batch-removed expression data
+scn5a_logCPM_batch_removed <- logCPM_batchRemoved[scn5a_ensembl, , drop = FALSE]
+
+# Melt the logCPM batch-removed data for ggplot2 using the "Sample" column created above
+scn5a_logCPM_melted <- data.frame(Sample = colnames(scn5a_logCPM_batch_removed), Expression = as.numeric(scn5a_logCPM_batch_removed)) %>%
+  left_join(meta_with_sample, by = "Sample")
+
+# Plot the batch-removed logCPM data, split by Region (RA and LA)
+ggplot(scn5a_logCPM_melted, aes(x = Group, y = Expression, fill = Group)) +
+  geom_violin(trim = FALSE) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.6) +
+  theme_bw() +
+  labs(title = "SCN5A Expression - Batch-Removed logCPM (by Region)",
+       x = "Condition",
+       y = "logCPM (Batch-Removed)",
+       fill = "Condition") +
+  scale_fill_manual(values = publication_colors) +
+  facet_wrap(~ Region)
+
+
+#Question for ALI: How come my SCN5A expression is mostly blue in the metformin treated group for the RA in the heatmap, when I can see that this is just not true on raw data points? Is it because of the batch-correction and if so, why does that not carry over to the limma-analysis? 
+
+#TO DO: Include heatmap on ionchannels! 
+
+
+```
+
+
+
+#Venn-diagrams to understand effect of disease and treatment in RA
+```{r}
+# Ensure res_all is a data.table
+res_all <- as.data.table(res_all)
+
+# Filter genes function
+filter_genes <- function(contrast, direction) {
+  res_all[Contrast == contrast & ((logFC > 0 & direction == "up") | (logFC < 0 & direction == "down")) & adj.P.Val < 0.05, GENENAME]
+}
+
+# Effect of treatment and disease
+met_up_RA <- filter_genes("met_vs_placebo_RA", "up")
+met_down_RA <- filter_genes("met_vs_placebo_RA", "down")
+af_up_RA <- filter_genes("AF_vs_sham_RA", "up")
+af_down_RA <- filter_genes("AF_vs_sham_RA", "down")
+
+# Extract intersecting genes
+up_in_AF_down_in_met <- intersect(af_up_RA, met_down_RA)
+down_in_AF_up_in_met <- intersect(af_down_RA, met_up_RA)
+even_more_up_met <- intersect(af_up_RA, met_up_RA)
+even_more_down_met <- intersect(af_down_RA, met_down_RA)
+
+# Print results with captions
+cat("Genes upregulated in AF and downregulated in Metformin:\n", paste(up_in_AF_down_in_met, collapse = ", "), "\n\n")
+cat("Genes downregulated in AF and upregulated in Metformin:\n", paste(down_in_AF_up_in_met, collapse = ", "), "\n")
+cat("Genes upregulated in AF and but even more upregulated in Metformin:\n", paste(even_more_up_met, collapse = ", "), "\n\n")
+cat("Genes downregulated in AF and but even more downregulated in Metformin:\n", paste(even_more_down_met, collapse = ", "), "\n")
+
+
+# Generate Venn diagram
+ggvenn(list(Up_met = met_up_RA, Down_met = met_down_RA, AF_up = af_up_RA, AF_down = af_down_RA), 
+       fill_color = c("#E69F00", "#56B4E9", "#009E73", "#F0E442"))
+
+```
+
+#Heatmaps for genes inversely regulated in metformin treatment and AF
+```{r}
+# Load GO annotations
+go_file <- "../../../data/gene_annotation/horse_GO.tsv.gz"
+go <- fread(go_file)
+go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
+setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
+
+# Map GENENAMES to ENSEMBL IDs using the annot file
+up_in_AF_down_in_met_ensembl <- annot[annot$GENENAME %in% up_in_AF_down_in_met, "ENSEMBL"]
+down_in_AF_up_in_met_ensembl <- annot[annot$GENENAME %in% down_in_AF_up_in_met, "ENSEMBL"]
+
+# Ensure res_all is a data.frame
+res_all <- as.data.frame(res_all)
+
+# Function to generate pheatmap for a given GO term and region
+generate_pheatmap_for_goid <- function(goid, go_annotations, go_data, annot, logCPM_batchRemoved, res_all, meta, meta_reordered, region) {
+  # Filter for specified GO term
+  go_activity <- go_annotations[GOID == goid, "ENSEMBL"]
+  go_ensembl <- annot[annot$ENSEMBL %in% go_activity$ENSEMBL, c("GENENAME", "ENSEMBL")]
+  subset_logCPM <- logCPM_batchRemoved[rownames(logCPM_batchRemoved) %in% go_ensembl$ENSEMBL, ]
+  rownames(subset_logCPM) <- go_ensembl$GENENAME[match(rownames(subset_logCPM), go_ensembl$ENSEMBL)]
+  
+  # Significant genes
+  sig_genes <- res_all[res_all$ENSEMBL %in% go_ensembl$ENSEMBL & res_all$adj.P.Val < 0.05, ]
+  sig_genes_up_in_AF_down_in_met <- sig_genes[sig_genes$ENSEMBL %in% go_data$up_in_AF_down_in_met_ensembl, "GENENAME"]
+  sig_genes_down_in_AF_up_in_met <- sig_genes[sig_genes$ENSEMBL %in% go_data$down_in_AF_up_in_met_ensembl, "GENENAME"]
+  
+  # Combine and deduplicate gene names
+  combined_sig_genes <- unique(c(sig_genes_up_in_AF_down_in_met, sig_genes_down_in_AF_up_in_met))
+  
+  # Subset samples based on the specified region
+  subset_logCPM_combined <- subset_logCPM[rownames(subset_logCPM) %in% combined_sig_genes, ]
+  region_samples <- row.names(meta)[meta$Region == region]
+  subset_logCPM_combined_region <- subset_logCPM_combined[, region_samples]
+  
+  # Generate heatmap for the specified region
+  pheatmap(subset_logCPM_combined_region,
+           annotation_col = meta_reordered[region_samples, "Group", drop=FALSE],
+           scale = "row",
+           show_rownames = TRUE,
+           fontsize = 10,
+           fontsize_row = 8,
+           fontsize_col = 8,
+           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+           main = paste("Heatmap for", goid, "in", region))
+}
+
+# Example usage for protein kinases in RA
+generate_pheatmap_for_goid(
+  goid = "GO:0004672",                    # Example GOID
+  go_annotations = go,                    # GO annotations
+  go_data = list(up_in_AF_down_in_met_ensembl = up_in_AF_down_in_met_ensembl, down_in_AF_up_in_met_ensembl = down_in_AF_up_in_met_ensembl),
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  region = "RA"                           # Specified region (RA)
+)
+
+
+# Example usage for mitochondrial matrix in RA
+generate_pheatmap_for_goid(
+  goid = "GO:0005759",                    # Example GOID
+  go_annotations = go,                    # GO annotations
+  go_data = list(up_in_AF_down_in_met_ensembl = up_in_AF_down_in_met_ensembl, down_in_AF_up_in_met_ensembl = down_in_AF_up_in_met_ensembl),
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  region = "RA"                           # Specified region (RA)
+)
+
+# GO:0016301 Kinase Activity
+generate_pheatmap_for_goid(
+  goid = "GO:0016301",                    # Example GOID
+  go_annotations = go,                    # GO annotations
+  go_data = list(up_in_AF_down_in_met_ensembl = up_in_AF_down_in_met_ensembl, down_in_AF_up_in_met_ensembl = down_in_AF_up_in_met_ensembl),
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  region = "RA"                           # Specified region (RA)
+)
+
+# GO:0005912 Adherens Junction
+generate_pheatmap_for_goid(
+  goid = "GO:0005912",                    # Example GOID
+  go_annotations = go,                    # GO annotations
+  go_data = list(up_in_AF_down_in_met_ensembl = up_in_AF_down_in_met_ensembl, down_in_AF_up_in_met_ensembl = down_in_AF_up_in_met_ensembl),
+  annot = annot,
+  logCPM_batchRemoved = logCPM_batchRemoved,
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  region = "RA"                           # Specified region (RA)
+)
+```

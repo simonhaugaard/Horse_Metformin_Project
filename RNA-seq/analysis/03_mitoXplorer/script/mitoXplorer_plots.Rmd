@@ -1,0 +1,194 @@
+---
+title: "MitoXplorer"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("edgeR")
+pacman::p_load("readr")
+pacman::p_load("readxl")
+pacman::p_load("biomaRt")
+pacman::p_load("magrittr")
+pacman::p_load("tibble")
+pacman::p_load("stringr")
+pacman::p_load("ggplot2")
+pacman::p_load("data.table")
+pacman::p_load("ggplot2", "patchwork")
+pacman::p_load("openxlsx")
+pacman::p_load("dplyr")
+pacman::p_load("data.table")
+pacman::p_load("ggvenn")
+pacman::p_load("pheatmap")
+pacman::p_load_gh("altintasali/aamisc")
+
+# install aamisc package for MDS and Volcano plots
+#pacman::p_load("qvalue", "rain", "limma", "devtools")
+#url <- "https://cran.r-project.org/src/contrib/Archive/HarmonicRegression/HarmonicRegression_1.0.tar.gz"
+#pkgFile <- "HarmonicRegression_1.0.tar.gz"
+#download.file(url = url, destfile = pkgFile)
+#install.packages(pkgs=pkgFile, type="source", repos=NULL)
+#file.remove(pkgFile)
+#pacman::p_load_gh("altintasali/aamisc")
+
+# Colours for publication
+publication_colors <- c("AF" = "#285291", "Metformin" = "#7C1516", "Sham" = "#9B9B9B")
+
+```
+
+# Read data
+## MitoXplorer3.0 web-data 
+```{r read_data}
+# Load count data from a local file and metadata through Excel
+Mito_AF_vs_Sham_RA_RNA <- "../../../../RNA-seq/data/mitoXplorer/AF_vs_Sham_RA_RNA.txt"
+Mito_AF_vs_Sham_RA_RNA <- fread(Mito_AF_vs_Sham_RA_RNA)
+
+Mito_Metformin_vs_Placebo_RA_RNA <- "../../../../RNA-seq/data/mitoXplorer/Metformin_vs_placebo_RA_RNA.txt"
+Mito_Metformin_vs_Placebo_RA_RNA <- fread(Mito_Metformin_vs_Placebo_RA_RNA)
+
+# Classify genes for Metformin vs Placebo
+Mito_Metformin_vs_Placebo_RA_RNA <- Mito_Metformin_vs_Placebo_RA_RNA %>%
+  mutate(Significance = case_when(
+    `P-VALUE` < 0.05 & LOG2FOLD > 0 ~ "Upregulated",
+    `P-VALUE` < 0.05 & LOG2FOLD < 0 ~ "Downregulated",
+    TRUE ~ "Non-significant"
+  ))
+
+# Classify genes for AF vs Sham
+Mito_AF_vs_Sham_RA_RNA <- Mito_AF_vs_Sham_RA_RNA %>%
+  mutate(Significance = case_when(
+    `P-VALUE` < 0.05 & LOG2FOLD > 0 ~ "Upregulated",
+    `P-VALUE` < 0.05 & LOG2FOLD < 0 ~ "Downregulated",
+    TRUE ~ "Non-significant"
+  ))
+```
+
+#Bar-Plot 
+```{r fig.height=15, fig.width=20}
+# Count genes for Metformin vs Placebo
+count_Metformin_vs_Placebo <- Mito_Metformin_vs_Placebo_RA_RNA %>%
+  group_by(PROCESS, Significance) %>%
+  summarise(Count = n()) %>%
+  ungroup()
+
+# Count genes for AF vs Sham
+count_AF_vs_Sham <- Mito_AF_vs_Sham_RA_RNA %>%
+  group_by(PROCESS, Significance) %>%
+  summarise(Count = n()) %>%
+  ungroup()
+
+# Combine the two datasets
+combined_counts <- bind_rows(
+  count_Metformin_vs_Placebo %>% mutate(Comparison = "Metformin vs Placebo"),
+  count_AF_vs_Sham %>% mutate(Comparison = "AF vs Sham")
+)
+
+# Combine the counts of significant genes (upregulated + downregulated)
+total_significant_Metformin_vs_Placebo <- count_Metformin_vs_Placebo %>%
+  filter(Significance != "Non-significant") %>%
+  group_by(PROCESS) %>%
+  summarise(Total_Significant = sum(Count)) %>%
+  arrange(desc(Total_Significant))
+
+total_significant_AF_vs_Sham <- count_AF_vs_Sham %>%
+  filter(Significance != "Non-significant") %>%
+  group_by(PROCESS) %>%
+  summarise(Total_Significant = sum(Count)) %>%
+  arrange(desc(Total_Significant))
+
+# For Metformin vs Placebo
+count_Metformin_vs_Placebo <- count_Metformin_vs_Placebo %>%
+  mutate(PROCESS = factor(PROCESS, levels = total_significant_Metformin_vs_Placebo$PROCESS))
+
+# For AF vs Sham
+count_AF_vs_Sham <- count_AF_vs_Sham %>%
+  mutate(PROCESS = factor(PROCESS, levels = total_significant_AF_vs_Sham$PROCESS))
+
+# Combine the two datasets
+combined_counts <- bind_rows(
+  count_Metformin_vs_Placebo %>% mutate(Comparison = "Metformin vs Placebo"),
+  count_AF_vs_Sham %>% mutate(Comparison = "AF vs Sham")
+)
+
+# Plot with sorted facets
+ggplot(combined_counts, aes(x = PROCESS, y = Count, fill = Significance)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ Comparison, scales = "free_x") +
+  labs(title = "Gene Contributions to Biological Processes",
+       x = "Biological Process", y = "Number of Genes", fill = "Regulation") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top") +
+  scale_fill_manual(values = c("Upregulated" = "red", "Downregulated" = "blue", "Non-significant" = "grey"))
+
+
+
+```
+#Stacked Bar Plot
+```{r fig.height=15, fig.width=20}
+# Reorder the 'Significance' factor to control stacking order
+combined_counts$Significance <- factor(combined_counts$Significance, levels = c("Upregulated", "Downregulated", "Non-significant"))
+
+# Define colors to match your heatmap (red bottom, blue middle, grey top)
+heatmap_colors <- c("Upregulated" = "#d73027", "Downregulated" = "#4575b4", "Non-significant" = "#d3d3d3")
+
+ggplot(combined_counts, aes(x = PROCESS, y = Count, fill = Significance)) +
+  geom_bar(stat = "identity", position = "stack") +  # Use 'stack' to stack the bars
+  facet_wrap(~ Comparison, scales = "free_x", nrow = 1) +  # Arrange facets in a single row
+  scale_fill_manual(values = heatmap_colors) +  # Apply heatmap-like colors
+  labs(title = "Gene Contributions to Biological Processes",
+       x = "Biological Process", y = "Number of Genes", fill = "Regulation") +
+  theme_minimal(base_size = 16) +  # Increase base font size for readability
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 14),  # Increase x-axis text size and angle
+    axis.text.y = element_text(size = 14),  # Increase y-axis text size
+    axis.title.x = element_text(size = 18, face = "bold"),  # Larger and bold x-axis title
+    axis.title.y = element_text(size = 18, face = "bold"),  # Larger and bold y-axis title
+    plot.title = element_text(size = 24, face = "bold", hjust = 0.5),  # Larger and centered title
+    legend.title = element_text(size = 18, face = "bold"),  # Larger legend title
+    legend.text = element_text(size = 16),  # Larger legend text
+    legend.position = "top",  # Position the legend at the top
+    panel.grid.major = element_line(color = "grey80"),  # Soft grid lines for better visibility
+    panel.grid.minor = element_blank(),  # Remove minor grid lines for a cleaner look
+    strip.text = element_text(size = 18, face = "bold")  # Larger and bold facet labels
+  )
+
+```
+#Dot plot
+```{r fig.height=15, fig.width=20}
+ggplot(combined_counts, aes(x = PROCESS, y = Significance, size = Count, color = Significance)) +
+  geom_point(alpha = 0.7) +
+  facet_wrap(~ Comparison, scales = "free_x", nrow = 1) +
+  scale_size_continuous(range = c(5, 20)) +  # Increase the size range for points
+  scale_color_manual(values = c("Upregulated" = "red", "Downregulated" = "blue", "Non-significant" = "grey")) +
+  labs(title = "Dot Plot of Significant Genes by Process",
+       x = "Biological Process", y = "Regulation", size = "Number of Genes") +
+  theme_minimal(base_size = 16) +  # Base font size increased for readability
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 14),  # Increase x-axis text size
+    axis.text.y = element_text(size = 14),  # Increase y-axis text size
+    axis.title.x = element_text(size = 18, face = "bold"),  # Larger and bold x-axis title
+    axis.title.y = element_text(size = 18, face = "bold"),  # Larger and bold y-axis title
+    plot.title = element_text(size = 24, face = "bold", hjust = 0.5),  # Larger and centered title
+    legend.title = element_text(size = 18, face = "bold"),  # Larger legend title
+    legend.text = element_text(size = 16),  # Larger legend text
+    legend.position = "top",  # Keep legend at the top
+    panel.grid.major = element_line(color = "grey80"),  # Soft grid lines for better visibility
+    panel.grid.minor = element_blank(),  # Remove minor grid lines for a cleaner look
+    strip.text = element_text(size = 18, face = "bold")  # Larger facet labels
+  )
+
+```
+

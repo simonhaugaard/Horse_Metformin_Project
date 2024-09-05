@@ -1,0 +1,594 @@
+---
+title: "Differential Gene Expression"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+#This script uses a combination of the DEP-package and a limma-script that can handle paired samples (LA and RA from same horse). The DEP-package uses FDR-tools to generate q-values, which I have included in my own limma-script. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("edgeR")
+pacman::p_load("readr")
+pacman::p_load("readxl")
+pacman::p_load("biomaRt")
+pacman::p_load("magrittr")
+pacman::p_load("tibble")
+pacman::p_load("stringr")
+pacman::p_load("ggplot2")
+pacman::p_load("data.table")
+pacman::p_load("ggplot2", "patchwork")
+pacman::p_load("openxlsx")
+library(dplyr)
+library(missForest)
+library(RColorBrewer)
+library(limma)
+library(DEqMS)
+library(preprocessCore)
+library(DEP)
+library(SummarizedExperiment)
+library(Metrics)
+library(fdrtool)
+library(aamisc)
+
+
+# install aamisc package for MDS and Volcano plots
+#pacman::p_load("qvalue", "rain", "limma", "devtools")
+#url <- "https://cran.r-project.org/src/contrib/Archive/HarmonicRegression/HarmonicRegression_1.0.tar.gz"
+#pkgFile <- "HarmonicRegression_1.0.tar.gz"
+#download.file(url = url, destfile = pkgFile)
+#install.packages(pkgs=pkgFile, type="source", repos=NULL)
+#file.remove(pkgFile)
+#pacman::p_load_gh("altintasali/aamisc")
+
+# Colours for publication
+publication_colors <- c("Control" = "#285291", "Metformin" = "#7C1516", "Sham" = "#9B9B9B")
+```
+
+# Read data and filtrer
+```{r read_data}
+# Load count data from a local file and metadata through Excel
+# Define file paths
+count_file <- "../../../data/count/report.unique_genes_matrix.tsv"
+meta_file <- "../../../data/metadata/meta_proteomics.xlsx"
+geneinfo_file <- "../../../data/gene_annotation/horse_gene_annotation.tsv.gz"
+
+# Read count data
+count <- readr::read_delim(count_file)
+
+# Read metadata
+meta <- readxl::read_excel(meta_file)
+
+# Remove blank column (from MS machine)
+count <- count %>% select(-matches("D:\\\\Mass_spectrometry\\\\Raw_data\\\\Joakim\\\\Simon Horse second run2\\\\10A_RA11_1_24830.d"))
+
+# Load gene annotation from horse
+geneinfo <- fread(geneinfo_file)
+setnames(geneinfo, old = names(geneinfo), new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
+                                                  "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
+geneinfo <- geneinfo %>% select(-ENSEMBLv, -Description_detailed) %>% distinct(ENSEMBL, .keep_all = TRUE)
+
+# Merge gene annotation with count data
+annot <- merge(count[, "Genes", drop = FALSE], geneinfo, by.x = "Genes", by.y = "GENENAME", all.x = TRUE)
+
+# Clean count data
+count <- count %>% remove_rownames() %>% column_to_rownames(var="Genes")
+cleaned_names <- gsub("D:\\\\Mass_spectrometry\\\\Raw_data\\\\Joakim\\\\Simon Horse second run2\\\\|_.*", "", colnames(count))
+colnames(count) <- cleaned_names
+meta$`Sample ID` <- cleaned_names
+
+#subset data to only RA terminal and baseline samples
+meta <- meta[meta$Region %in% c("RA"), ]
+count <- count[, colnames(count) %in% meta$`Sample ID`]
+
+
+# Remove low count samples from Count and Meta
+samples_to_remove <- c("25C", "12A", "22A", "19A")
+count <- count[, !colnames(count) %in% samples_to_remove]
+meta <- meta %>% filter(!`Sample ID` %in% samples_to_remove)
+
+# Calculate the number of proteins in each sample
+num_proteins <- colSums(!is.na(count))
+num_proteins <- num_proteins[meta$`Sample ID`]  # Ensure matching order with meta
+
+# Define color scheme for groups
+KUalt <- c("#7C1516", "#285291", "#434343", "#999999")  # Custom color palette
+group_colors <- setNames(KUalt[1:length(unique(meta$Group))], unique(meta$Group))
+bar_colors <- group_colors[meta$Group]
+
+# Plot the number of proteins in each sample before filtering
+par(mfrow = c(1, 1))
+barplot(num_proteins, 
+        main = "Number of Proteins in Each Sample\nBefore Filtering",
+        xlab = "Sample",
+        ylab = "Number of Proteins",
+        col = bar_colors,
+        border = "black",
+        ylim = c(0, 2500),
+        las = 2)
+
+# Print the total number of proteins before filtering
+cat("The total number of proteins before filtering was", max(num_proteins), "\n")
+
+# Identify genes with less than three valid values in any condition
+invalid_genes <- unique(unlist(lapply(unique(meta$Condition), function(condition) {
+  condition_columns <- meta$`Sample ID`[meta$Condition == condition]
+  condition_count <- count[, condition_columns, drop = FALSE]
+  rownames(condition_count)[rowSums(!is.na(condition_count)) < 3]
+})))
+
+# Remove invalid genes from the original count table
+filtered_count <- count[!rownames(count) %in% invalid_genes, ]
+
+# Calculate the number of proteins in each sample after filtering
+num_proteins_after <- colSums(!is.na(filtered_count))
+num_proteins_after <- num_proteins_after[meta$`Sample ID`]  # Ensure matching order with meta
+
+# Plot settings
+par(mfrow = c(1, 2))
+
+# First plot: Number of proteins in each sample before filtering
+barplot(num_proteins, 
+        main = "Number of Proteins in Each Sample\nBefore Filtering",
+        xlab = "Sample",
+        ylab = "Number of Proteins",
+        col = bar_colors,
+        border = "black",
+        ylim = c(0, 2500),
+        las = 2)
+
+# Second plot: Number of proteins in each sample after filtering
+barplot(num_proteins_after, 
+        main = "Number of Proteins in Each Sample\nAfter Filtering",
+        xlab = "Sample",
+        ylab = "Number of Proteins",
+        col = bar_colors,
+        border = "black",
+        ylim = c(0, 2500),
+        las = 2)
+
+# Print the total and average number of proteins before and after filtering
+cat("The total number of proteins before filtering was", max(num_proteins), "\n")
+cat("The average number of proteins before filtering was", mean(num_proteins), "\n")
+cat("The total number of proteins after filtering was", max(num_proteins_after), "\n")
+cat("The average number of proteins after filtering was", mean(num_proteins_after), "\n")
+```
+#DEP-package  https://bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/DEP.html
+##Generate a SummarizedExperiment object
+```{r DEP - create SE object}
+#Log2 transform (as per vignette, input should be log2transformed, even though it messes up volcano plots)
+filtered_count <- filtered_count
+
+# Create proxy columns to make SE-object similar to the input for the DEP package
+proxy_column_names <- c("Protein.IDs", "Majority.protein.IDs", "Protein.names", "Gene.names", 
+                        "Fasta.headers", "Peptides", "Razor...unique.peptides", "Unique.peptides", 
+                        "Only.identified.by.site", "Reverse", "Potential.contaminant")
+proxy_df <- data.frame(matrix(NA, nrow=nrow(filtered_count), ncol=length(proxy_column_names)))
+colnames(proxy_df) <- proxy_column_names
+
+# Assign row names to specific columns
+rownames_to_columns <- rownames(filtered_count)
+proxy_df[1:4] <- lapply(1:4, function(i) rownames_to_columns)
+
+# Merge and rename sample columns
+merged_df <- cbind(proxy_df, filtered_count)
+colnames(merged_df)[12:ncol(merged_df)] <- paste0("LFQ.intensity.", colnames(filtered_count))
+
+# Reorder columns
+lfq_columns <- grep("^LFQ.intensity", colnames(merged_df), value = TRUE)
+new_order <- c(proxy_column_names[1:8], lfq_columns, proxy_column_names[9:11])
+data <- merged_df[, new_order]
+
+print(colnames(data))
+
+#Are there any duplicated gene names?
+data$Gene.names %>% duplicated() %>% any()
+
+# Make unique names using the annotation in the "Gene.names" column as primary names and the annotation in "Protein.IDs" as name for those that do not have an gene name.
+data_unique <- make_unique(data, "Gene.names", "Protein.IDs", delim = ";")
+
+# Generate a SummarizedExperiment object using an experimental design
+LFQ_columns <- grep("LFQ.", colnames(data_unique)) # get LFQ column numbers
+
+# Define experimental design including a placeholder replicate column
+experimental_design <- data.frame(
+  label = colnames(filtered_count),
+  condition = meta$Condition,
+  replicate = NA  # Initialize replicate column with NA
+)
+
+# Assign replicate numbers within each condition
+experimental_design <- experimental_design %>%
+  group_by(condition) %>%
+  mutate(replicate = row_number()) %>%
+  ungroup()
+
+# Set row names
+row.names(experimental_design) <- experimental_design$label
+
+# Ensure the row names of experimental_design are unique
+experimental_design <- as.data.frame(experimental_design)
+rownames(experimental_design) <- make.unique(rownames(experimental_design))
+
+# Print the experimental design to verify
+print(experimental_design)
+
+# Generate a SummarizedExperiment object using an experimental design
+data_se <- make_se(data_unique, LFQ_columns, experimental_design)
+
+```
+##Protein Coverage & filtrer on missing values
+```{r Protein Coverage}
+# Plot a barplot of the protein identification overlap between samples
+plot_frequency(data_se)
+plot_numbers(data_se)
+plot_coverage(data_se)
+
+# Filter for proteins that are identified in all replicates of at least one condition
+#data_filt <- filter_missval(data_se, thr = 0)
+#plot_frequency(data_filt)
+
+# Plot a barplot of the number of identified proteins per samples
+plot_numbers(data_se)
+
+# Plot a barplot of the protein identification overlap between samples
+plot_coverage(data_se)
+
+```
+##Normalizaiton
+```{r Normalization}
+#Check un-normalized data
+plot_normalization(data_se)
+
+#VSN-normalization
+data_se_norm <- normalize_vsn(data_se)
+
+#Plot VSN-norm data
+meanSdPlot(data_se_norm, rank = TRUE)
+plot_normalization(data_se_norm)
+
+###Verdict: After variance stabilisation, the median (a reasonable estimator of the standard deviation of feature level data conditional on the mean) is approximately a horizontal line.
+```
+###Impute data for missing values
+```{r Imputation for Missing Values}
+# Plot a heatmap of proteins with missing values
+plot_missval(data_se_norm)
+
+# Plot intensity distributions and cumulative fraction of proteins with and without missing values
+plot_detect(data_se_norm)
+
+#The nature of the missing-ness:  the proteins with missing values have low intensities on average. This data (MNAR and close to the detection limit) should be imputed by a left-censored imputation method, such as the quantile regression-based left-censored function (“QRILC”) or random draws from a left-shifted distribution (“MinProb” and “man”). 
+
+# Impute missing data using random draws from a Gaussian distribution centered around a minimal value (for MNAR)
+data_imp_MinProb <- impute(data_se_norm, fun = "MinProb", q = 0.01) 
+
+# Impute missing data using random draws from a manually defined left-shifted Gaussian distribution (for MNAR)
+data_imp_man <- impute( data_se_norm, fun = "man", shift = 1.8, scale = 0.3) 
+
+
+# Impute missing data using Quantile Regression Imputation of Left-Censored Data (It’s particularly useful when missing values are expected to be low or below a detection limit.)
+data_imp_qrilc <- impute( data_se_norm, fun = "QRILC") 
+
+# Plot intensity distributions before and after imputation
+plot_imputation( data_se_norm, data_imp_MinProb, data_imp_man, data_imp_qrilc)
+
+###Verdict: data_imp_qrilC seems to be  addressing MNAR the best, and will be used downstream. 
+```
+
+##Differential abundance analysis using DEP
+```{r DEP differential abundance analyisis}
+#Set contrasts
+con <- c("RA_Control_4months_vs_RA_Sham_4months", "RA_Metformin_4months_vs_RA_Control_4months")
+
+# Perform differential analysis using the specified contrasts - best on non-imputed data, honestly
+data_diff <- test_diff(data_imp_qrilc, type = "manual", test = con)
+
+# Denote significant proteins based on user defined cutoffs
+dep <- add_rejections(data_diff, alpha = 0.05, lfc = log2(0))
+
+# Generate a long data.frame
+df_long <- get_df_long(dep)
+df_wide <- get_df_wide(dep)
+
+```
+
+##Volcano plots and DAE using DEP
+```{r DEP - Volacano}
+# Plot a volcano plot
+plot_volcano(dep, contrast = "RA_Control_4months_vs_RA_Sham_4months", label_size = 2, add_names = TRUE)
+plot_volcano(dep, contrast = "RA_Metformin_4months_vs_RA_Control_4months", label_size = 2, add_names = TRUE)
+
+# Plot a frequency plot of significant proteins for the different conditions
+plot_cond(dep)
+
+# Generate a results table
+data_results <- get_results(dep)
+
+# Number of significant proteins
+data_results %>% filter(significant) %>% nrow()
+
+
+
+```
+#MDS-plots on non-imputed data
+```{r MDS plots}
+#Log-transformation 
+logCounts <- filtered_count
+#For PCA plot, we will remove the NAs - 
+logCounts_noNA  <- na.omit(logCounts)
+
+# Make DGE list and define design
+annot_reordered <- annot[match(rownames(logCounts_noNA), annot$Genes), ]
+d <- DGEList(counts = logCounts_noNA, genes = annot_reordered, samples = meta)
+design <- model.matrix(~0 + Condition, d$samples)
+
+# Remove batch
+logCounts_batchRemoved <- removeBatchEffect(logCounts_noNA, 
+                                            batch = as.factor(d$samples$Horse), 
+                                            design = design)
+meta$Group <- factor(meta$Group, levels = names(publication_colors))
+
+# Plot MDS
+mds <- plotMDS(logCounts_batchRemoved, plot = FALSE)
+
+dims <- list(p1 = c(1,2), p2 = c(1,3), p3 = c(2,3), p4 = c(1,4))
+mds_plot <- list()
+
+# Without labels
+for (i in seq_along(dims)){
+  mds_plot[[i]] <- aamisc::ggMDS(mds = mds,
+                                 meta = d$samples, 
+                                 dim = dims[[i]], 
+                                 color.by = "Group", 
+                                 shape.by = "Timepoint",
+                                 legend.position = "right"
+                                 ) + 
+                  scale_color_manual(values = publication_colors)
+}
+
+plot1 <- patchwork::wrap_plots(mds_plot, ncol = 2) + patchwork::plot_layout(guides = 'collect')
+
+# With labels
+for (i in seq_along(dims)){
+  mds_plot[[i]] <- aamisc::ggMDS(mds = mds,
+                                 meta = d$samples, 
+                                 dim = dims[[i]], 
+                                 color.by = "Group", 
+                                 shape.by = "Timepoint",
+                                 legend.position = "right",
+                                 text.by = "Horse",
+                                 text.size = 1.5
+                                 ) + 
+                  scale_color_manual(values = publication_colors)
+}
+
+plot2 <- patchwork::wrap_plots(mds_plot, ncol = 2) + patchwork::plot_layout(guides = 'collect')
+
+# Display the plots
+print(plot1)
+print(plot2)
+```
+
+#Checking histograms of normalized-unimputed (data_se_norm), imputed (data_imp_MinProb) and raw log-counts (filtred_counts) before limma
+```{r Intensity-Histograms, fig.height=5, fig.width=10}
+# Extract the assay data from data_se_norm (normalized_unimputed)
+normalized_unimputed <- as.data.frame(assay(data_se_norm))
+colnames(normalized_unimputed) <- colnames(filtered_count)
+rownames(normalized_unimputed) <- rownames(data_se_norm)
+
+# Extract the assay data from data_imp_MinProb (imputed)
+imputed_data_MinProb <- as.data.frame(assay(data_imp_MinProb))
+colnames(imputed_data_MinProb) <- colnames(filtered_count)
+rownames(imputed_data_MinProb) <- rownames(data_se_norm)
+
+# Extract the assay data from data_imp_qrilc
+imputed_data_qrilc <- as.data.frame(assay(data_imp_qrilc))
+colnames(imputed_data_qrilc) <- colnames(filtered_count)
+rownames(imputed_data_qrilc) <- rownames(data_se_norm)
+
+# Plot histogram for normalized data
+par(mfrow = c(1, 4))
+hist(as.vector(as.matrix(normalized_unimputed)), breaks = 50, main = "Normalized Data", xlab = "Intensity")
+hist(as.vector(as.matrix(imputed_data_MinProb)), breaks = 50, main = "MinProb Imputed Data", xlab = "Intensity")
+hist(as.vector(as.matrix(imputed_data_qrilc)), breaks = 50, main = "QRILC Imputed Data", xlab = "Intensity")
+hist(as.vector(as.matrix(filtered_count)), breaks = 50, main = "Unfiltered Data", xlab = "Intensity")
+
+
+#Moving on with QRILC imputed data!
+```
+
+#Limma with FDR-tools on normalized data
+```{r Limma with FDR-tools on normalized data}
+#I combine my own Limma code with the FDRtools (which is what the DEP package uses seperately from lmfit/eBayes). I do this to double check that my results align with the DEP package, when I use the same workflow. Not sure if I will continue with FDR values or adj. P. values. 
+
+# Set the design
+design <- model.matrix(~0 + Condition, d$samples)
+colnames(design) <- gsub("Condition", "", colnames(design))
+
+con <- makeContrasts(
+  Metformin_vs_AF_RA = RA_Metformin_4months - RA_Control_4months,
+  AF_vs_Sham_RA = RA_Control_4months - RA_Sham_4months,
+  Terminal_vs_Baseline_Control = RA_Control_4months - RA_Control_Baseline,
+  Terminal_vs_Baseline_Metformin = RA_Metformin_4months - RA_Metformin_Baseline,
+  Diff_Treatment = (RA_Metformin_4months - RA_Metformin_Baseline) - (RA_Control_4months - RA_Control_Baseline),
+  Diff_Disease = (RA_Control_4months - RA_Control_Baseline) - (RA_Sham_4months - RA_Sham_Baseline),
+  Baseline_Difference_Metf_vs_AF = RA_Metformin_Baseline - RA_Control_Baseline,
+  Baseline_Difference_AF_vs_Sham = RA_Control_Baseline - RA_Sham_Baseline,
+  levels = design
+)
+con
+
+# Run limma whilst blocking for "horse" 
+corfit <- duplicateCorrelation(imputed_data_qrilc, design, block = as.factor(d$samples$Horse))
+fit <- lmFit(imputed_data_qrilc, design, block = as.factor(d$samples$Horse), correlation = corfit$consensus.correlation)
+rownames(fit$coefficients) <- rownames(imputed_data_qrilc)
+
+# Obtain DGE results with FDR correction using fdrtool
+res <- list() # list for DGE results
+for (i in colnames(con)) {
+  fit.contrast <- contrasts.fit(fit, contrasts = con)
+  fit.contrast <- eBayes(fit.contrast, robust = TRUE, trend = TRUE)
+  res_tmp <- topTable(fit.contrast, coef = i, number = Inf)
+  res_tmp <- res_tmp[!is.na(res_tmp$t), ]
+  
+  # Apply FDR correction using fdrtool
+  fdr_res <- fdrtool(res_tmp$t, plot = FALSE, verbose = FALSE)
+  res_tmp$qval <- fdr_res$qval
+  res_tmp$lfdr <- fdr_res$lfdr
+  res_tmp$Contrast <- rep(i, nrow(res_tmp))
+  res[[i]] <- data.frame(res_tmp)
+  
+  # Print the number of differentially abundant genes
+  n_qval <- res_tmp %>% filter(qval < 0.05) %>% nrow()
+  n_adj_pval <- res_tmp %>% filter(adj.P.Val < 0.05) %>% nrow()
+  print(paste('Number of differentially abundant genes for', i, 'based on q-value (FDR) =', n_qval))
+  print(paste('Number of differentially abundant genes for', i, 'based on adjusted p-value =', n_adj_pval))
+}
+
+# Combine results into a single data frame
+res_all <- do.call(rbind, res)
+
+# Add gene names manually
+res_all$GeneName <- sapply(seq_len(nrow(res_all)), function(i) {
+  gsub(paste0("^", res_all$Contrast[i], "\\."), "", rownames(res_all)[i])
+})
+
+# Split results by contrast
+res_split <- split(res_all, res_all$Contrast)
+
+# Create output Excel file
+openxlsx::write.xlsx(x = res_split, file = "../../../../Timecourse/analysis/01_dge/output/dge_results.xlsx", asTable = TRUE)
+
+# Create output TSV file
+data.table::fwrite(x = res_all, file = "../../../../Timecourse/analysis/01_dge/output/dge_results.tsv.gz", sep = "\t")
+
+```
+## p-value histograms
+```{r pvalue_histograms, fig.height=10, fig.width=10}
+ggplot(res_all, aes(x = P.Value)) + 
+  geom_histogram(fill = "lightgray",
+                 color = "black",
+                 breaks = seq(0, 1, by = 0.05),
+                 closed = "right",
+                 lwd = 0.2) + 
+  facet_wrap(~ Contrast, nrow = 3, scales = "free") + 
+  theme_bw()
+```
+
+### Volcano plots
+```{r volcano_plots, fig.height=10, fig.width=10}
+volcano_plots <- list()
+for (i in names(res)){
+  volcano_plots[[i]] <- ggVolcano(x = res[[i]], 
+                                  fdr = 0.05,
+                                  fdr.column = "P.Value", 
+                                  pvalue.column = "P.Value", 
+                                  logFC = 0, 
+                                  logFC.column = "logFC", 
+                                  text.size = 2) + 
+    theme_bw(base_size = 10) + 
+    ggtitle(i)
+}
+
+patchwork::wrap_plots(volcano_plots, ncol = 3)
+```
+
+#Understanding the direciton in diff-treatment
+```{r}
+# Understanding LogFC for "Diff_Treatment"
+# Positive logFC:
+#   a) Metformin group increases, and control group decreases
+#   b) Both groups increase, but the increase is greater in the metformin group
+#   c) Both groups decrease, but the decrease is smaller in the metformin group
+# Overall: Metformin is associated with a relatively higher level, indicating a greater positive change or a smaller negative change.
+
+# Negative logFC:
+#   a) Metformin group decreases, and control group increases
+#   b) Both groups decrease, but the decrease is greater in the metformin group
+#   c) Both groups increase, but the increase is smaller in the metformin group
+# Overall: Metformin is associated with a relatively lower level, indicating a greater negative change or a smaller positive change.
+
+# Function to create boxplots to look at individual proteins
+library(ggpubr)
+# Define the function to create a violin plot with dots and mean line for a given protein
+plot_protein_counts <- function(protein_of_interest) {
+  # Ensure that the protein is in the dataset
+  if(protein_of_interest %in% rownames(data_se_norm)) {
+    # Extract the counts for the protein
+    protein_counts <- assay(data_se_norm)[protein_of_interest,]
+    
+    # Create a data frame for plotting
+    protein_df <- data.frame(
+      SampleID = colnames(data_se_norm),
+      Count = protein_counts,
+      Condition = meta$Condition
+    )
+    
+    # Plot using ggpubr
+    p <- ggplot(protein_df, aes(x = Condition, y = Count, fill = Condition)) +
+      geom_violin(trim = FALSE, alpha = 0.5) + # Violin plot
+      geom_jitter(width = 0.2, size = 2, alpha = 0.7) + # Individual data points
+      stat_summary(fun = mean, geom = "crossbar", width = 0.5, fatten = 2, color = "red") + # Mean line
+      labs(
+        title = paste("Violin plot of normalized counts for", protein_of_interest),
+        x = "Condition",
+        y = "Normalized Abundance"
+      ) +
+      theme_pubr() + # Apply the ggpubr theme
+      scale_fill_brewer(palette = "Set3")
+    
+    print(p)
+  } else {
+    cat("The protein", protein_of_interest, "is not present in the dataset.\n")
+  }
+}
+
+# Electron transport Chain Genes - treatment difference that are "blue"/negative logFC between treated an untreated
+plot_protein_counts("NDUFA6") #Candidate gene for treatment effect, has been linked with metformin treatment before in relation to Aoritc Aneurysms
+plot_protein_counts("ATP5F1C") #Candidate gene for treatment effect
+plot_protein_counts("KARS1")
+
+# Proteasome proteins - also "blue" treatment difference 
+plot_protein_counts("PSMC5")
+plot_protein_counts("PSMC4") #Candidate gene for ... 
+plot_protein_counts("PSMD11")
+
+# Hsp90 proteins - also "blue" treatment difference 
+plot_protein_counts("SUGT1")
+plot_protein_counts("HSP90AA1")
+plot_protein_counts("DYNC1H1")
+
+# Detoxification of ROS - red treatment difference
+plot_protein_counts("TXNRD2")
+plot_protein_counts("TXN") #Maybe candidate gene
+plot_protein_counts("SOD3")
+
+
+plot_protein_counts("DDAH1")
+plot_protein_counts("COQ8A")
+plot_protein_counts("RICTOR")
+
+plot_protein_counts("YWHAE")
+
+plot_protein_counts("TXNDC5")
+
+
+```
+
+
+
+
+
+

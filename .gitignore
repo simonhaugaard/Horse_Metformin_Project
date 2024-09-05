@@ -1,0 +1,7 @@
+*.RData
+*.Rhistory
+.Rproj.user/
+Proteomics/Timecourse/data/gene_annotation/filtered_9796.protein.links.full.v12.0.txt.gz
+Proteomics/Terminal/data/gene_annotation/9796.protein.links.full.v12.0.txt.gz
+
+"Proteomics/Terminal/data/gene_annotation/9796.protein.links.full.v12.0.txt.gz" 

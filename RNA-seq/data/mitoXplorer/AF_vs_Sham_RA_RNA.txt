@@ -1,0 +1,945 @@
+SAMPLE NAME	HGNC ID	GENE NAME	PROCESS	LOG2FOLD	P-VALUE
+AF_vs_Sham_RA_RNA_adj_user	AARS2	alanyl-tRNA synthetase 2, mitochondrial	Translation	-0.002	0.997
+AF_vs_Sham_RA_RNA_adj_user	BPHL	biphenyl hydrolase like	Translation	0.09	0.781
+AF_vs_Sham_RA_RNA_adj_user	CARS2	cysteinyl-tRNA synthetase 2, mitochondrial	Translation	-0.218	0.440
+AF_vs_Sham_RA_RNA_adj_user	DAP3	death associated protein 3	Translation	-0.161	0.288
+AF_vs_Sham_RA_RNA_adj_user	DARS2	aspartyl-tRNA synthetase 2, mitochondrial	Translation	0.28	0.486
+AF_vs_Sham_RA_RNA_adj_user	DDX28	DEAD-box helicase 28	Translation	0.177	0.348
+AF_vs_Sham_RA_RNA_adj_user	EARS2	glutamyl-tRNA synthetase 2, mitochondrial	Translation	0.153	0.797
+AF_vs_Sham_RA_RNA_adj_user	EIF2AK3	eukaryotic translation initiation factor 2 alpha kinase 3	Translation	-0.389	0.262
+AF_vs_Sham_RA_RNA_adj_user	ELAC2	elaC ribonuclease Z 2	Translation	0.302	0.147
+AF_vs_Sham_RA_RNA_adj_user	ERAL1	Era like 12S mitochondrial rRNA chaperone 1	Translation	0.082	0.673
+AF_vs_Sham_RA_RNA_adj_user	FARS2	phenylalanyl-tRNA synthetase 2, mitochondrial	Translation	0.099	0.535
+AF_vs_Sham_RA_RNA_adj_user	FASTK	Fas activated serine/threonine kinase	Translation	0.164	0.276
+AF_vs_Sham_RA_RNA_adj_user	FASTKD1	FAST kinase domains 1	Translation	0.024	0.953
+AF_vs_Sham_RA_RNA_adj_user	FASTKD2	FAST kinase domains 2	Translation	0.01	0.963
+AF_vs_Sham_RA_RNA_adj_user	FASTKD3	FAST kinase domains 3	Translation	0.309	0.186
+AF_vs_Sham_RA_RNA_adj_user	FASTKD5	FAST kinase domains 5	Translation	-0.11	0.642
+AF_vs_Sham_RA_RNA_adj_user	GADD45GIP1	GADD45G interacting protein 1	Translation	0.376	0.027
+AF_vs_Sham_RA_RNA_adj_user	GARS1	glycyl-tRNA synthetase	Translation	-0.361	0.047
+AF_vs_Sham_RA_RNA_adj_user	GATB	glutamyl-tRNA amidotransferase subunit B	Translation	0.026	0.891
+AF_vs_Sham_RA_RNA_adj_user	GATC	glutamyl-tRNA amidotransferase subunit C	Translation	-0.032	0.877
+AF_vs_Sham_RA_RNA_adj_user	GFM2	G elongation factor mitochondrial 2	Translation	-0.306	0.270
+AF_vs_Sham_RA_RNA_adj_user	GTPBP10	GTP binding protein 10	Translation	0.118	0.600
+AF_vs_Sham_RA_RNA_adj_user	GTPBP3	GTP binding protein 3, mitochondrial	Translation	0.368	0.044
+AF_vs_Sham_RA_RNA_adj_user	GUF1	GUF1 homolog, GTPase	Translation	-0.229	0.387
+AF_vs_Sham_RA_RNA_adj_user	HARS2	histidyl-tRNA synthetase 2, mitochondrial	Translation	-0.033	0.859
+AF_vs_Sham_RA_RNA_adj_user	HEMK1	HemK methyltransferase family member 1	Translation	0.433	0.098
+AF_vs_Sham_RA_RNA_adj_user	IARS2	isoleucyl-tRNA synthetase 2, mitochondrial	Translation	-0.033	0.820
+AF_vs_Sham_RA_RNA_adj_user	LACTB2	lactamase beta 2	Translation	-0.001	0.994
+AF_vs_Sham_RA_RNA_adj_user	LARS2	leucyl-tRNA synthetase 2, mitochondrial	Translation	-0.153	0.603
+AF_vs_Sham_RA_RNA_adj_user	LRPPRC	leucine rich pentatricopeptide repeat containing	Translation	0.06	0.798
+AF_vs_Sham_RA_RNA_adj_user	MALSU1	mitochondrial assembly of ribosomal large subunit 1	Translation	0.156	0.400
+AF_vs_Sham_RA_RNA_adj_user	MARS2	methionyl-tRNA synthetase 2, mitochondrial	Translation	-0.003	0.993
+AF_vs_Sham_RA_RNA_adj_user	METTL17	methyltransferase like 17	Translation	0.035	0.917
+AF_vs_Sham_RA_RNA_adj_user	MPV17L2	MPV17 mitochondrial inner membrane protein like 2	Translation	0.084	0.742
+AF_vs_Sham_RA_RNA_adj_user	MRM1	mitochondrial rRNA methyltransferase 1	Translation	0.483	0.011
+AF_vs_Sham_RA_RNA_adj_user	MRM2	mitochondrial rRNA methyltransferase 2	Translation	0.103	0.509
+AF_vs_Sham_RA_RNA_adj_user	MRM3	mitochondrial rRNA methyltransferase 3	Translation	-0.045	0.819
+AF_vs_Sham_RA_RNA_adj_user	MRPL11	mitochondrial ribosomal protein L11	Translation	0.334	0.021
+AF_vs_Sham_RA_RNA_adj_user	MRPL12	mitochondrial ribosomal protein L12	Translation	0.405	0.004
+AF_vs_Sham_RA_RNA_adj_user	MRPL13	mitochondrial ribosomal protein L13	Translation	0.327	0.126
+AF_vs_Sham_RA_RNA_adj_user	MRPL14	mitochondrial ribosomal protein L14	Translation	0.559	0.002
+AF_vs_Sham_RA_RNA_adj_user	MRPL15	mitochondrial ribosomal protein L15	Translation	-0.108	0.575
+AF_vs_Sham_RA_RNA_adj_user	MRPL16	mitochondrial ribosomal protein L16	Translation	0.529	0.002
+AF_vs_Sham_RA_RNA_adj_user	MRPL17	mitochondrial ribosomal protein L17	Translation	0.101	0.549
+AF_vs_Sham_RA_RNA_adj_user	MRPL18	mitochondrial ribosomal protein L18	Translation	0.192	0.240
+AF_vs_Sham_RA_RNA_adj_user	MRPL19	mitochondrial ribosomal protein L19	Translation	0.284	0.031
+AF_vs_Sham_RA_RNA_adj_user	MRPL2	mitochondrial ribosomal protein L2	Translation	0.508	0.000
+AF_vs_Sham_RA_RNA_adj_user	MRPL21	mitochondrial ribosomal protein L21	Translation	0.03	0.911
+AF_vs_Sham_RA_RNA_adj_user	MRPL22	mitochondrial ribosomal protein L22	Translation	0.4	0.067
+AF_vs_Sham_RA_RNA_adj_user	MRPL24	mitochondrial ribosomal protein L24	Translation	0.224	0.059
+AF_vs_Sham_RA_RNA_adj_user	MRPL27	mitochondrial ribosomal protein L27	Translation	0.225	0.340
+AF_vs_Sham_RA_RNA_adj_user	MRPL28	mitochondrial ribosomal protein L28	Translation	0.27	0.087
+AF_vs_Sham_RA_RNA_adj_user	MRPL3	mitochondrial ribosomal protein L3	Translation	0.024	0.876
+AF_vs_Sham_RA_RNA_adj_user	MRPL30	mitochondrial ribosomal protein L30	Translation	0.419	0.003
+AF_vs_Sham_RA_RNA_adj_user	MRPL34	mitochondrial ribosomal protein L34	Translation	0.429	0.014
+AF_vs_Sham_RA_RNA_adj_user	MRPL35	mitochondrial ribosomal protein L35	Translation	0.183	0.304
+AF_vs_Sham_RA_RNA_adj_user	MRPL36	mitochondrial ribosomal protein L36	Translation	0.424	0.012
+AF_vs_Sham_RA_RNA_adj_user	MRPL37	mitochondrial ribosomal protein L37	Translation	0.667	0.000
+AF_vs_Sham_RA_RNA_adj_user	MRPL39	mitochondrial ribosomal protein L39	Translation	-0.135	0.614
+AF_vs_Sham_RA_RNA_adj_user	MRPL4	mitochondrial ribosomal protein L4	Translation	0.457	0.006
+AF_vs_Sham_RA_RNA_adj_user	MRPL40	mitochondrial ribosomal protein L40	Translation	0.363	0.055
+AF_vs_Sham_RA_RNA_adj_user	MRPL41	mitochondrial ribosomal protein L41	Translation	0.481	0.004
+AF_vs_Sham_RA_RNA_adj_user	MRPL42	mitochondrial ribosomal protein L42	Translation	0.371	0.379
+AF_vs_Sham_RA_RNA_adj_user	MRPL43	mitochondrial ribosomal protein L43	Translation	0.447	0.003
+AF_vs_Sham_RA_RNA_adj_user	MRPL45	mitochondrial ribosomal protein L45	Translation	0.084	0.426
+AF_vs_Sham_RA_RNA_adj_user	MRPL46	mitochondrial ribosomal protein L46	Translation	0.06	0.721
+AF_vs_Sham_RA_RNA_adj_user	MRPL47	mitochondrial ribosomal protein L47	Translation	0.31	0.233
+AF_vs_Sham_RA_RNA_adj_user	MRPL48	mitochondrial ribosomal protein L48	Translation	-0.068	0.768
+AF_vs_Sham_RA_RNA_adj_user	MRPL49	mitochondrial ribosomal protein L49	Translation	-0.022	0.907
+AF_vs_Sham_RA_RNA_adj_user	MRPL50	mitochondrial ribosomal protein L50	Translation	0.131	0.366
+AF_vs_Sham_RA_RNA_adj_user	MRPL51	mitochondrial ribosomal protein L51	Translation	0.326	0.038
+AF_vs_Sham_RA_RNA_adj_user	MRPL52	mitochondrial ribosomal protein L52	Translation	0.167	0.335
+AF_vs_Sham_RA_RNA_adj_user	MRPL53	mitochondrial ribosomal protein L53	Translation	0.181	0.384
+AF_vs_Sham_RA_RNA_adj_user	MRPL57	mitochondrial ribosomal protein L57	Translation	0.244	0.274
+AF_vs_Sham_RA_RNA_adj_user	MRPL58	mitochondrial ribosomal protein L58	Translation	0.148	0.343
+AF_vs_Sham_RA_RNA_adj_user	MRPL9	mitochondrial ribosomal protein L9	Translation	0.139	0.367
+AF_vs_Sham_RA_RNA_adj_user	MRPS10	mitochondrial ribosomal protein S10	Translation	0.359	0.076
+AF_vs_Sham_RA_RNA_adj_user	MRPS11	mitochondrial ribosomal protein S11	Translation	0.391	0.055
+AF_vs_Sham_RA_RNA_adj_user	MRPS12	mitochondrial ribosomal protein S12	Translation	0.334	0.056
+AF_vs_Sham_RA_RNA_adj_user	MRPS14	mitochondrial ribosomal protein S14	Translation	0.444	0.005
+AF_vs_Sham_RA_RNA_adj_user	MRPS15	mitochondrial ribosomal protein S15	Translation	0.388	0.035
+AF_vs_Sham_RA_RNA_adj_user	MRPS16	mitochondrial ribosomal protein S16	Translation	0.056	0.764
+AF_vs_Sham_RA_RNA_adj_user	MRPS18A	mitochondrial ribosomal protein S18A	Translation	0.081	0.678
+AF_vs_Sham_RA_RNA_adj_user	MRPS18B	mitochondrial ribosomal protein S18B	Translation	0.109	0.478
+AF_vs_Sham_RA_RNA_adj_user	MRPS18C	mitochondrial ribosomal protein S18C	Translation	-0.09	0.788
+AF_vs_Sham_RA_RNA_adj_user	MRPS2	mitochondrial ribosomal protein S2	Translation	0.211	0.082
+AF_vs_Sham_RA_RNA_adj_user	MRPS22	mitochondrial ribosomal protein S22	Translation	-0.075	0.728
+AF_vs_Sham_RA_RNA_adj_user	MRPS23	mitochondrial ribosomal protein S23	Translation	0.32	0.034
+AF_vs_Sham_RA_RNA_adj_user	MRPS24	mitochondrial ribosomal protein S24	Translation	0.321	0.006
+AF_vs_Sham_RA_RNA_adj_user	MRPS25	mitochondrial ribosomal protein S25	Translation	0.429	0.051
+AF_vs_Sham_RA_RNA_adj_user	MRPS26	mitochondrial ribosomal protein S26	Translation	0.442	0.003
+AF_vs_Sham_RA_RNA_adj_user	MRPS27	mitochondrial ribosomal protein S27	Translation	0.418	0.048
+AF_vs_Sham_RA_RNA_adj_user	MRPS28	mitochondrial ribosomal protein S28	Translation	0.268	0.287
+AF_vs_Sham_RA_RNA_adj_user	MRPS30	mitochondrial ribosomal protein S30	Translation	0.222	0.170
+AF_vs_Sham_RA_RNA_adj_user	MRPS31	mitochondrial ribosomal protein S31	Translation	0.064	0.761
+AF_vs_Sham_RA_RNA_adj_user	MRPS33	mitochondrial ribosomal protein S33	Translation	0.016	0.887
+AF_vs_Sham_RA_RNA_adj_user	MRPS34	mitochondrial ribosomal protein S34	Translation	0.333	0.043
+AF_vs_Sham_RA_RNA_adj_user	MRPS35	mitochondrial ribosomal protein S35	Translation	0.14	0.331
+AF_vs_Sham_RA_RNA_adj_user	MRPS36	mitochondrial ribosomal protein S36	Translation	0.204	0.157
+AF_vs_Sham_RA_RNA_adj_user	MRPS5	mitochondrial ribosomal protein S5	Translation	0.155	0.357
+AF_vs_Sham_RA_RNA_adj_user	MRPS6	mitochondrial ribosomal protein S6	Translation	0.225	0.312
+AF_vs_Sham_RA_RNA_adj_user	MRPS7	mitochondrial ribosomal protein S7	Translation	0.194	0.234
+AF_vs_Sham_RA_RNA_adj_user	MRPS9	mitochondrial ribosomal protein S9	Translation	0.006	0.971
+AF_vs_Sham_RA_RNA_adj_user	MRRF	mitochondrial ribosome recycling factor	Translation	0.063	0.826
+AF_vs_Sham_RA_RNA_adj_user	MTERF3	mitochondrial transcription termination factor 3	Translation	-0.179	0.607
+AF_vs_Sham_RA_RNA_adj_user	MTERF4	mitochondrial transcription termination factor 4	Translation	-0.043	0.860
+AF_vs_Sham_RA_RNA_adj_user	MTFMT	mitochondrial methionyl-tRNA formyltransferase	Translation	0.063	0.905
+AF_vs_Sham_RA_RNA_adj_user	MTG1	mitochondrial ribosome associated GTPase 1	Translation	0.152	0.389
+AF_vs_Sham_RA_RNA_adj_user	MTG2	mitochondrial ribosome associated GTPase 2	Translation	0.164	0.432
+AF_vs_Sham_RA_RNA_adj_user	MTIF2	mitochondrial translational initiation factor 2	Translation	0.258	0.124
+AF_vs_Sham_RA_RNA_adj_user	MTIF3	mitochondrial translational initiation factor 3	Translation	0.163	0.309
+AF_vs_Sham_RA_RNA_adj_user	MTO1	mitochondrial tRNA translation optimization 1	Translation	-0.046	0.785
+AF_vs_Sham_RA_RNA_adj_user	MTPAP	mitochondrial poly(A) polymerase	Translation	0.058	0.816
+AF_vs_Sham_RA_RNA_adj_user	MTRES1	mitochondrial transcription rescue factor 1	Translation	0.307	0.015
+AF_vs_Sham_RA_RNA_adj_user	MTRF1	mitochondrial translation release factor 1	Translation	0.383	0.138
+AF_vs_Sham_RA_RNA_adj_user	MTRF1L	mitochondrial translational release factor 1 like	Translation	0.311	0.273
+AF_vs_Sham_RA_RNA_adj_user	NOA1	nitric oxide associated 1	Translation	0.387	0.091
+AF_vs_Sham_RA_RNA_adj_user	NSUN3	NOP2/Sun RNA methyltransferase 3	Translation	0.067	0.780
+AF_vs_Sham_RA_RNA_adj_user	OSGEPL1	O-sialoglycoprotein endopeptidase like 1	Translation	-0.367	0.374
+AF_vs_Sham_RA_RNA_adj_user	PARS2	prolyl-tRNA synthetase 2, mitochondrial	Translation	0.153	0.514
+AF_vs_Sham_RA_RNA_adj_user	PDE12	phosphodiesterase 12	Translation	0.181	0.401
+AF_vs_Sham_RA_RNA_adj_user	PIN4	peptidylprolyl cis/trans isomerase, NIMA-interacting 4	Translation	-0.084	0.844
+AF_vs_Sham_RA_RNA_adj_user	PNPT1	polyribonucleotide nucleotidyltransferase 1	Translation	0.024	0.948
+AF_vs_Sham_RA_RNA_adj_user	PPA2	pyrophosphatase (inorganic) 2	Translation	0.175	0.417
+AF_vs_Sham_RA_RNA_adj_user	PRORP	protein only RNase P catalytic subunit	Translation	0.533	0.044
+AF_vs_Sham_RA_RNA_adj_user	PSTK	phosphoseryl-tRNA kinase	Translation	0.024	0.954
+AF_vs_Sham_RA_RNA_adj_user	PTCD1	pentatricopeptide repeat domain 1	Translation	0.058	0.838
+AF_vs_Sham_RA_RNA_adj_user	PTRH2	peptidyl-tRNA hydrolase 2	Translation	0.1	0.583
+AF_vs_Sham_RA_RNA_adj_user	PUS1	pseudouridine synthase 1	Translation	0.097	0.747
+AF_vs_Sham_RA_RNA_adj_user	PUSL1	pseudouridine synthase like 1	Translation	0.321	0.275
+AF_vs_Sham_RA_RNA_adj_user	QRSL1	glutaminyl-tRNA amidotransferase subunit QRSL1	Translation	0.061	0.757
+AF_vs_Sham_RA_RNA_adj_user	QTRT1	queuine tRNA-ribosyltransferase catalytic subunit 1	Translation	0.015	0.963
+AF_vs_Sham_RA_RNA_adj_user	RARS2	arginyl-tRNA synthetase 2, mitochondrial	Translation	-0.104	0.774
+AF_vs_Sham_RA_RNA_adj_user	RBFA	ribosome binding factor A	Translation	-0.015	0.949
+AF_vs_Sham_RA_RNA_adj_user	REXO2	RNA exonuclease 2	Translation	0.327	0.118
+AF_vs_Sham_RA_RNA_adj_user	RIDA	reactive intermediate imine deaminase A homolog	Translation	-0.199	0.469
+AF_vs_Sham_RA_RNA_adj_user	RMND1	required for meiotic nuclear division 1 homolog	Translation	-0.121	0.697
+AF_vs_Sham_RA_RNA_adj_user	RPS19	ribosomal protein S19	Translation	0.001	0.997
+AF_vs_Sham_RA_RNA_adj_user	RPUSD3	RNA pseudouridine synthase D3	Translation	-0.182	0.539
+AF_vs_Sham_RA_RNA_adj_user	RPUSD4	RNA pseudouridine synthase D4	Translation	0.156	0.452
+AF_vs_Sham_RA_RNA_adj_user	SARS2	seryl-tRNA synthetase 2, mitochondrial	Translation	0.204	0.262
+AF_vs_Sham_RA_RNA_adj_user	SBDS	SBDS ribosome maturation factor	Translation	0.053	0.716
+AF_vs_Sham_RA_RNA_adj_user	SLIRP	SRA stem-loop interacting RNA binding protein	Translation	0.358	0.170
+AF_vs_Sham_RA_RNA_adj_user	TACO1	translational activator of cytochrome c oxidase I	Translation	0.169	0.402
+AF_vs_Sham_RA_RNA_adj_user	TARS2	threonyl-tRNA synthetase 2, mitochondrial	Translation	0.423	0.002
+AF_vs_Sham_RA_RNA_adj_user	TRIT1	tRNA isopentenyltransferase 1	Translation	0.051	0.860
+AF_vs_Sham_RA_RNA_adj_user	TRMT10C	tRNA methyltransferase 10C, mitochondrial RNase P subunit	Translation	-0.18	0.459
+AF_vs_Sham_RA_RNA_adj_user	TRMT11	tRNA methyltransferase 11 homolog	Translation	0.403	0.117
+AF_vs_Sham_RA_RNA_adj_user	TRMT2B	tRNA methyltransferase 2 homolog B	Translation	0.529	0.044
+AF_vs_Sham_RA_RNA_adj_user	TRMT5	tRNA methyltransferase 5	Translation	0.149	0.311
+AF_vs_Sham_RA_RNA_adj_user	TRMT61B	tRNA methyltransferase 61B	Translation	0.211	0.321
+AF_vs_Sham_RA_RNA_adj_user	TRMU	tRNA 5-methylaminomethyl-2-thiouridylate methyltransferase	Translation	-0.035	0.934
+AF_vs_Sham_RA_RNA_adj_user	TRNT1	tRNA nucleotidyl transferase 1	Translation	-0.298	0.180
+AF_vs_Sham_RA_RNA_adj_user	TSFM	Ts translation elongation factor, mitochondrial	Translation	0.257	0.175
+AF_vs_Sham_RA_RNA_adj_user	TUFM	Tu translation elongation factor, mitochondrial	Translation	0.238	0.024
+AF_vs_Sham_RA_RNA_adj_user	VARS2	valyl-tRNA synthetase 2, mitochondrial	Translation	-0.143	0.541
+AF_vs_Sham_RA_RNA_adj_user	WARS2	tryptophanyl tRNA synthetase 2, mitochondrial	Translation	0.076	0.789
+AF_vs_Sham_RA_RNA_adj_user	YARS2	tyrosyl-tRNA synthetase 2	Translation	0.391	0.046
+AF_vs_Sham_RA_RNA_adj_user	AASS	aminoadipate-semialdehyde synthase	Amino Acid Metabolism	-0.242061	0.25406
+AF_vs_Sham_RA_RNA_adj_user	ABHD10	abhydrolase domain containing 10	Amino Acid Metabolism	0.152007	0.232624
+AF_vs_Sham_RA_RNA_adj_user	ABHD11	abhydrolase domain containing 11	Amino Acid Metabolism	0.115303	0.472615
+AF_vs_Sham_RA_RNA_adj_user	ABHD16A	abhydrolase domain containing 16A	Amino Acid Metabolism	0.0234342	0.908412
+AF_vs_Sham_RA_RNA_adj_user	ACAT1	acetyl-CoA acetyltransferase 1	Amino Acid Metabolism	-0.0575979	0.807252
+AF_vs_Sham_RA_RNA_adj_user	ADO	2-aminoethanethiol dioxygenase	Amino Acid Metabolism	-0.162231	0.336501
+AF_vs_Sham_RA_RNA_adj_user	ALDH18A1	aldehyde dehydrogenase 18 family member A1	Amino Acid Metabolism	0.194753	0.235351
+AF_vs_Sham_RA_RNA_adj_user	ALDH4A1	aldehyde dehydrogenase 4 family member A1	Amino Acid Metabolism	0.293416	0.626933
+AF_vs_Sham_RA_RNA_adj_user	ALDH5A1	aldehyde dehydrogenase 5 family member A1	Amino Acid Metabolism	0.112523	0.717017
+AF_vs_Sham_RA_RNA_adj_user	ALDH6A1	aldehyde dehydrogenase 6 family member A1	Amino Acid Metabolism	0.091838	0.68298
+AF_vs_Sham_RA_RNA_adj_user	AMT	aminomethyltransferase	Amino Acid Metabolism	-0.195331	0.381156
+AF_vs_Sham_RA_RNA_adj_user	ASS1	argininosuccinate synthase 1	Amino Acid Metabolism	0.113731	0.808499
+AF_vs_Sham_RA_RNA_adj_user	AUH	AU RNA binding methylglutaconyl-CoA hydratase	Amino Acid Metabolism	0.327181	0.0410737
+AF_vs_Sham_RA_RNA_adj_user	BCAT1	branched chain amino acid transaminase 1	Amino Acid Metabolism	0.971175	0.00446257
+AF_vs_Sham_RA_RNA_adj_user	BCAT2	branched chain amino acid transaminase 2	Amino Acid Metabolism	0.0141352	0.967417
+AF_vs_Sham_RA_RNA_adj_user	BCKDHA	branched chain keto acid dehydrogenase E1, alpha polypeptide	Amino Acid Metabolism	0.166139	0.305099
+AF_vs_Sham_RA_RNA_adj_user	BCKDHB	branched chain keto acid dehydrogenase E1 subunit beta	Amino Acid Metabolism	0.0470948	0.84328
+AF_vs_Sham_RA_RNA_adj_user	BCKDK	branched chain ketoacid dehydrogenase kinase	Amino Acid Metabolism	0.0317566	0.817753
+AF_vs_Sham_RA_RNA_adj_user	CKMT2	creatine kinase, mitochondrial 2	Amino Acid Metabolism	0.85183	0.0000062147
+AF_vs_Sham_RA_RNA_adj_user	DBT	dihydrolipoamide branched chain transacylase E2	Amino Acid Metabolism	-0.188369	0.249431
+AF_vs_Sham_RA_RNA_adj_user	DHTKD1	dehydrogenase E1 and transketolase domain containing 1	Amino Acid Metabolism	0.0599839	0.850402
+AF_vs_Sham_RA_RNA_adj_user	ETHE1	ETHE1 persulfide dioxygenase	Amino Acid Metabolism	0.486524	0.0487417
+AF_vs_Sham_RA_RNA_adj_user	ETNPPL	ethanolamine-phosphate phospho-lyase	Amino Acid Metabolism	0.686125	0.104319
+AF_vs_Sham_RA_RNA_adj_user	FAHD1	fumarylacetoacetate hydrolase domain containing 1	Amino Acid Metabolism	0.178202	0.342389
+AF_vs_Sham_RA_RNA_adj_user	FAHD2A	fumarylacetoacetate hydrolase domain containing 2A	Amino Acid Metabolism	0.372236	0.00459995
+AF_vs_Sham_RA_RNA_adj_user	GATM	glycine amidinotransferase	Amino Acid Metabolism	-0.82684	0.0529975
+AF_vs_Sham_RA_RNA_adj_user	GCSH	glycine cleavage system protein H	Amino Acid Metabolism	0.770549	0.000176396
+AF_vs_Sham_RA_RNA_adj_user	GLS	glutaminase	Amino Acid Metabolism	-0.339583	0.0941074
+AF_vs_Sham_RA_RNA_adj_user	GLS2	glutaminase 2	Amino Acid Metabolism	0.340567	0.0850725
+AF_vs_Sham_RA_RNA_adj_user	GLUL	glutamate-ammonia ligase	Amino Acid Metabolism	-0.137802	0.635789
+AF_vs_Sham_RA_RNA_adj_user	GOT2	glutamic-oxaloacetic transaminase 2	Amino Acid Metabolism	0.220215	0.00867947
+AF_vs_Sham_RA_RNA_adj_user	GPT2	glutamic--pyruvic transaminase 2	Amino Acid Metabolism	0.0963412	0.586029
+AF_vs_Sham_RA_RNA_adj_user	GSTZ1	glutathione S-transferase zeta 1	Amino Acid Metabolism	-0.0323742	0.917421
+AF_vs_Sham_RA_RNA_adj_user	HIBADH	3-hydroxyisobutyrate dehydrogenase	Amino Acid Metabolism	0.120872	0.341564
+AF_vs_Sham_RA_RNA_adj_user	HIBCH	3-hydroxyisobutyryl-CoA hydrolase	Amino Acid Metabolism	0.198729	0.197982
+AF_vs_Sham_RA_RNA_adj_user	HMGCL	3-hydroxy-3-methylglutaryl-CoA lyase	Amino Acid Metabolism	-0.017975	0.948126
+AF_vs_Sham_RA_RNA_adj_user	IVD	isovaleryl-CoA dehydrogenase	Amino Acid Metabolism	-0.101275	0.501415
+AF_vs_Sham_RA_RNA_adj_user	KYAT3	kynurenine aminotransferase 3	Amino Acid Metabolism	0.146053	0.646575
+AF_vs_Sham_RA_RNA_adj_user	LAP3	leucine aminopeptidase 3	Amino Acid Metabolism	-0.197651	0.331463
+AF_vs_Sham_RA_RNA_adj_user	MAOA	monoamine oxidase A	Amino Acid Metabolism	-0.378476	0.350339
+AF_vs_Sham_RA_RNA_adj_user	MAOB	monoamine oxidase B	Amino Acid Metabolism	-0.411686	0.0689297
+AF_vs_Sham_RA_RNA_adj_user	MCCC1	methylcrotonoyl-CoA carboxylase 1	Amino Acid Metabolism	0.141972	0.636786
+AF_vs_Sham_RA_RNA_adj_user	MCCC2	methylcrotonoyl-CoA carboxylase 2	Amino Acid Metabolism	-0.187655	0.520584
+AF_vs_Sham_RA_RNA_adj_user	MCEE	methylmalonyl-CoA epimerase	Amino Acid Metabolism	0.521169	0.0190302
+AF_vs_Sham_RA_RNA_adj_user	MMUT	methylmalonyl-CoA mutase	Amino Acid Metabolism	-0.0772075	0.636235
+AF_vs_Sham_RA_RNA_adj_user	MPST	mercaptopyruvate sulfurtransferase	Amino Acid Metabolism	0.202633	0.263892
+AF_vs_Sham_RA_RNA_adj_user	NADK2	NAD kinase 2, mitochondrial	Amino Acid Metabolism	0.0554906	0.750811
+AF_vs_Sham_RA_RNA_adj_user	NIT1	nitrilase 1	Amino Acid Metabolism	0.569584	0.0300683
+AF_vs_Sham_RA_RNA_adj_user	NIT2	nitrilase family member 2	Amino Acid Metabolism	0.150889	0.437655
+AF_vs_Sham_RA_RNA_adj_user	OAT	ornithine aminotransferase	Amino Acid Metabolism	-0.326339	0.0817556
+AF_vs_Sham_RA_RNA_adj_user	OXCT1	3-oxoacid CoA-transferase 1	Amino Acid Metabolism	0.162547	0.555714
+AF_vs_Sham_RA_RNA_adj_user	OXCT2	3-oxoacid CoA-transferase 2	Amino Acid Metabolism	-0.0832007	0.915218
+AF_vs_Sham_RA_RNA_adj_user	PCCA	propionyl-CoA carboxylase subunit alpha	Amino Acid Metabolism	0.185781	0.509993
+AF_vs_Sham_RA_RNA_adj_user	PDF	peptide deformylase, mitochondrial	Amino Acid Metabolism	0.462917	0.0332344
+AF_vs_Sham_RA_RNA_adj_user	PHYKPL	5-phosphohydroxy-L-lysine phospho-lyase	Amino Acid Metabolism	-0.345526	0.25511
+AF_vs_Sham_RA_RNA_adj_user	PPM1K	protein phosphatase, Mg2+/Mn2+ dependent 1K	Amino Acid Metabolism	-0.232027	0.558863
+AF_vs_Sham_RA_RNA_adj_user	PYCR1	pyrroline-5-carboxylate reductase 1	Amino Acid Metabolism	0.152188	0.822442
+AF_vs_Sham_RA_RNA_adj_user	PYCR2	pyrroline-5-carboxylate reductase 2	Amino Acid Metabolism	0.640054	0.00568651
+AF_vs_Sham_RA_RNA_adj_user	QDPR	quinoid dihydropteridine reductase	Amino Acid Metabolism	-0.00252201	0.991509
+AF_vs_Sham_RA_RNA_adj_user	SQOR	sulfide quinone oxidoreductase	Amino Acid Metabolism	0.10832	0.745318
+AF_vs_Sham_RA_RNA_adj_user	SUGCT	succinyl-CoA:glutarate-CoA transferase	Amino Acid Metabolism	-0.203609	0.478211
+AF_vs_Sham_RA_RNA_adj_user	SUOX	sulfite oxidase	Amino Acid Metabolism	-0.167535	0.336166
+AF_vs_Sham_RA_RNA_adj_user	TST	thiosulfate sulfurtransferase	Amino Acid Metabolism	-0.0267166	0.942606
+AF_vs_Sham_RA_RNA_adj_user	AIFM1	apoptosis inducing factor mitochondria associated 1	Apoptosis	0.289378	0.0358537
+AF_vs_Sham_RA_RNA_adj_user	AIFM2	apoptosis inducing factor mitochondria associated 2	Apoptosis	-0.0323531	0.896864
+AF_vs_Sham_RA_RNA_adj_user	ALKBH7	alkB homolog 7	Apoptosis	0.405993	0.0197486
+AF_vs_Sham_RA_RNA_adj_user	APAF1	apoptotic peptidase activating factor 1	Apoptosis	-0.208987	0.585821
+AF_vs_Sham_RA_RNA_adj_user	ARMC10	armadillo repeat containing 10	Apoptosis	-0.0843693	0.684177
+AF_vs_Sham_RA_RNA_adj_user	BAD	BCL2 associated agonist of cell death	Apoptosis	0.880724	0.0000937633
+AF_vs_Sham_RA_RNA_adj_user	BAK1	BCL2 antagonist/killer 1	Apoptosis	0.0225124	0.940457
+AF_vs_Sham_RA_RNA_adj_user	BAX	BCL2 associated X, apoptosis regulator	Apoptosis	-0.0337629	0.926198
+AF_vs_Sham_RA_RNA_adj_user	BCL2	BCL2 apoptosis regulator	Apoptosis	-0.430725	0.0714571
+AF_vs_Sham_RA_RNA_adj_user	BCL2L1	BCL2 like 1	Apoptosis	-0.327389	0.181415
+AF_vs_Sham_RA_RNA_adj_user	BCL2L11	BCL2 like 11	Apoptosis	0.486083	0.424372
+AF_vs_Sham_RA_RNA_adj_user	BCL2L13	BCL2 like 13	Apoptosis	-0.209958	0.0862044
+AF_vs_Sham_RA_RNA_adj_user	BID	BH3 interacting domain death agonist	Apoptosis	0.483306	0.0151863
+AF_vs_Sham_RA_RNA_adj_user	BNIP1	BCL2 interacting protein 1	Apoptosis	-0.190966	0.539766
+AF_vs_Sham_RA_RNA_adj_user	BNIP3	BCL2 interacting protein 3	Apoptosis	0.333723	0.0283706
+AF_vs_Sham_RA_RNA_adj_user	BNIP3L	BCL2 interacting protein 3 like	Apoptosis	-0.0550239	0.795157
+AF_vs_Sham_RA_RNA_adj_user	BOK	BCL2 family apoptosis regulator BOK	Apoptosis	-0.504991	0.251479
+AF_vs_Sham_RA_RNA_adj_user	CASP2	caspase 2	Apoptosis	-0.773223	0.00101555
+AF_vs_Sham_RA_RNA_adj_user	CASP3	caspase 3	Apoptosis	0.229807	0.641451
+AF_vs_Sham_RA_RNA_adj_user	CASP7	caspase 7	Apoptosis	-0.36393	0.255246
+AF_vs_Sham_RA_RNA_adj_user	CASP9	caspase 9	Apoptosis	-0.174302	0.633893
+AF_vs_Sham_RA_RNA_adj_user	CLIC4	chloride intracellular channel 4	Apoptosis	-0.440586	0.011389
+AF_vs_Sham_RA_RNA_adj_user	CTSB	cathepsin B	Apoptosis	-0.0624359	0.821839
+AF_vs_Sham_RA_RNA_adj_user	DELE1	DAP3 binding cell death enhancer 1	Apoptosis	0.260865	0.178531
+AF_vs_Sham_RA_RNA_adj_user	DIABLO	diablo IAP-binding mitochondrial protein	Apoptosis	0.355597	0.0191443
+AF_vs_Sham_RA_RNA_adj_user	FAM162A	family with sequence similarity 162 member A	Apoptosis	0.2905	0.0677658
+AF_vs_Sham_RA_RNA_adj_user	GFER	growth factor, augmenter of liver regeneration	Apoptosis	0.204881	0.316405
+AF_vs_Sham_RA_RNA_adj_user	GHITM	growth hormone inducible transmembrane protein	Apoptosis	0.0905685	0.486975
+AF_vs_Sham_RA_RNA_adj_user	HTRA2	HtrA serine peptidase 2	Apoptosis	0.0297534	0.902217
+AF_vs_Sham_RA_RNA_adj_user	LETMD1	LETM1 domain containing 1	Apoptosis	-0.198004	0.298314
+AF_vs_Sham_RA_RNA_adj_user	MAPK1	mitogen-activated protein kinase 1	Apoptosis	-0.224149	0.539988
+AF_vs_Sham_RA_RNA_adj_user	MAPK3	mitogen-activated protein kinase 3	Apoptosis	-0.44238	0.00790154
+AF_vs_Sham_RA_RNA_adj_user	MAPK8	mitogen-activated protein kinase 8 	Apoptosis	-0.173641	0.567209
+AF_vs_Sham_RA_RNA_adj_user	MCL1	MCL1 apoptosis regulator, BCL2 family member	Apoptosis	-0.448371	0.0436761
+AF_vs_Sham_RA_RNA_adj_user	MTCH1	mitochondrial carrier 1	Apoptosis	0.100104	0.39375
+AF_vs_Sham_RA_RNA_adj_user	MTCH2	mitochondrial carrier 2	Apoptosis	0.0296799	0.868527
+AF_vs_Sham_RA_RNA_adj_user	PARL	presenilin associated rhomboid like	Apoptosis	0.201299	0.223887
+AF_vs_Sham_RA_RNA_adj_user	PRELID1	PRELI domain containing 1	Apoptosis	-0.0626705	0.87252
+AF_vs_Sham_RA_RNA_adj_user	RPS6KB1	ribosomal protein S6 kinase B1	Apoptosis	-0.00581255	0.985518
+AF_vs_Sham_RA_RNA_adj_user	TRAP1	TNF receptor associated protein 1	Apoptosis	-0.0970537	0.608586
+AF_vs_Sham_RA_RNA_adj_user	TSPO	translocator protein	Apoptosis	-0.102206	0.797282
+AF_vs_Sham_RA_RNA_adj_user	XIAP	X-linked inhibitor of apoptosis	Apoptosis	-0.162376	0.429609
+AF_vs_Sham_RA_RNA_adj_user	AMACR	alpha-methylacyl-CoA racemase	Bile Acid Synthesis	0.263294	0.135275
+AF_vs_Sham_RA_RNA_adj_user	STAR	steroidogenic acute regulatory protein	Bile Acid Synthesis	0.500312	0.0103599
+AF_vs_Sham_RA_RNA_adj_user	CCDC90B	coiled-coil domain containing 90B	Calcium Signaling & Transport	0.466978	0.043328
+AF_vs_Sham_RA_RNA_adj_user	EFHD1	EF-hand domain family member D1	Calcium Signaling & Transport	-0.256756	0.629838
+AF_vs_Sham_RA_RNA_adj_user	HINT2	histidine triad nucleotide binding protein 2	Calcium Signaling & Transport	0.508659	0.00247105
+AF_vs_Sham_RA_RNA_adj_user	ITPR1	inositol 1,4,5-trisphosphate receptor type 1	Calcium Signaling & Transport	-0.765185	0.0193755
+AF_vs_Sham_RA_RNA_adj_user	ITPR2	inositol 1,4,5-trisphosphate receptor type 2	Calcium Signaling & Transport	-0.265315	0.485362
+AF_vs_Sham_RA_RNA_adj_user	ITPR3	inositol 1,4,5-trisphosphate receptor type 3	Calcium Signaling & Transport	-0.78328	0.00961451
+AF_vs_Sham_RA_RNA_adj_user	LETM1	leucine zipper and EF-hand containing transmembrane protein 1	Calcium Signaling & Transport	0.0322101	0.84819
+AF_vs_Sham_RA_RNA_adj_user	MAIP1	matrix AAA peptidase interacting protein 1	Calcium Signaling & Transport	0.577883	0.0275064
+AF_vs_Sham_RA_RNA_adj_user	MCU	mitochondrial calcium uniporter	Calcium Signaling & Transport	0.130411	0.46388
+AF_vs_Sham_RA_RNA_adj_user	MCUR1	mitochondrial calcium uniporter regulator 1	Calcium Signaling & Transport	-0.147608	0.390346
+AF_vs_Sham_RA_RNA_adj_user	MICU1	mitochondrial calcium uptake 1	Calcium Signaling & Transport	-0.276328	0.170966
+AF_vs_Sham_RA_RNA_adj_user	MICU2	mitochondrial calcium uptake 2	Calcium Signaling & Transport	0.123843	0.358739
+AF_vs_Sham_RA_RNA_adj_user	PACS2	phosphofurin acidic cluster sorting protein 2	Calcium Signaling & Transport	-0.245256	0.0656389
+AF_vs_Sham_RA_RNA_adj_user	PML	promyelocytic leukemia	Calcium Signaling & Transport	-0.12712	0.776617
+AF_vs_Sham_RA_RNA_adj_user	SLC25A12	solute carrier family 25 member 12	Calcium Signaling & Transport	0.0296978	0.84775
+AF_vs_Sham_RA_RNA_adj_user	SLC25A13	solute carrier family 25 member 13	Calcium Signaling & Transport	0.264141	0.159075
+AF_vs_Sham_RA_RNA_adj_user	SLC8B1	solute carrier family 8 member B1	Calcium Signaling & Transport	-0.00758468	0.988921
+AF_vs_Sham_RA_RNA_adj_user	TCHP	trichoplein keratin filament binding	Calcium Signaling & Transport	0.0979	0.748621
+AF_vs_Sham_RA_RNA_adj_user	TMEM65	transmembrane protein 65	Calcium Signaling & Transport	0.212601	0.188991
+AF_vs_Sham_RA_RNA_adj_user	CDS1	CDP-diacylglycerol synthase 1	Cardiolipin Biosynthesis	-0.00528918	0.989547
+AF_vs_Sham_RA_RNA_adj_user	CRLS1	cardiolipin synthase 1	Cardiolipin Biosynthesis	0.224065	0.215405
+AF_vs_Sham_RA_RNA_adj_user	LCLAT1	lysocardiolipin acyltransferase 1	Cardiolipin Biosynthesis	0.744491	0.000281534
+AF_vs_Sham_RA_RNA_adj_user	PGS1	phosphatidylglycerophosphate synthase 1	Cardiolipin Biosynthesis	-0.308902	0.0837721
+AF_vs_Sham_RA_RNA_adj_user	PTPMT1	protein tyrosine phosphatase mitochondrial 1	Cardiolipin Biosynthesis	0.401491	0.0226034
+AF_vs_Sham_RA_RNA_adj_user	ACSL1	acyl-CoA synthetase long chain family member 1	Fatty Acid Biosynthesis & Elongation	0.0322804	0.897077
+AF_vs_Sham_RA_RNA_adj_user	ACSL5	acyl-CoA synthetase long chain family member 5	Fatty Acid Biosynthesis & Elongation	-0.678257	0.0575856
+AF_vs_Sham_RA_RNA_adj_user	ACSL6	acyl-CoA synthetase long chain family member 6	Fatty Acid Biosynthesis & Elongation	-0.0798875	0.900705
+AF_vs_Sham_RA_RNA_adj_user	ACSM3	acyl-CoA synthetase medium chain family member 3	Fatty Acid Biosynthesis & Elongation	0.041519	0.962007
+AF_vs_Sham_RA_RNA_adj_user	CBR4	carbonyl reductase 4	Fatty Acid Biosynthesis & Elongation	-0.208498	0.248236
+AF_vs_Sham_RA_RNA_adj_user	ECH1	enoyl-CoA hydratase 1	Fatty Acid Biosynthesis & Elongation	0.274718	0.0515613
+AF_vs_Sham_RA_RNA_adj_user	ECHDC1	ethylmalonyl-CoA decarboxylase 1	Fatty Acid Biosynthesis & Elongation	0.191125	0.10952
+AF_vs_Sham_RA_RNA_adj_user	ECHDC2	enoyl-CoA hydratase domain containing 2	Fatty Acid Biosynthesis & Elongation	0.270553	0.242064
+AF_vs_Sham_RA_RNA_adj_user	ECHDC3	enoyl-CoA hydratase domain containing 3	Fatty Acid Biosynthesis & Elongation	0.227029	0.206773
+AF_vs_Sham_RA_RNA_adj_user	ECHS1	enoyl-CoA hydratase, short chain 1	Fatty Acid Biosynthesis & Elongation	0.0397506	0.867021
+AF_vs_Sham_RA_RNA_adj_user	HSD17B8	hydroxysteroid 17-beta dehydrogenase 8	Fatty Acid Biosynthesis & Elongation	0.283053	0.0456877
+AF_vs_Sham_RA_RNA_adj_user	MCAT	malonyl-CoA-acyl carrier protein transacylase	Fatty Acid Biosynthesis & Elongation	0.362941	0.0147047
+AF_vs_Sham_RA_RNA_adj_user	MECR	mitochondrial trans-2-enoyl-CoA reductase	Fatty Acid Biosynthesis & Elongation	0.353689	0.068788
+AF_vs_Sham_RA_RNA_adj_user	OXSM	3-oxoacyl-ACP synthase, mitochondrial	Fatty Acid Biosynthesis & Elongation	0.14664	0.520115
+AF_vs_Sham_RA_RNA_adj_user	THEM4	thioesterase superfamily member 4	Fatty Acid Biosynthesis & Elongation	-0.43096	0.264866
+AF_vs_Sham_RA_RNA_adj_user	ACAA2	acetyl-CoA acyltransferase 2	Fatty Acid Degradation & Beta-oxidation	-0.0217082	0.906588
+AF_vs_Sham_RA_RNA_adj_user	ACACB	acetyl-CoA carboxylase beta	Fatty Acid Degradation & Beta-oxidation	-0.107925	0.667051
+AF_vs_Sham_RA_RNA_adj_user	ACAD10	acyl-CoA dehydrogenase family member 10	Fatty Acid Degradation & Beta-oxidation	-0.102437	0.670723
+AF_vs_Sham_RA_RNA_adj_user	ACAD11	acyl-CoA dehydrogenase family member 11	Fatty Acid Degradation & Beta-oxidation	0.0989401	0.757607
+AF_vs_Sham_RA_RNA_adj_user	ACAD8	acyl-CoA dehydrogenase family member 8	Fatty Acid Degradation & Beta-oxidation	0.0484136	0.788586
+AF_vs_Sham_RA_RNA_adj_user	ACAD9	acyl-CoA dehydrogenase family member 9	Fatty Acid Degradation & Beta-oxidation	0.0123134	0.946028
+AF_vs_Sham_RA_RNA_adj_user	ACADL	acyl-CoA dehydrogenase long chain	Fatty Acid Degradation & Beta-oxidation	-0.255348	0.277627
+AF_vs_Sham_RA_RNA_adj_user	ACADM	acyl-CoA dehydrogenase medium chain	Fatty Acid Degradation & Beta-oxidation	0.162552	0.389047
+AF_vs_Sham_RA_RNA_adj_user	ACADS	acyl-CoA dehydrogenase short chain	Fatty Acid Degradation & Beta-oxidation	0.364225	0.00945295
+AF_vs_Sham_RA_RNA_adj_user	ACADVL	acyl-CoA dehydrogenase very long chain	Fatty Acid Degradation & Beta-oxidation	0.459987	0.0034956
+AF_vs_Sham_RA_RNA_adj_user	ACSL3	acyl-CoA synthetase long chain family member 3	Fatty Acid Degradation & Beta-oxidation	0.135331	0.666695
+AF_vs_Sham_RA_RNA_adj_user	ACSL4	acyl-CoA synthetase long chain family member 4	Fatty Acid Degradation & Beta-oxidation	-0.10313	0.774572
+AF_vs_Sham_RA_RNA_adj_user	ALDH2	aldehyde dehydrogenase 2 family member	Fatty Acid Degradation & Beta-oxidation	-0.107357	0.478211
+AF_vs_Sham_RA_RNA_adj_user	ALDH3A2	aldehyde dehydrogenase 3 family member A2	Fatty Acid Degradation & Beta-oxidation	0.201131	0.179726
+AF_vs_Sham_RA_RNA_adj_user	CPT1A	carnitine palmitoyltransferase 1A	Fatty Acid Degradation & Beta-oxidation	-0.313245	0.528302
+AF_vs_Sham_RA_RNA_adj_user	CPT1B	carnitine palmitoyltransferase 1B	Fatty Acid Degradation & Beta-oxidation	0.261337	0.114606
+AF_vs_Sham_RA_RNA_adj_user	CPT2	carnitine palmitoyltransferase 2	Fatty Acid Degradation & Beta-oxidation	0.153831	0.247332
+AF_vs_Sham_RA_RNA_adj_user	CRAT	carnitine O-acetyltransferase	Fatty Acid Degradation & Beta-oxidation	0.094927	0.549501
+AF_vs_Sham_RA_RNA_adj_user	DECR1	2,4-dienoyl-CoA reductase 1	Fatty Acid Degradation & Beta-oxidation	0.32343	0.026433
+AF_vs_Sham_RA_RNA_adj_user	ECI1	enoyl-CoA delta isomerase 1	Fatty Acid Degradation & Beta-oxidation	0.168946	0.326863
+AF_vs_Sham_RA_RNA_adj_user	ECI2	enoyl-CoA delta isomerase 2	Fatty Acid Degradation & Beta-oxidation	0.286779	0.184259
+AF_vs_Sham_RA_RNA_adj_user	GCDH	glutaryl-CoA dehydrogenase	Fatty Acid Degradation & Beta-oxidation	0.177933	0.272451
+AF_vs_Sham_RA_RNA_adj_user	HADHA	hydroxyacyl-CoA dehydrogenase trifunctional multienzyme complex subunit alpha	Fatty Acid Degradation & Beta-oxidation	0.179479	0.186776
+AF_vs_Sham_RA_RNA_adj_user	HADHB	hydroxyacyl-CoA dehydrogenase trifunctional multienzyme complex subunit beta	Fatty Acid Degradation & Beta-oxidation	0.0972373	0.584233
+AF_vs_Sham_RA_RNA_adj_user	ACOT9	acyl-CoA thioesterase 9	Fatty Acid Metabolism	-0.509242	0.00293971
+AF_vs_Sham_RA_RNA_adj_user	ACSF2	acyl-CoA synthetase family member 2	Fatty Acid Metabolism	0.0517279	0.799989
+AF_vs_Sham_RA_RNA_adj_user	ACSF3	acyl-CoA synthetase family member 3	Fatty Acid Metabolism	0.0848566	0.748048
+AF_vs_Sham_RA_RNA_adj_user	AGK	acylglycerol kinase	Fatty Acid Metabolism	-0.0298721	0.892749
+AF_vs_Sham_RA_RNA_adj_user	BDH1	3-hydroxybutyrate dehydrogenase 1	Fatty Acid Metabolism	0.987666	0.00026904
+AF_vs_Sham_RA_RNA_adj_user	HDHD5	haloacid dehalogenase like hydrolase domain containing 5	Fatty Acid Metabolism	0.30074	0.0694316
+AF_vs_Sham_RA_RNA_adj_user	LYPLA1	lysophospholipase 1	Fatty Acid Metabolism	-0.141947	0.353474
+AF_vs_Sham_RA_RNA_adj_user	LYPLAL1	lysophospholipase like 1	Fatty Acid Metabolism	0.223293	0.508741
+AF_vs_Sham_RA_RNA_adj_user	MLYCD	malonyl-CoA decarboxylase	Fatty Acid Metabolism	0.760269	0.00165679
+AF_vs_Sham_RA_RNA_adj_user	PCCB	propionyl-CoA carboxylase subunit beta	Fatty Acid Metabolism	0.038754	0.867365
+AF_vs_Sham_RA_RNA_adj_user	PNPLA8	patatin like phospholipase domain containing 8	Fatty Acid Metabolism	0.0325788	0.870499
+AF_vs_Sham_RA_RNA_adj_user	TMLHE	trimethyllysine hydroxylase, epsilon	Fatty Acid Metabolism	-0.0317786	0.861471
+AF_vs_Sham_RA_RNA_adj_user	BOLA1	bolA family member 1	Fe-S Cluster Biosynthesis	0.426202	0.0200969
+AF_vs_Sham_RA_RNA_adj_user	BOLA3	bolA family member 3	Fe-S Cluster Biosynthesis	-0.0645765	0.839342
+AF_vs_Sham_RA_RNA_adj_user	CIAO1	cytosolic iron-sulfur assembly component 1	Fe-S Cluster Biosynthesis	0.047408	0.750056
+AF_vs_Sham_RA_RNA_adj_user	CIAO2A	cytosolic iron-sulfur assembly component 2A	Fe-S Cluster Biosynthesis	0.344943	0.0617374
+AF_vs_Sham_RA_RNA_adj_user	CIAO2B	cytosolic iron-sulfur assembly component 2B	Fe-S Cluster Biosynthesis	-0.254281	0.190922
+AF_vs_Sham_RA_RNA_adj_user	CIAPIN1	cytokine induced apoptosis inhibitor 1	Fe-S Cluster Biosynthesis	0.10549	0.581222
+AF_vs_Sham_RA_RNA_adj_user	FDX1	ferredoxin 1	Fe-S Cluster Biosynthesis	0.337223	0.0477217
+AF_vs_Sham_RA_RNA_adj_user	FDX2	ferredoxin 2	Fe-S Cluster Biosynthesis	0.501761	0.0193736
+AF_vs_Sham_RA_RNA_adj_user	FDXR	ferredoxin reductase	Fe-S Cluster Biosynthesis	0.00609699	0.990176
+AF_vs_Sham_RA_RNA_adj_user	FXN	frataxin	Fe-S Cluster Biosynthesis	0.313065	0.149338
+AF_vs_Sham_RA_RNA_adj_user	HSCB	HscB mitochondrial iron-sulfur cluster cochaperone	Fe-S Cluster Biosynthesis	0.561036	0.0664834
+AF_vs_Sham_RA_RNA_adj_user	IBA57	iron-sulfur cluster assembly factor IBA57	Fe-S Cluster Biosynthesis	0.21885	0.157746
+AF_vs_Sham_RA_RNA_adj_user	ISCA2	iron-sulfur cluster assembly 2	Fe-S Cluster Biosynthesis	0.129512	0.56317
+AF_vs_Sham_RA_RNA_adj_user	ISCU	iron-sulfur cluster assembly enzyme	Fe-S Cluster Biosynthesis	0.314248	0.171704
+AF_vs_Sham_RA_RNA_adj_user	MMS19	MMS19 homolog, cytosolic iron-sulfur assembly component	Fe-S Cluster Biosynthesis	-0.160265	0.359903
+AF_vs_Sham_RA_RNA_adj_user	NARF	nuclear prelamin A recognition factor	Fe-S Cluster Biosynthesis	-0.000143223	0.999255
+AF_vs_Sham_RA_RNA_adj_user	NFS1	NFS1 cysteine desulfurase	Fe-S Cluster Biosynthesis	0.277464	0.0494278
+AF_vs_Sham_RA_RNA_adj_user	NUBP1	nucleotide binding protein 1	Fe-S Cluster Biosynthesis	-0.193245	0.464552
+AF_vs_Sham_RA_RNA_adj_user	NUBP2	nucleotide binding protein 2	Fe-S Cluster Biosynthesis	0.203073	0.361419
+AF_vs_Sham_RA_RNA_adj_user	SLC25A28	solute carrier family 25 member 28	Fe-S Cluster Biosynthesis	0.109281	0.456384
+AF_vs_Sham_RA_RNA_adj_user	SLC25A37	solute carrier family 25 member 37	Fe-S Cluster Biosynthesis	0.04206	0.858306
+AF_vs_Sham_RA_RNA_adj_user	ALDH1L1	aldehyde dehydrogenase 1 family member L1	Folate & Pterin Metabolism	-0.410346	0.238105
+AF_vs_Sham_RA_RNA_adj_user	ALDH1L2	aldehyde dehydrogenase 1 family member L2	Folate & Pterin Metabolism	0.0797691	0.891394
+AF_vs_Sham_RA_RNA_adj_user	FPGS	folylpolyglutamate synthase	Folate & Pterin Metabolism	0.495706	0.0635814
+AF_vs_Sham_RA_RNA_adj_user	MTHFD1	methylenetetrahydrofolate dehydrogenase, cyclohydrolase and formyltetrahydrofolate synthetase 1	Folate & Pterin Metabolism	-0.223584	0.0993868
+AF_vs_Sham_RA_RNA_adj_user	MTHFD2	methylenetetrahydrofolate dehydrogenase (NADP+ dependent) 2, methenyltetrahydrofolate cyclohydrolase	Folate & Pterin Metabolism	-0.328641	0.311868
+AF_vs_Sham_RA_RNA_adj_user	MTHFD2L	methylenetetrahydrofolate dehydrogenase (NADP+ dependent) 2 like	Folate & Pterin Metabolism	-0.673371	0.132802
+AF_vs_Sham_RA_RNA_adj_user	MTHFS	methenyltetrahydrofolate synthetase	Folate & Pterin Metabolism	-0.745171	0.0112657
+AF_vs_Sham_RA_RNA_adj_user	PTS	6-pyruvoyltetrahydropterin synthase	Folate & Pterin Metabolism	0.48434	0.0227856
+AF_vs_Sham_RA_RNA_adj_user	SHMT2	serine hydroxymethyltransferase 2	Folate & Pterin Metabolism	0.206309	0.246752
+AF_vs_Sham_RA_RNA_adj_user	SLC25A32	solute carrier family 25 member 32	Folate & Pterin Metabolism	-0.101952	0.744269
+AF_vs_Sham_RA_RNA_adj_user	AKR1B1	aldo-keto reductase family 1 member B	Fructose Metabolism	0.0321036	0.863111
+AF_vs_Sham_RA_RNA_adj_user	ALDH1A1	aldehyde dehydrogenase 1 family member A1	Fructose Metabolism	-0.156485	0.710853
+AF_vs_Sham_RA_RNA_adj_user	GLYCTK	glycerate kinase	Fructose Metabolism	0.0850214	0.757043
+AF_vs_Sham_RA_RNA_adj_user	KHK	ketohexokinase	Fructose Metabolism	0.0143739	0.978167
+AF_vs_Sham_RA_RNA_adj_user	SORD	sorbitol dehydrogenase	Fructose Metabolism	-0.0834583	0.71375
+AF_vs_Sham_RA_RNA_adj_user	TKFC	triokinase and FMN cyclase	Fructose Metabolism	-0.0367504	0.934152
+AF_vs_Sham_RA_RNA_adj_user	ALDOA	aldolase, fructose-bisphosphate A	Glycolysis	0.139228	0.159075
+AF_vs_Sham_RA_RNA_adj_user	ALDOC	aldolase, fructose-bisphosphate C	Glycolysis	-0.0927135	0.826713
+AF_vs_Sham_RA_RNA_adj_user	ENO1	enolase 1	Glycolysis	-0.229367	0.263566
+AF_vs_Sham_RA_RNA_adj_user	ENO3	enolase 3	Glycolysis	-0.0577609	0.795157
+AF_vs_Sham_RA_RNA_adj_user	GAPDH	glyceraldehyde-3-phosphate dehydrogenase	Glycolysis	0.340179	0.00899586
+AF_vs_Sham_RA_RNA_adj_user	GCK	glucokinase	Glycolysis	0.11986	0.811762
+AF_vs_Sham_RA_RNA_adj_user	GPI	glucose-6-phosphate isomerase	Glycolysis	-0.0318994	0.824959
+AF_vs_Sham_RA_RNA_adj_user	HK1	hexokinase 1	Glycolysis	-0.190559	0.19372
+AF_vs_Sham_RA_RNA_adj_user	LDHA	lactate dehydrogenase A	Glycolysis	0.23374	0.267302
+AF_vs_Sham_RA_RNA_adj_user	LDHB	lactate dehydrogenase B	Glycolysis	0.631281	0.000833044
+AF_vs_Sham_RA_RNA_adj_user	PC	pyruvate carboxylase	Glycolysis	-0.133277	0.750163
+AF_vs_Sham_RA_RNA_adj_user	PFKL	phosphofructokinase, liver type	Glycolysis	-0.166461	0.389397
+AF_vs_Sham_RA_RNA_adj_user	PFKM	phosphofructokinase, muscle	Glycolysis	-0.167728	0.195906
+AF_vs_Sham_RA_RNA_adj_user	PFKP	phosphofructokinase, platelet	Glycolysis	1.10629	0.00151659
+AF_vs_Sham_RA_RNA_adj_user	PGAM1	phosphoglycerate mutase 1	Glycolysis	0.300333	0.238332
+AF_vs_Sham_RA_RNA_adj_user	PGAM2	phosphoglycerate mutase 2	Glycolysis	0.285032	0.0783588
+AF_vs_Sham_RA_RNA_adj_user	PGK1	phosphoglycerate kinase 1	Glycolysis	-0.00118222	0.992987
+AF_vs_Sham_RA_RNA_adj_user	PKM	pyruvate kinase M1/2	Glycolysis	0.273695	0.0918051
+AF_vs_Sham_RA_RNA_adj_user	SLC2A1	solute carrier family 2 member 1	Glycolysis	0.416415	0.195583
+AF_vs_Sham_RA_RNA_adj_user	SLC2A4	solute carrier family 2 member 4	Glycolysis	0.0843172	0.675184
+AF_vs_Sham_RA_RNA_adj_user	TPI1	triosephosphate isomerase 1	Glycolysis	0.51981	0.000622011
+AF_vs_Sham_RA_RNA_adj_user	ALAS1	5'-aminolevulinate synthase 1	Heme Biosynthesis	-0.170553	0.266704
+AF_vs_Sham_RA_RNA_adj_user	CPOX	coproporphyrinogen oxidase	Heme Biosynthesis	0.102638	0.61801
+AF_vs_Sham_RA_RNA_adj_user	FECH	ferrochelatase	Heme Biosynthesis	0.237352	0.0794782
+AF_vs_Sham_RA_RNA_adj_user	FTMT	ferritin mitochondrial	Heme Biosynthesis	-0.73762	0.24338
+AF_vs_Sham_RA_RNA_adj_user	HMBS	hydroxymethylbilane synthase	Heme Biosynthesis	0.290904	0.04551
+AF_vs_Sham_RA_RNA_adj_user	UROD	uroporphyrinogen decarboxylase	Heme Biosynthesis	0.067703	0.737298
+AF_vs_Sham_RA_RNA_adj_user	UROS	uroporphyrinogen III synthase	Heme Biosynthesis	-0.0832098	0.736306
+AF_vs_Sham_RA_RNA_adj_user	CHCHD4	coiled-coil-helix-coiled-coil-helix domain containing 4	Import & Sorting	0.570059	0.00330444
+AF_vs_Sham_RA_RNA_adj_user	CHCHD5	coiled-coil-helix-coiled-coil-helix domain containing 5	Import & Sorting	0.180843	0.329232
+AF_vs_Sham_RA_RNA_adj_user	CMC2	C-X9-C motif containing 2	Import & Sorting	1.22153	0.0000454948
+AF_vs_Sham_RA_RNA_adj_user	DNAJC15	DnaJ heat shock protein family (Hsp40) member C15	Import & Sorting	0.172413	0.452604
+AF_vs_Sham_RA_RNA_adj_user	DNAJC19	DnaJ heat shock protein family (Hsp40) member C19	Import & Sorting	0.306068	0.03719
+AF_vs_Sham_RA_RNA_adj_user	GRPEL1	GrpE like 1, mitochondrial	Import & Sorting	0.127531	0.350212
+AF_vs_Sham_RA_RNA_adj_user	GRPEL2	GrpE like 2, mitochondrial	Import & Sorting	0.183219	0.172502
+AF_vs_Sham_RA_RNA_adj_user	HSPA9	heat shock protein family A (Hsp70) member 9	Import & Sorting	-0.0455909	0.770955
+AF_vs_Sham_RA_RNA_adj_user	HSPE1	heat shock protein family E (Hsp10) member 1	Import & Sorting	0.33751	0.0539444
+AF_vs_Sham_RA_RNA_adj_user	IMMP1L	inner mitochondrial membrane peptidase subunit 1	Import & Sorting	0.478652	0.102349
+AF_vs_Sham_RA_RNA_adj_user	IMMP2L	inner mitochondrial membrane peptidase subunit 2	Import & Sorting	0.55095	0.00705807
+AF_vs_Sham_RA_RNA_adj_user	METAP1D	methionyl aminopeptidase type 1D, mitochondrial	Import & Sorting	0.261614	0.260414
+AF_vs_Sham_RA_RNA_adj_user	MIPEP	mitochondrial intermediate peptidase	Import & Sorting	0.227644	0.324983
+AF_vs_Sham_RA_RNA_adj_user	MTX1	metaxin 1	Import & Sorting	0.286763	0.148672
+AF_vs_Sham_RA_RNA_adj_user	MTX2	metaxin 2	Import & Sorting	0.226013	0.174486
+AF_vs_Sham_RA_RNA_adj_user	MTX3	metaxin 3	Import & Sorting	0.0950938	0.884842
+AF_vs_Sham_RA_RNA_adj_user	PAM16	presequence translocase associated motor 16	Import & Sorting	-0.0694186	0.822249
+AF_vs_Sham_RA_RNA_adj_user	PMPCA	peptidase, mitochondrial processing alpha subunit	Import & Sorting	0.00807882	0.967483
+AF_vs_Sham_RA_RNA_adj_user	PMPCB	peptidase, mitochondrial processing beta subunit	Import & Sorting	0.0237673	0.900705
+AF_vs_Sham_RA_RNA_adj_user	PPIF	peptidylprolyl isomerase F	Import & Sorting	0.181553	0.233495
+AF_vs_Sham_RA_RNA_adj_user	SAMM50	SAMM50 sorting and assembly machinery component	Import & Sorting	0.033211	0.877754
+AF_vs_Sham_RA_RNA_adj_user	TAMM41	TAM41 mitochondrial translocator assembly and maintenance homolog	Import & Sorting	0.132605	0.70355
+AF_vs_Sham_RA_RNA_adj_user	TIMM10	translocase of inner mitochondrial membrane 10	Import & Sorting	0.795833	0.0000425939
+AF_vs_Sham_RA_RNA_adj_user	TIMM10B	translocase of inner mitochondrial membrane 10B	Import & Sorting	-0.09089	0.690035
+AF_vs_Sham_RA_RNA_adj_user	TIMM17A	translocase of inner mitochondrial membrane 17A	Import & Sorting	0.245923	0.0728828
+AF_vs_Sham_RA_RNA_adj_user	TIMM17B	translocase of inner mitochondrial membrane 17B	Import & Sorting	0.297704	0.0495411
+AF_vs_Sham_RA_RNA_adj_user	TIMM21	translocase of inner mitochondrial membrane 21	Import & Sorting	-0.0294295	0.898364
+AF_vs_Sham_RA_RNA_adj_user	TIMM22	translocase of inner mitochondrial membrane 22	Import & Sorting	0.732924	0.000150513
+AF_vs_Sham_RA_RNA_adj_user	TIMM23	translocase of inner mitochondrial membrane 23	Import & Sorting	0.476602	0.0000755679
+AF_vs_Sham_RA_RNA_adj_user	TIMM44	translocase of inner mitochondrial membrane 44	Import & Sorting	0.263009	0.0480026
+AF_vs_Sham_RA_RNA_adj_user	TIMM50	translocase of inner mitochondrial membrane 50	Import & Sorting	0.0676914	0.736306
+AF_vs_Sham_RA_RNA_adj_user	TIMM8B	translocase of inner mitochondrial membrane 8 homolog B	Import & Sorting	0.581324	0.00826886
+AF_vs_Sham_RA_RNA_adj_user	TIMM9	translocase of inner mitochondrial membrane 9	Import & Sorting	0.247881	0.139446
+AF_vs_Sham_RA_RNA_adj_user	TIMMDC1	translocase of inner mitochondrial membrane domain containing 1	Import & Sorting	0.202687	0.359916
+AF_vs_Sham_RA_RNA_adj_user	TOMM20	translocase of outer mitochondrial membrane 20	Import & Sorting	-0.0298847	0.841062
+AF_vs_Sham_RA_RNA_adj_user	TOMM22	translocase of outer mitochondrial membrane 22	Import & Sorting	0.175124	0.11567
+AF_vs_Sham_RA_RNA_adj_user	TOMM34	translocase of outer mitochondrial membrane 34	Import & Sorting	0.580825	0.0338697
+AF_vs_Sham_RA_RNA_adj_user	TOMM40	translocase of outer mitochondrial membrane 40	Import & Sorting	0.235077	0.116033
+AF_vs_Sham_RA_RNA_adj_user	TOMM40L	translocase of outer mitochondrial membrane 40 like	Import & Sorting	-0.0467296	0.775878
+AF_vs_Sham_RA_RNA_adj_user	TOMM7	translocase of outer mitochondrial membrane 7	Import & Sorting	0.409641	0.0290667
+AF_vs_Sham_RA_RNA_adj_user	TOMM70	translocase of outer mitochondrial membrane 70	Import & Sorting	0.0359903	0.804451
+AF_vs_Sham_RA_RNA_adj_user	YME1L1	YME1 like 1 ATPase	Import & Sorting	0.141373	0.157074
+AF_vs_Sham_RA_RNA_adj_user	LIAS	lipoic acid synthetase	Lipoic Acid Metabolism	0.179768	0.231712
+AF_vs_Sham_RA_RNA_adj_user	LIPT1	lipoyltransferase 1	Lipoic Acid Metabolism	0.0902638	0.737298
+AF_vs_Sham_RA_RNA_adj_user	LIPT2	lipoyl(octanoyl) transferase 2	Lipoic Acid Metabolism	0.423812	0.148295
+AF_vs_Sham_RA_RNA_adj_user	ABCD1	ATP binding cassette subfamily D member 1	Metabolism of Lipids & Lipoproteins	-0.0957198	0.645853
+AF_vs_Sham_RA_RNA_adj_user	ACACA	acetyl-CoA carboxylase alpha	Metabolism of Lipids & Lipoproteins	-0.24698	0.139219
+AF_vs_Sham_RA_RNA_adj_user	ACP6	acid phosphatase 6, lysophosphatidic	Metabolism of Lipids & Lipoproteins	-0.05504	0.886772
+AF_vs_Sham_RA_RNA_adj_user	ACSS3	acyl-CoA synthetase short chain family member 3	Metabolism of Lipids & Lipoproteins	-0.401692	0.0309162
+AF_vs_Sham_RA_RNA_adj_user	AGPAT5	1-acylglycerol-3-phosphate O-acyltransferase 5	Metabolism of Lipids & Lipoproteins	-0.181691	0.124033
+AF_vs_Sham_RA_RNA_adj_user	CDS2	CDP-diacylglycerol synthase 2	Metabolism of Lipids & Lipoproteins	-0.45165	0.00762146
+AF_vs_Sham_RA_RNA_adj_user	CYB5R1	cytochrome b5 reductase 1	Metabolism of Lipids & Lipoproteins	0.577572	0.00545053
+AF_vs_Sham_RA_RNA_adj_user	CYB5R3	cytochrome b5 reductase 3	Metabolism of Lipids & Lipoproteins	0.246603	0.167595
+AF_vs_Sham_RA_RNA_adj_user	CYP27A1	cytochrome P450 family 27 subfamily A member 1	Metabolism of Lipids & Lipoproteins	0.0758402	0.872442
+AF_vs_Sham_RA_RNA_adj_user	FDPS	farnesyl diphosphate synthase	Metabolism of Lipids & Lipoproteins	-0.726816	0.0109033
+AF_vs_Sham_RA_RNA_adj_user	GPAM	glycerol-3-phosphate acyltransferase, mitochondrial	Metabolism of Lipids & Lipoproteins	0.182252	0.478211
+AF_vs_Sham_RA_RNA_adj_user	LACTB	lactamase beta	Metabolism of Lipids & Lipoproteins	-0.0185669	0.949445
+AF_vs_Sham_RA_RNA_adj_user	NUDT19	nudix hydrolase 19	Metabolism of Lipids & Lipoproteins	0.206564	0.268318
+AF_vs_Sham_RA_RNA_adj_user	OPA3	OPA3 outer mitochondrial membrane lipid metabolism regulator	Metabolism of Lipids & Lipoproteins	0.148327	0.288771
+AF_vs_Sham_RA_RNA_adj_user	PISD	phosphatidylserine decarboxylase	Metabolism of Lipids & Lipoproteins	-0.032471	0.892749
+AF_vs_Sham_RA_RNA_adj_user	PRELID3A	PRELI domain containing 3A	Metabolism of Lipids & Lipoproteins	-0.217003	0.485435
+AF_vs_Sham_RA_RNA_adj_user	PRELID3B	PRELI domain containing 3B	Metabolism of Lipids & Lipoproteins	0.188939	0.288366
+AF_vs_Sham_RA_RNA_adj_user	SARDH	sarcosine dehydrogenase	Metabolism of Lipids & Lipoproteins	0.133923	0.759969
+AF_vs_Sham_RA_RNA_adj_user	SERAC1	serine active site containing 1	Metabolism of Lipids & Lipoproteins	0.0266816	0.937328
+AF_vs_Sham_RA_RNA_adj_user	SLC27A3	solute carrier family 27 member 3	Metabolism of Lipids & Lipoproteins	0.141636	0.816254
+AF_vs_Sham_RA_RNA_adj_user	STARD7	StAR related lipid transfer domain containing 7	Metabolism of Lipids & Lipoproteins	0.14052	0.196199
+AF_vs_Sham_RA_RNA_adj_user	CLYBL	citrate lyase beta like	Metabolism of Vitamins & Co-Factors	0.0365052	0.894213
+AF_vs_Sham_RA_RNA_adj_user	COASY	Coenzyme A synthase	Metabolism of Vitamins & Co-Factors	0.250858	0.139627
+AF_vs_Sham_RA_RNA_adj_user	CYB5A	cytochrome b5 type A	Metabolism of Vitamins & Co-Factors	-0.034716	0.882107
+AF_vs_Sham_RA_RNA_adj_user	CYB5B	cytochrome b5 type B	Metabolism of Vitamins & Co-Factors	0.239378	0.302847
+AF_vs_Sham_RA_RNA_adj_user	MMAA	metabolism of cobalamin associated A	Metabolism of Vitamins & Co-Factors	-0.139408	0.743294
+AF_vs_Sham_RA_RNA_adj_user	MMAB	metabolism of cobalamin associated B	Metabolism of Vitamins & Co-Factors	-0.202855	0.583908
+AF_vs_Sham_RA_RNA_adj_user	MMADHC	metabolism of cobalamin associated D	Metabolism of Vitamins & Co-Factors	0.0802196	0.624234
+AF_vs_Sham_RA_RNA_adj_user	NAXD	NAD(P)HX dehydratase	Metabolism of Vitamins & Co-Factors	0.141889	0.249061
+AF_vs_Sham_RA_RNA_adj_user	NAXE	NAD(P)HX epimerase	Metabolism of Vitamins & Co-Factors	0.186861	0.167131
+AF_vs_Sham_RA_RNA_adj_user	NMNAT3	nicotinamide nucleotide adenylyltransferase 3	Metabolism of Vitamins & Co-Factors	0.493425	0.00443341
+AF_vs_Sham_RA_RNA_adj_user	PANK2	pantothenate kinase 2	Metabolism of Vitamins & Co-Factors	-0.456405	0.0185795
+AF_vs_Sham_RA_RNA_adj_user	RDH13	retinol dehydrogenase 13	Metabolism of Vitamins & Co-Factors	0.280824	0.290514
+AF_vs_Sham_RA_RNA_adj_user	SLC22A4	solute carrier family 22 member 4	Mitochondrial Carrier	-0.0937191	0.875663
+AF_vs_Sham_RA_RNA_adj_user	SLC25A10	solute carrier family 25 member 10	Mitochondrial Carrier	0.492529	0.0530683
+AF_vs_Sham_RA_RNA_adj_user	SLC25A11	solute carrier family 25 member 11	Mitochondrial Carrier	0.0383198	0.753701
+AF_vs_Sham_RA_RNA_adj_user	SLC25A14	solute carrier family 25 member 14	Mitochondrial Carrier	0.127331	0.805479
+AF_vs_Sham_RA_RNA_adj_user	SLC25A16	solute carrier family 25 member 16	Mitochondrial Carrier	-0.303525	0.298314
+AF_vs_Sham_RA_RNA_adj_user	SLC25A19	solute carrier family 25 member 19	Mitochondrial Carrier	-0.0274138	0.935562
+AF_vs_Sham_RA_RNA_adj_user	SLC25A20	solute carrier family 25 member 20	Mitochondrial Carrier	0.365509	0.129013
+AF_vs_Sham_RA_RNA_adj_user	SLC25A21	solute carrier family 25 member 21	Mitochondrial Carrier	0.35349	0.262492
+AF_vs_Sham_RA_RNA_adj_user	SLC25A23	solute carrier family 25 member 23	Mitochondrial Carrier	-0.0709066	0.783058
+AF_vs_Sham_RA_RNA_adj_user	SLC25A24	solute carrier family 25 member 24	Mitochondrial Carrier	-0.339585	0.0819225
+AF_vs_Sham_RA_RNA_adj_user	SLC25A26	solute carrier family 25 member 26	Mitochondrial Carrier	0.481212	0.00545053
+AF_vs_Sham_RA_RNA_adj_user	SLC25A27	solute carrier family 25 member 27	Mitochondrial Carrier	-0.386074	0.128181
+AF_vs_Sham_RA_RNA_adj_user	SLC25A29	solute carrier family 25 member 29	Mitochondrial Carrier	0.0171333	0.963314
+AF_vs_Sham_RA_RNA_adj_user	SLC25A3	solute carrier family 25 member 3	Mitochondrial Carrier	0.209096	0.0223672
+AF_vs_Sham_RA_RNA_adj_user	SLC25A30	solute carrier family 25 member 30	Mitochondrial Carrier	0.158671	0.433437
+AF_vs_Sham_RA_RNA_adj_user	SLC25A33	solute carrier family 25 member 33	Mitochondrial Carrier	-0.0250299	0.932004
+AF_vs_Sham_RA_RNA_adj_user	SLC25A34	solute carrier family 25 member 34	Mitochondrial Carrier	0.622071	0.11031
+AF_vs_Sham_RA_RNA_adj_user	SLC25A36	solute carrier family 25 member 36	Mitochondrial Carrier	-0.269776	0.214246
+AF_vs_Sham_RA_RNA_adj_user	SLC25A38	solute carrier family 25 member 38	Mitochondrial Carrier	0.278703	0.120872
+AF_vs_Sham_RA_RNA_adj_user	SLC25A39	solute carrier family 25 member 39	Mitochondrial Carrier	0.230572	0.101149
+AF_vs_Sham_RA_RNA_adj_user	SLC25A40	solute carrier family 25 member 40	Mitochondrial Carrier	0.104506	0.71273
+AF_vs_Sham_RA_RNA_adj_user	SLC25A42	solute carrier family 25 member 42	Mitochondrial Carrier	-0.333841	0.219652
+AF_vs_Sham_RA_RNA_adj_user	SLC25A44	solute carrier family 25 member 44	Mitochondrial Carrier	-0.0840055	0.567932
+AF_vs_Sham_RA_RNA_adj_user	SLC25A47	solute carrier family 25 member 47	Mitochondrial Carrier	0.164317	0.775845
+AF_vs_Sham_RA_RNA_adj_user	SLC27A1	solute carrier family 27 member 1	Mitochondrial Carrier	0.141258	0.316658
+AF_vs_Sham_RA_RNA_adj_user	SLC29A1	solute carrier family 29 member 1 (Augustine blood group)	Mitochondrial Carrier	-0.617408	0.0111399
+AF_vs_Sham_RA_RNA_adj_user	SLC3A1	solute carrier family 3 member 1	Mitochondrial Carrier	-0.138055	0.814749
+AF_vs_Sham_RA_RNA_adj_user	SLC44A1	solute carrier family 44 member 1	Mitochondrial Carrier	-0.553395	0.0980336
+AF_vs_Sham_RA_RNA_adj_user	UCP2	uncoupling protein 2	Mitochondrial Carrier	-0.146014	0.797228
+AF_vs_Sham_RA_RNA_adj_user	ACTR2	actin related protein 2	Mitochondrial Dynamics	0.115579	0.431258
+AF_vs_Sham_RA_RNA_adj_user	AFG3L2	AFG3 like matrix AAA peptidase subunit 2	Mitochondrial Dynamics	0.0654294	0.758141
+AF_vs_Sham_RA_RNA_adj_user	AGTPBP1	ATP/GTP binding protein 1	Mitochondrial Dynamics	-0.316531	0.136165
+AF_vs_Sham_RA_RNA_adj_user	APOO	apolipoprotein O	Mitochondrial Dynamics	0.245759	0.145601
+AF_vs_Sham_RA_RNA_adj_user	ARPC3	actin related protein 2/3 complex subunit 3	Mitochondrial Dynamics	-0.211204	0.338779
+AF_vs_Sham_RA_RNA_adj_user	ARPC5	actin related protein 2/3 complex subunit 5	Mitochondrial Dynamics	-0.469218	0.0867956
+AF_vs_Sham_RA_RNA_adj_user	ATAD3A	ATPase family AAA domain containing 3A	Mitochondrial Dynamics	0.0348503	0.892586
+AF_vs_Sham_RA_RNA_adj_user	CHCHD10	coiled-coil-helix-coiled-coil-helix domain containing 10	Mitochondrial Dynamics	0.12041	0.459831
+AF_vs_Sham_RA_RNA_adj_user	CHCHD3	coiled-coil-helix-coiled-coil-helix domain containing 3	Mitochondrial Dynamics	0.247948	0.158028
+AF_vs_Sham_RA_RNA_adj_user	CHCHD6	coiled-coil-helix-coiled-coil-helix domain containing 6	Mitochondrial Dynamics	-0.0497473	0.898364
+AF_vs_Sham_RA_RNA_adj_user	DNM1L	dynamin 1 like	Mitochondrial Dynamics	-0.0504644	0.746208
+AF_vs_Sham_RA_RNA_adj_user	FIS1	fission, mitochondrial 1	Mitochondrial Dynamics	0.219473	0.25511
+AF_vs_Sham_RA_RNA_adj_user	FUNDC1	FUN14 domain containing 1	Mitochondrial Dynamics	0.0367939	0.873351
+AF_vs_Sham_RA_RNA_adj_user	FUNDC2	FUN14 domain containing 2	Mitochondrial Dynamics	0.114837	0.410958
+AF_vs_Sham_RA_RNA_adj_user	GDAP1	ganglioside induced differentiation associated protein 1	Mitochondrial Dynamics	-0.172183	0.761125
+AF_vs_Sham_RA_RNA_adj_user	IMMT	inner membrane mitochondrial protein	Mitochondrial Dynamics	0.0312115	0.885802
+AF_vs_Sham_RA_RNA_adj_user	KIF1B	kinesin family member 1B	Mitochondrial Dynamics	-0.137562	0.399091
+AF_vs_Sham_RA_RNA_adj_user	KIF5B	kinesin family member 5B	Mitochondrial Dynamics	-0.832997	0.0000018154
+AF_vs_Sham_RA_RNA_adj_user	LYRM1	LYR motif containing 1	Mitochondrial Dynamics	-0.00415769	0.987086
+AF_vs_Sham_RA_RNA_adj_user	MFF	mitochondrial fission factor	Mitochondrial Dynamics	0.240778	0.0740099
+AF_vs_Sham_RA_RNA_adj_user	MFN1	mitofusin 1	Mitochondrial Dynamics	-0.14207	0.272285
+AF_vs_Sham_RA_RNA_adj_user	MFN2	mitofusin 2	Mitochondrial Dynamics	0.070007	0.553116
+AF_vs_Sham_RA_RNA_adj_user	MICOS10	mitochondrial contact site and cristae organizing system subunit 10	Mitochondrial Dynamics	0.464953	0.0284849
+AF_vs_Sham_RA_RNA_adj_user	MICOS13	mitochondrial contact site and cristae organizing system subunit 13	Mitochondrial Dynamics	0.653565	0.00125137
+AF_vs_Sham_RA_RNA_adj_user	MIEF1	mitochondrial elongation factor 1	Mitochondrial Dynamics	-0.161176	0.290554
+AF_vs_Sham_RA_RNA_adj_user	MIEF2	mitochondrial elongation factor 2	Mitochondrial Dynamics	0.155652	0.409162
+AF_vs_Sham_RA_RNA_adj_user	MSTO1	misato mitochondrial distribution and morphology regulator 1	Mitochondrial Dynamics	0.0101809	0.963922
+AF_vs_Sham_RA_RNA_adj_user	MTFP1	mitochondrial fission process 1	Mitochondrial Dynamics	0.547723	0.00315606
+AF_vs_Sham_RA_RNA_adj_user	MTFR1	mitochondrial fission regulator 1	Mitochondrial Dynamics	-0.135031	0.664618
+AF_vs_Sham_RA_RNA_adj_user	MTFR1L	mitochondrial fission regulator 1 like	Mitochondrial Dynamics	0.226934	0.0265866
+AF_vs_Sham_RA_RNA_adj_user	OMA1	OMA1 zinc metallopeptidase	Mitochondrial Dynamics	0.0849112	0.718534
+AF_vs_Sham_RA_RNA_adj_user	OPA1	OPA1 mitochondrial dynamin like GTPase	Mitochondrial Dynamics	0.11748	0.381595
+AF_vs_Sham_RA_RNA_adj_user	PHB2	prohibitin 2	Mitochondrial Dynamics	0.295109	0.234847
+AF_vs_Sham_RA_RNA_adj_user	PKIA	cAMP-dependent protein kinase inhibitor alpha	Mitochondrial Dynamics	0.208672	0.308681
+AF_vs_Sham_RA_RNA_adj_user	RHOT1	ras homolog family member T1	Mitochondrial Dynamics	-0.160613	0.259386
+AF_vs_Sham_RA_RNA_adj_user	RHOT2	ras homolog family member T2	Mitochondrial Dynamics	0.358938	0.374852
+AF_vs_Sham_RA_RNA_adj_user	SH3GLB1	SH3 domain containing GRB2 like, endophilin B1	Mitochondrial Dynamics	-0.146163	0.297455
+AF_vs_Sham_RA_RNA_adj_user	SLC25A4	solute carrier family 25 member 4	Mitochondrial Dynamics	0.330704	0.00127908
+AF_vs_Sham_RA_RNA_adj_user	SLC25A46	solute carrier family 25 member 46	Mitochondrial Dynamics	-0.0195653	0.921337
+AF_vs_Sham_RA_RNA_adj_user	SLC25A5	solute carrier family 25 member 5	Mitochondrial Dynamics	0.136901	0.509192
+AF_vs_Sham_RA_RNA_adj_user	SPG7	SPG7 matrix AAA peptidase subunit, paraplegin	Mitochondrial Dynamics	0.0217	0.886772
+AF_vs_Sham_RA_RNA_adj_user	SQSTM1	sequestosome 1	Mitochondrial Dynamics	-0.109733	0.534081
+AF_vs_Sham_RA_RNA_adj_user	STOML2	stomatin like 2	Mitochondrial Dynamics	0.281152	0.0201747
+AF_vs_Sham_RA_RNA_adj_user	SYBU	syntabulin	Mitochondrial Dynamics	-1.13072	0.00548663
+AF_vs_Sham_RA_RNA_adj_user	TCAIM	T cell activation inhibitor, mitochondrial	Mitochondrial Dynamics	0.125267	0.534102
+AF_vs_Sham_RA_RNA_adj_user	TMEM11	transmembrane protein 11	Mitochondrial Dynamics	0.190571	0.210037
+AF_vs_Sham_RA_RNA_adj_user	TRAK1	trafficking kinesin protein 1	Mitochondrial Dynamics	-0.00224399	0.989129
+AF_vs_Sham_RA_RNA_adj_user	TRAK2	trafficking kinesin protein 2	Mitochondrial Dynamics	0.218405	0.354669
+AF_vs_Sham_RA_RNA_adj_user	USP30	ubiquitin specific peptidase 30	Mitochondrial Dynamics	-0.188466	0.397067
+AF_vs_Sham_RA_RNA_adj_user	WDR81	WD repeat domain 81	Mitochondrial Dynamics	0.151261	0.543403
+AF_vs_Sham_RA_RNA_adj_user	AKAP1	A-kinase anchoring protein 1	Mitochondrial Signaling	-0.0205727	0.929051
+AF_vs_Sham_RA_RNA_adj_user	AKAP10	A-kinase anchoring protein 10	Mitochondrial Signaling	-0.0836737	0.761274
+AF_vs_Sham_RA_RNA_adj_user	AKT1	AKT serine/threonine kinase 1	Mitochondrial Signaling	0.121445	0.366711
+AF_vs_Sham_RA_RNA_adj_user	CHCHD2	coiled-coil-helix-coiled-coil-helix domain containing 2	Mitochondrial Signaling	0.208455	0.219501
+AF_vs_Sham_RA_RNA_adj_user	GSK3B	glycogen synthase kinase 3 beta	Mitochondrial Signaling	-0.499865	0.0243908
+AF_vs_Sham_RA_RNA_adj_user	IDE	insulin degrading enzyme	Mitochondrial Signaling	0.146213	0.264156
+AF_vs_Sham_RA_RNA_adj_user	MAVS	mitochondrial antiviral signaling protein	Mitochondrial Signaling	0.17344	0.20398
+AF_vs_Sham_RA_RNA_adj_user	MTOR	mechanistic target of rapamycin kinase	Mitochondrial Signaling	0.059735	0.717893
+AF_vs_Sham_RA_RNA_adj_user	NLRX1	NLR family member X1	Mitochondrial Signaling	0.0711775	0.757734
+AF_vs_Sham_RA_RNA_adj_user	PRKACA	protein kinase cAMP-activated catalytic subunit alpha	Mitochondrial Signaling	-0.069714	0.620917
+AF_vs_Sham_RA_RNA_adj_user	SHC1	SHC adaptor protein 1	Mitochondrial Signaling	-0.362493	0.130084
+AF_vs_Sham_RA_RNA_adj_user	SIRT1	sirtuin 1	Mitochondrial Signaling	-0.205726	0.278533
+AF_vs_Sham_RA_RNA_adj_user	SIRT2	sirtuin 2	Mitochondrial Signaling	-0.00851466	0.962632
+AF_vs_Sham_RA_RNA_adj_user	SIRT3	sirtuin 3	Mitochondrial Signaling	0.177538	0.317645
+AF_vs_Sham_RA_RNA_adj_user	SIRT4	sirtuin 4	Mitochondrial Signaling	0.414904	0.213088
+AF_vs_Sham_RA_RNA_adj_user	SIRT5	sirtuin 5	Mitochondrial Signaling	0.168629	0.264176
+AF_vs_Sham_RA_RNA_adj_user	SYNJ2BP	synaptojanin 2 binding protein	Mitochondrial Signaling	-0.0741487	0.763453
+AF_vs_Sham_RA_RNA_adj_user	AMBRA1	autophagy and beclin 1 regulator 1 	Mitophagy	-0.00637999	0.979648
+AF_vs_Sham_RA_RNA_adj_user	ATG5	autophagy related 5 	Mitophagy	-0.130889	0.453949
+AF_vs_Sham_RA_RNA_adj_user	BECN1	beclin 1	Mitophagy	-0.10784	0.626475
+AF_vs_Sham_RA_RNA_adj_user	CALCOCO2	calcium binding and coiled-coil domain 2 	Mitophagy	0.0287987	0.816018
+AF_vs_Sham_RA_RNA_adj_user	CITED2	Cbp/p300 interacting transactivator with Glu/Asp rich carboxy-terminal domain 2 	Mitophagy	-0.0321128	0.926198
+AF_vs_Sham_RA_RNA_adj_user	NBR1	NBR1 autophagy cargo receptor 	Mitophagy	-0.0623174	0.622233
+AF_vs_Sham_RA_RNA_adj_user	OPTN	optineurin 	Mitophagy	0.0957768	0.469171
+AF_vs_Sham_RA_RNA_adj_user	PGAM5	PGAM family member 5, mitochondrial serine/threonine protein phosphatase 	Mitophagy	0.0214026	0.905792
+AF_vs_Sham_RA_RNA_adj_user	PINK1	PTEN induced kinase 1 	Mitophagy	0.23405	0.123578
+AF_vs_Sham_RA_RNA_adj_user	PRKN	parkin RBR E3 ubiquitin protein ligase 	Mitophagy	0.0314119	0.870811
+AF_vs_Sham_RA_RNA_adj_user	RAB7B	RAB7B, member RAS oncogene family 	Mitophagy	-0.723483	0.206779
+AF_vs_Sham_RA_RNA_adj_user	RRAS2	RAS related 2 	Mitophagy	0.260264	0.243744
+AF_vs_Sham_RA_RNA_adj_user	TAX1BP1	Tax1 binding protein 1 	Mitophagy	-0.00717258	0.963314
+AF_vs_Sham_RA_RNA_adj_user	TBC1D15	TBC1 domain family member 15 	Mitophagy	-0.176919	0.414596
+AF_vs_Sham_RA_RNA_adj_user	TBK1	TANK binding kinase 1 	Mitophagy	-0.237099	0.232842
+AF_vs_Sham_RA_RNA_adj_user	ULK1	unc-51 like autophagy activating kinase 1 	Mitophagy	0.0172339	0.928469
+AF_vs_Sham_RA_RNA_adj_user	USP15	ubiquitin specific peptidase 15 	Mitophagy	-0.0467732	0.782088
+AF_vs_Sham_RA_RNA_adj_user	USP8	ubiquitin specific peptidase 8 	Mitophagy	0.0831587	0.621346
+AF_vs_Sham_RA_RNA_adj_user	ARG2	arginase 2	Nitrogen Metabolism	0.638234	0.153141
+AF_vs_Sham_RA_RNA_adj_user	ASL	argininosuccinate lyase	Nitrogen Metabolism	-0.142563	0.55581
+AF_vs_Sham_RA_RNA_adj_user	CA5B	carbonic anhydrase 5B	Nitrogen Metabolism	-0.510291	0.170966
+AF_vs_Sham_RA_RNA_adj_user	DDAH1	dimethylarginine dimethylaminohydrolase 1	Nitrogen Metabolism	0.159498	0.607217
+AF_vs_Sham_RA_RNA_adj_user	OTC	ornithine carbamoyltransferase	Nitrogen Metabolism	0.280334	0.423334
+AF_vs_Sham_RA_RNA_adj_user	AK2	adenylate kinase 2	Nucleotide Metabolism	0.281196	0.0460296
+AF_vs_Sham_RA_RNA_adj_user	AK3	adenylate kinase 3	Nucleotide Metabolism	-0.0159743	0.926198
+AF_vs_Sham_RA_RNA_adj_user	AK4	adenylate kinase 4	Nucleotide Metabolism	-0.321252	0.328164
+AF_vs_Sham_RA_RNA_adj_user	ATIC	5-aminoimidazole-4-carboxamide ribonucleotide formyltransferase/IMP cyclohydrolase	Nucleotide Metabolism	0.0932717	0.710853
+AF_vs_Sham_RA_RNA_adj_user	DHODH	dihydroorotate dehydrogenase (quinone)	Nucleotide Metabolism	0.0810734	0.761143
+AF_vs_Sham_RA_RNA_adj_user	NME4	NME/NM23 nucleoside diphosphate kinase 4	Nucleotide Metabolism	-0.0916392	0.621708
+AF_vs_Sham_RA_RNA_adj_user	NME6	NME/NM23 nucleoside diphosphate kinase 6	Nucleotide Metabolism	0.130635	0.584263
+AF_vs_Sham_RA_RNA_adj_user	NUDT13	nudix hydrolase 13	Nucleotide Metabolism	0.131583	0.601663
+AF_vs_Sham_RA_RNA_adj_user	NUDT9	nudix hydrolase 9	Nucleotide Metabolism	0.262354	0.103789
+AF_vs_Sham_RA_RNA_adj_user	TYMS	thymidylate synthetase	Nucleotide Metabolism	0.206941	0.243081
+AF_vs_Sham_RA_RNA_adj_user	ADCK1	aarF domain containing kinase 1	Oxidative Phosphorylation	-0.148572	0.536138
+AF_vs_Sham_RA_RNA_adj_user	ATP5F1A	ATP synthase F1 subunit alpha	Oxidative Phosphorylation	0.0446147	0.720318
+AF_vs_Sham_RA_RNA_adj_user	ATP5F1B	ATP synthase F1 subunit beta	Oxidative Phosphorylation	0.0672141	0.493464
+AF_vs_Sham_RA_RNA_adj_user	ATP5F1C	ATP synthase F1 subunit gamma	Oxidative Phosphorylation	0.192939	0.128122
+AF_vs_Sham_RA_RNA_adj_user	ATP5F1D	ATP synthase F1 subunit delta	Oxidative Phosphorylation	0.421265	0.00603891
+AF_vs_Sham_RA_RNA_adj_user	ATP5IF1	ATP synthase inhibitory factor subunit 1	Oxidative Phosphorylation	0.500553	0.00117284
+AF_vs_Sham_RA_RNA_adj_user	ATP5MC1	ATP synthase membrane subunit c locus 1	Oxidative Phosphorylation	0.409092	0.00199696
+AF_vs_Sham_RA_RNA_adj_user	ATP5MC2	ATP synthase membrane subunit c locus 2	Oxidative Phosphorylation	0.266887	0.0909907
+AF_vs_Sham_RA_RNA_adj_user	ATP5MC3	ATP synthase membrane subunit c locus 3	Oxidative Phosphorylation	0.335832	0.0118298
+AF_vs_Sham_RA_RNA_adj_user	ATP5MF	ATP synthase membrane subunit f	Oxidative Phosphorylation	0.370294	0.037109
+AF_vs_Sham_RA_RNA_adj_user	ATP5PB	ATP synthase peripheral stalk-membrane subunit b	Oxidative Phosphorylation	0.386365	0.000974688
+AF_vs_Sham_RA_RNA_adj_user	ATP5PD	ATP synthase peripheral stalk subunit d	Oxidative Phosphorylation	0.287907	0.0444141
+AF_vs_Sham_RA_RNA_adj_user	ATP5PO	ATP synthase peripheral stalk subunit OSCP	Oxidative Phosphorylation	0.367989	0.0230585
+AF_vs_Sham_RA_RNA_adj_user	ATP6V1E1	ATPase H+ transporting V1 subunit E1	Oxidative Phosphorylation	0.19084	0.163403
+AF_vs_Sham_RA_RNA_adj_user	ATPAF1	ATP synthase mitochondrial F1 complex assembly factor 1	Oxidative Phosphorylation	-0.190605	0.124031
+AF_vs_Sham_RA_RNA_adj_user	ATPAF2	ATP synthase mitochondrial F1 complex assembly factor 2	Oxidative Phosphorylation	0.465878	0.0104181
+AF_vs_Sham_RA_RNA_adj_user	BCS1L	BCS1 homolog, ubiquinol-cytochrome c reductase complex chaperone	Oxidative Phosphorylation	0.527443	0.00706998
+AF_vs_Sham_RA_RNA_adj_user	CISD1	CDGSH iron sulfur domain 1	Oxidative Phosphorylation	-0.103297	0.505223
+AF_vs_Sham_RA_RNA_adj_user	CISD2	CDGSH iron sulfur domain 2	Oxidative Phosphorylation	0.0934994	0.614566
+AF_vs_Sham_RA_RNA_adj_user	CISD3	CDGSH iron sulfur domain 3	Oxidative Phosphorylation	0.0402575	0.874367
+AF_vs_Sham_RA_RNA_adj_user	CMC1	C-X9-C motif containing 1	Oxidative Phosphorylation	0.190112	0.349559
+AF_vs_Sham_RA_RNA_adj_user	COA1	cytochrome c oxidase assembly factor 1 homolog	Oxidative Phosphorylation	0.513894	0.0269265
+AF_vs_Sham_RA_RNA_adj_user	COA4	cytochrome c oxidase assembly factor 4 homolog	Oxidative Phosphorylation	-0.0180043	0.969564
+AF_vs_Sham_RA_RNA_adj_user	COA7	cytochrome c oxidase assembly factor 7 (putative)	Oxidative Phosphorylation	0.299054	0.156212
+AF_vs_Sham_RA_RNA_adj_user	COQ10A	coenzyme Q10A	Oxidative Phosphorylation	0.619551	0.0000303272
+AF_vs_Sham_RA_RNA_adj_user	COQ10B	coenzyme Q10B	Oxidative Phosphorylation	-0.425707	0.0129995
+AF_vs_Sham_RA_RNA_adj_user	COQ8A	coenzyme Q8A	Oxidative Phosphorylation	0.248009	0.128506
+AF_vs_Sham_RA_RNA_adj_user	COQ8B	coenzyme Q8B	Oxidative Phosphorylation	0.275531	0.186007
+AF_vs_Sham_RA_RNA_adj_user	COX10	cytochrome c oxidase assembly factor heme A:farnesyltransferase COX10	Oxidative Phosphorylation	0.0798614	0.797282
+AF_vs_Sham_RA_RNA_adj_user	COX11	cytochrome c oxidase copper chaperone COX11	Oxidative Phosphorylation	0.265681	0.118405
+AF_vs_Sham_RA_RNA_adj_user	COX15	cytochrome c oxidase assembly homolog COX15	Oxidative Phosphorylation	0.105107	0.464552
+AF_vs_Sham_RA_RNA_adj_user	COX16	cytochrome c oxidase assembly factor COX16	Oxidative Phosphorylation	0.437652	0.0318076
+AF_vs_Sham_RA_RNA_adj_user	COX18	cytochrome c oxidase assembly factor COX18	Oxidative Phosphorylation	0.202831	0.307009
+AF_vs_Sham_RA_RNA_adj_user	COX20	cytochrome c oxidase assembly factor COX20	Oxidative Phosphorylation	0.270705	0.217111
+AF_vs_Sham_RA_RNA_adj_user	COX4I1	cytochrome c oxidase subunit 4I1	Oxidative Phosphorylation	0.469154	0.00192222
+AF_vs_Sham_RA_RNA_adj_user	COX4I2	cytochrome c oxidase subunit 4I2	Oxidative Phosphorylation	-0.896442	0.031707
+AF_vs_Sham_RA_RNA_adj_user	COX5A	cytochrome c oxidase subunit 5A	Oxidative Phosphorylation	0.199275	0.11765
+AF_vs_Sham_RA_RNA_adj_user	COX5B	cytochrome c oxidase subunit 5B	Oxidative Phosphorylation	0.408968	0.00810757
+AF_vs_Sham_RA_RNA_adj_user	COX6A1	cytochrome c oxidase subunit 6A1	Oxidative Phosphorylation	0.136066	0.496279
+AF_vs_Sham_RA_RNA_adj_user	COX7A1	cytochrome c oxidase subunit 7A1	Oxidative Phosphorylation	0.363341	0.213746
+AF_vs_Sham_RA_RNA_adj_user	COX7A2	cytochrome c oxidase subunit 7A2	Oxidative Phosphorylation	0.459505	0.0227179
+AF_vs_Sham_RA_RNA_adj_user	COX7A2L	cytochrome c oxidase subunit 7A2 like	Oxidative Phosphorylation	0.3078	0.0296718
+AF_vs_Sham_RA_RNA_adj_user	COX7B	cytochrome c oxidase subunit 7B	Oxidative Phosphorylation	0.413082	0.0213689
+AF_vs_Sham_RA_RNA_adj_user	CYC1	cytochrome c1	Oxidative Phosphorylation	0.276815	0.0241678
+AF_vs_Sham_RA_RNA_adj_user	CYCS	cytochrome c, somatic	Oxidative Phosphorylation	-0.0174474	0.901785
+AF_vs_Sham_RA_RNA_adj_user	D2HGDH	D-2-hydroxyglutarate dehydrogenase	Oxidative Phosphorylation	0.0570514	0.831702
+AF_vs_Sham_RA_RNA_adj_user	DMAC2	distal membrane arm assembly complex 2	Oxidative Phosphorylation	0.0744298	0.609055
+AF_vs_Sham_RA_RNA_adj_user	DMAC2L	distal membrane arm assembly complex 2 like	Oxidative Phosphorylation	0.0955256	0.58833
+AF_vs_Sham_RA_RNA_adj_user	DONSON	downstream neighbor of SON	Oxidative Phosphorylation	0.180338	0.607032
+AF_vs_Sham_RA_RNA_adj_user	ECSIT	ECSIT signalling integrator	Oxidative Phosphorylation	0.250187	0.0612203
+AF_vs_Sham_RA_RNA_adj_user	ETFA	electron transfer flavoprotein subunit alpha	Oxidative Phosphorylation	0.388092	0.0609529
+AF_vs_Sham_RA_RNA_adj_user	ETFB	electron transfer flavoprotein subunit beta	Oxidative Phosphorylation	0.312071	0.0323892
+AF_vs_Sham_RA_RNA_adj_user	ETFDH	electron transfer flavoprotein dehydrogenase	Oxidative Phosphorylation	-0.0212058	0.942606
+AF_vs_Sham_RA_RNA_adj_user	ETFRF1	electron transfer flavoprotein regulatory factor 1	Oxidative Phosphorylation	0.331736	0.0540332
+AF_vs_Sham_RA_RNA_adj_user	FOXRED1	FAD dependent oxidoreductase domain containing 1	Oxidative Phosphorylation	0.268336	0.0708556
+AF_vs_Sham_RA_RNA_adj_user	GPD1	glycerol-3-phosphate dehydrogenase 1	Oxidative Phosphorylation	0.809778	0.00165679
+AF_vs_Sham_RA_RNA_adj_user	GPD2	glycerol-3-phosphate dehydrogenase 2	Oxidative Phosphorylation	-0.326058	0.0439689
+AF_vs_Sham_RA_RNA_adj_user	HCCS	holocytochrome c synthase	Oxidative Phosphorylation	0.07538	0.715404
+AF_vs_Sham_RA_RNA_adj_user	LYRM7	LYR motif containing 7	Oxidative Phosphorylation	0.681401	0.0422749
+AF_vs_Sham_RA_RNA_adj_user	NDUFA10	NADH:ubiquinone oxidoreductase subunit A10	Oxidative Phosphorylation	0.409743	0.00160794
+AF_vs_Sham_RA_RNA_adj_user	NDUFA12	NADH:ubiquinone oxidoreductase subunit A12	Oxidative Phosphorylation	0.664785	0.00000628
+AF_vs_Sham_RA_RNA_adj_user	NDUFA6	NADH:ubiquinone oxidoreductase subunit A6	Oxidative Phosphorylation	0.557066	0.000670694
+AF_vs_Sham_RA_RNA_adj_user	NDUFA7	NADH:ubiquinone oxidoreductase subunit A7	Oxidative Phosphorylation	0.46372	0.0256967
+AF_vs_Sham_RA_RNA_adj_user	NDUFA9	NADH:ubiquinone oxidoreductase subunit A9	Oxidative Phosphorylation	0.21883	0.075414
+AF_vs_Sham_RA_RNA_adj_user	NDUFAB1	NADH:ubiquinone oxidoreductase subunit AB1	Oxidative Phosphorylation	0.507113	0.00406296
+AF_vs_Sham_RA_RNA_adj_user	NDUFAF1	NADH:ubiquinone oxidoreductase complex assembly factor 1	Oxidative Phosphorylation	0.216547	0.104309
+AF_vs_Sham_RA_RNA_adj_user	NDUFAF2	NADH:ubiquinone oxidoreductase complex assembly factor 2	Oxidative Phosphorylation	0.352225	0.062005
+AF_vs_Sham_RA_RNA_adj_user	NDUFAF3	NADH:ubiquinone oxidoreductase complex assembly factor 3	Oxidative Phosphorylation	0.151695	0.231712
+AF_vs_Sham_RA_RNA_adj_user	NDUFAF4	NADH:ubiquinone oxidoreductase complex assembly factor 4	Oxidative Phosphorylation	0.220079	0.20091
+AF_vs_Sham_RA_RNA_adj_user	NDUFAF5	NADH:ubiquinone oxidoreductase complex assembly factor 5	Oxidative Phosphorylation	0.0770846	0.816403
+AF_vs_Sham_RA_RNA_adj_user	NDUFAF6	NADH:ubiquinone oxidoreductase complex assembly factor 6	Oxidative Phosphorylation	0.132902	0.630082
+AF_vs_Sham_RA_RNA_adj_user	NDUFAF7	NADH:ubiquinone oxidoreductase complex assembly factor 7	Oxidative Phosphorylation	0.2043	0.495365
+AF_vs_Sham_RA_RNA_adj_user	NDUFB10	NADH:ubiquinone oxidoreductase subunit B10	Oxidative Phosphorylation	0.425739	0.00482647
+AF_vs_Sham_RA_RNA_adj_user	NDUFB11	NADH:ubiquinone oxidoreductase subunit B11	Oxidative Phosphorylation	0.426112	0.00161493
+AF_vs_Sham_RA_RNA_adj_user	NDUFB3	NADH:ubiquinone oxidoreductase subunit B3	Oxidative Phosphorylation	0.393162	0.00740555
+AF_vs_Sham_RA_RNA_adj_user	NDUFB4	NADH:ubiquinone oxidoreductase subunit B4	Oxidative Phosphorylation	0.380168	0.00440002
+AF_vs_Sham_RA_RNA_adj_user	NDUFB5	NADH:ubiquinone oxidoreductase subunit B5	Oxidative Phosphorylation	0.346921	0.0373536
+AF_vs_Sham_RA_RNA_adj_user	NDUFB7	NADH:ubiquinone oxidoreductase subunit B7	Oxidative Phosphorylation	0.492656	0.00429175
+AF_vs_Sham_RA_RNA_adj_user	NDUFB9	NADH:ubiquinone oxidoreductase subunit B9	Oxidative Phosphorylation	0.275621	0.100616
+AF_vs_Sham_RA_RNA_adj_user	NDUFC1	NADH:ubiquinone oxidoreductase subunit C1	Oxidative Phosphorylation	0.361923	0.218352
+AF_vs_Sham_RA_RNA_adj_user	NDUFC2	NADH:ubiquinone oxidoreductase subunit C2	Oxidative Phosphorylation	0.366396	0.0177975
+AF_vs_Sham_RA_RNA_adj_user	NDUFS1	NADH:ubiquinone oxidoreductase core subunit S1	Oxidative Phosphorylation	0.145908	0.188991
+AF_vs_Sham_RA_RNA_adj_user	NDUFS2	NADH:ubiquinone oxidoreductase core subunit S2	Oxidative Phosphorylation	0.230148	0.0257495
+AF_vs_Sham_RA_RNA_adj_user	NDUFS3	NADH:ubiquinone oxidoreductase core subunit S3	Oxidative Phosphorylation	0.297511	0.022076
+AF_vs_Sham_RA_RNA_adj_user	NDUFS4	NADH:ubiquinone oxidoreductase subunit S4	Oxidative Phosphorylation	0.263924	0.0929593
+AF_vs_Sham_RA_RNA_adj_user	NDUFS5	NADH:ubiquinone oxidoreductase subunit S5	Oxidative Phosphorylation	0.59175	0.00386184
+AF_vs_Sham_RA_RNA_adj_user	NDUFS6	NADH:ubiquinone oxidoreductase subunit S6	Oxidative Phosphorylation	0.340895	0.0203576
+AF_vs_Sham_RA_RNA_adj_user	NDUFS7	NADH:ubiquinone oxidoreductase core subunit S7	Oxidative Phosphorylation	0.587063	0.00293971
+AF_vs_Sham_RA_RNA_adj_user	NDUFS8	NADH:ubiquinone oxidoreductase core subunit S8	Oxidative Phosphorylation	0.450084	0.00144971
+AF_vs_Sham_RA_RNA_adj_user	NDUFV1	NADH:ubiquinone oxidoreductase core subunit V1	Oxidative Phosphorylation	0.137486	0.435154
+AF_vs_Sham_RA_RNA_adj_user	NDUFV2	NADH:ubiquinone oxidoreductase core subunit V2	Oxidative Phosphorylation	0.277826	0.0270487
+AF_vs_Sham_RA_RNA_adj_user	NDUFV3	NADH:ubiquinone oxidoreductase subunit V3	Oxidative Phosphorylation	0.394244	0.00488796
+AF_vs_Sham_RA_RNA_adj_user	NIPSNAP1	nipsnap homolog 1	Oxidative Phosphorylation	-0.125213	0.600545
+AF_vs_Sham_RA_RNA_adj_user	NIPSNAP2	nipsnap homolog 2	Oxidative Phosphorylation	0.242183	0.0310314
+AF_vs_Sham_RA_RNA_adj_user	NUBPL	nucleotide binding protein like	Oxidative Phosphorylation	-0.0729182	0.76422
+AF_vs_Sham_RA_RNA_adj_user	OXA1L	OXA1L mitochondrial inner membrane protein	Oxidative Phosphorylation	0.00406348	0.985242
+AF_vs_Sham_RA_RNA_adj_user	PET117	PET117 cytochrome c oxidase chaperone	Oxidative Phosphorylation	0.129995	0.588994
+AF_vs_Sham_RA_RNA_adj_user	PTCD2	pentatricopeptide repeat domain 2	Oxidative Phosphorylation	-0.0396973	0.870346
+AF_vs_Sham_RA_RNA_adj_user	RTN4IP1	reticulon 4 interacting protein 1	Oxidative Phosphorylation	0.169117	0.38902
+AF_vs_Sham_RA_RNA_adj_user	SCO1	SCO cytochrome c oxidase assembly protein 1	Oxidative Phosphorylation	0.257842	0.15548
+AF_vs_Sham_RA_RNA_adj_user	SCO2	SCO cytochrome c oxidase assembly protein 2	Oxidative Phosphorylation	0.530857	0.0300296
+AF_vs_Sham_RA_RNA_adj_user	SDHA	succinate dehydrogenase complex flavoprotein subunit A	Oxidative Phosphorylation	0.0770856	0.49824
+AF_vs_Sham_RA_RNA_adj_user	SDHAF2	succinate dehydrogenase complex assembly factor 2	Oxidative Phosphorylation	-0.144957	0.492549
+AF_vs_Sham_RA_RNA_adj_user	SDHB	succinate dehydrogenase complex iron sulfur subunit B	Oxidative Phosphorylation	0.186334	0.173322
+AF_vs_Sham_RA_RNA_adj_user	SDHC	succinate dehydrogenase complex subunit C	Oxidative Phosphorylation	0.131899	0.28807
+AF_vs_Sham_RA_RNA_adj_user	SDHD	succinate dehydrogenase complex subunit D	Oxidative Phosphorylation	0.247616	0.0237499
+AF_vs_Sham_RA_RNA_adj_user	SURF1	SURF1 cytochrome c oxidase assembly factor	Oxidative Phosphorylation	0.307292	0.171704
+AF_vs_Sham_RA_RNA_adj_user	TBRG4	transforming growth factor beta regulator 4	Oxidative Phosphorylation	0.160261	0.278715
+AF_vs_Sham_RA_RNA_adj_user	TMEM126B	transmembrane protein 126B	Oxidative Phosphorylation	0.118226	0.539562
+AF_vs_Sham_RA_RNA_adj_user	TMEM186	transmembrane protein 186	Oxidative Phosphorylation	-0.0466733	0.782778
+AF_vs_Sham_RA_RNA_adj_user	TMEM70	transmembrane protein 70	Oxidative Phosphorylation	0.40083	0.00293971
+AF_vs_Sham_RA_RNA_adj_user	TTC19	tetratricopeptide repeat domain 19	Oxidative Phosphorylation	0.312619	0.0173873
+AF_vs_Sham_RA_RNA_adj_user	UQCC1	ubiquinol-cytochrome c reductase complex assembly factor 1	Oxidative Phosphorylation	0.173995	0.150922
+AF_vs_Sham_RA_RNA_adj_user	UQCC3	ubiquinol-cytochrome c reductase complex assembly factor 3	Oxidative Phosphorylation	0.342225	0.0689079
+AF_vs_Sham_RA_RNA_adj_user	UQCRB	ubiquinol-cytochrome c reductase binding protein	Oxidative Phosphorylation	0.296042	0.0287655
+AF_vs_Sham_RA_RNA_adj_user	UQCRC2	ubiquinol-cytochrome c reductase core protein 2	Oxidative Phosphorylation	0.0997784	0.334257
+AF_vs_Sham_RA_RNA_adj_user	UQCRFS1	ubiquinol-cytochrome c reductase, Rieske iron-sulfur polypeptide 1	Oxidative Phosphorylation	0.410616	0.000153829
+AF_vs_Sham_RA_RNA_adj_user	MT-ATP6	mitochondrially encoded ATP synthase 6	Oxidative Phosphorylation (mt)	0.288734	0.269714
+AF_vs_Sham_RA_RNA_adj_user	MT-ATP8	mitochondrially encoded ATP synthase 8	Oxidative Phosphorylation (mt)	0.116451	0.434433
+AF_vs_Sham_RA_RNA_adj_user	MT-CO1	mitochondrially encoded cytochrome c oxidase I	Oxidative Phosphorylation (mt)	0.059913	0.682546
+AF_vs_Sham_RA_RNA_adj_user	MT-CO2	mitochondrially encoded cytochrome c oxidase II	Oxidative Phosphorylation (mt)	0.303729	0.09519
+AF_vs_Sham_RA_RNA_adj_user	MT-CO3	mitochondrially encoded cytochrome c oxidase III	Oxidative Phosphorylation (mt)	-1.22283	0.327067
+AF_vs_Sham_RA_RNA_adj_user	MT-CYB	mitochondrially encoded cytochrome b	Oxidative Phosphorylation (mt)	-0.0333123	0.891943
+AF_vs_Sham_RA_RNA_adj_user	MT-ND1	mitochondrially encoded NADH dehydrogenase 1	Oxidative Phosphorylation (mt)	0.219058	0.269714
+AF_vs_Sham_RA_RNA_adj_user	MT-ND2	mitochondrially encoded NADH dehydrogenase 2	Oxidative Phosphorylation (mt)	0.245652	0.157414
+AF_vs_Sham_RA_RNA_adj_user	MT-ND3	mitochondrially encoded NADH dehydrogenase 3	Oxidative Phosphorylation (mt)	0.33098	0.127593
+AF_vs_Sham_RA_RNA_adj_user	MT-ND4	mitochondrially encoded NADH dehydrogenase 4	Oxidative Phosphorylation (mt)	0.0469383	0.962007
+AF_vs_Sham_RA_RNA_adj_user	MT-ND5	mitochondrially encoded NADH dehydrogenase 5	Oxidative Phosphorylation (mt)	-0.0857082	0.9029
+AF_vs_Sham_RA_RNA_adj_user	MT-ND6	mitochondrially encoded NADH dehydrogenase 6	Oxidative Phosphorylation (mt)	-0.0417486	0.968308
+AF_vs_Sham_RA_RNA_adj_user	G6PD	glucose-6-phosphate dehydrogenase	Pentose Phosphate Pathway	-0.130919	0.696308
+AF_vs_Sham_RA_RNA_adj_user	PGD	phosphogluconate dehydrogenase	Pentose Phosphate Pathway	-0.157921	0.247911
+AF_vs_Sham_RA_RNA_adj_user	PGLS	6-phosphogluconolactonase	Pentose Phosphate Pathway	0.119256	0.512428
+AF_vs_Sham_RA_RNA_adj_user	RPIA	ribose 5-phosphate isomerase A	Pentose Phosphate Pathway	-0.02803	0.931604
+AF_vs_Sham_RA_RNA_adj_user	TALDO1	transaldolase 1	Pentose Phosphate Pathway	0.0873846	0.606583
+AF_vs_Sham_RA_RNA_adj_user	TKT	transketolase	Pentose Phosphate Pathway	0.0910892	0.766348
+AF_vs_Sham_RA_RNA_adj_user	AFG1L	AFG1 like ATPase	Protein Stability & Degradation	-0.151455	0.665254
+AF_vs_Sham_RA_RNA_adj_user	ATAD1	ATPase family AAA domain containing 1	Protein Stability & Degradation	0.189754	0.171335
+AF_vs_Sham_RA_RNA_adj_user	ATP23	ATP23 metallopeptidase and ATP synthase assembly factor homolog	Protein Stability & Degradation	0.562033	0.103789
+AF_vs_Sham_RA_RNA_adj_user	CLPB	ClpB homolog, mitochondrial AAA ATPase chaperonin	Protein Stability & Degradation	-0.20014	0.188172
+AF_vs_Sham_RA_RNA_adj_user	CLPP	caseinolytic mitochondrial matrix peptidase proteolytic subunit	Protein Stability & Degradation	0.387146	0.0217169
+AF_vs_Sham_RA_RNA_adj_user	CLPX	caseinolytic mitochondrial matrix peptidase chaperone subunit	Protein Stability & Degradation	-0.0967603	0.571481
+AF_vs_Sham_RA_RNA_adj_user	DNAJA3	DnaJ heat shock protein family (Hsp40) member A3	Protein Stability & Degradation	0.062575	0.609731
+AF_vs_Sham_RA_RNA_adj_user	DNAJC11	DnaJ heat shock protein family (Hsp40) member C11	Protein Stability & Degradation	0.12998	0.323581
+AF_vs_Sham_RA_RNA_adj_user	DNAJC30	DnaJ heat shock protein family (Hsp40) member C30	Protein Stability & Degradation	0.392976	0.0362049
+AF_vs_Sham_RA_RNA_adj_user	DNAJC4	DnaJ heat shock protein family (Hsp40) member C4	Protein Stability & Degradation	0.634316	0.000948306
+AF_vs_Sham_RA_RNA_adj_user	FBXL4	F-box and leucine rich repeat protein 4	Protein Stability & Degradation	0.1021	0.569554
+AF_vs_Sham_RA_RNA_adj_user	FKBP8	FKBP prolyl isomerase 8	Protein Stability & Degradation	-0.0871621	0.607686
+AF_vs_Sham_RA_RNA_adj_user	HSPA1A	heat shock protein family A (Hsp70) member 1A	Protein Stability & Degradation	0.0031244	0.988353
+AF_vs_Sham_RA_RNA_adj_user	HSPD1	heat shock protein family D (Hsp60) member 1	Protein Stability & Degradation	0.173344	0.168114
+AF_vs_Sham_RA_RNA_adj_user	LONP1	lon peptidase 1, mitochondrial	Protein Stability & Degradation	0.146064	0.462338
+AF_vs_Sham_RA_RNA_adj_user	MUL1	mitochondrial E3 ubiquitin protein ligase 1	Protein Stability & Degradation	0.242412	0.0401705
+AF_vs_Sham_RA_RNA_adj_user	NLN	neurolysin	Protein Stability & Degradation	-0.0354737	0.856839
+AF_vs_Sham_RA_RNA_adj_user	NRDC	nardilysin convertase	Protein Stability & Degradation	-0.021515	0.880558
+AF_vs_Sham_RA_RNA_adj_user	PET100	PET100 cytochrome c oxidase chaperone	Protein Stability & Degradation	0.534774	0.0363673
+AF_vs_Sham_RA_RNA_adj_user	PITRM1	pitrilysin metallopeptidase 1	Protein Stability & Degradation	0.282887	0.40756
+AF_vs_Sham_RA_RNA_adj_user	RNF185	ring finger protein 185	Protein Stability & Degradation	-0.0632005	0.726295
+AF_vs_Sham_RA_RNA_adj_user	RNF5	ring finger protein 5	Protein Stability & Degradation	-0.0719794	0.676273
+AF_vs_Sham_RA_RNA_adj_user	TMEM177	transmembrane protein 177	Protein Stability & Degradation	0.37479	0.146382
+AF_vs_Sham_RA_RNA_adj_user	UBA1	ubiquitin like modifier activating enzyme 1	Protein Stability & Degradation	-0.186467	0.100504
+AF_vs_Sham_RA_RNA_adj_user	XPNPEP3	X-prolyl aminopeptidase 3	Protein Stability & Degradation	-0.277444	0.269991
+AF_vs_Sham_RA_RNA_adj_user	ACSS1	acyl-CoA synthetase short chain family member 1	Pyruvate Metabolism	0.997449	0.000150427
+AF_vs_Sham_RA_RNA_adj_user	ACSS2	acyl-CoA synthetase short chain family member 2	Pyruvate Metabolism	-0.334863	0.0354174
+AF_vs_Sham_RA_RNA_adj_user	ADHFE1	alcohol dehydrogenase iron containing 1	Pyruvate Metabolism	-0.0432974	0.850869
+AF_vs_Sham_RA_RNA_adj_user	ALDH7A1	aldehyde dehydrogenase 7 family member A1	Pyruvate Metabolism	0.0419309	0.826246
+AF_vs_Sham_RA_RNA_adj_user	DLAT	dihydrolipoamide S-acetyltransferase	Pyruvate Metabolism	0.328554	0.0178044
+AF_vs_Sham_RA_RNA_adj_user	HAGH	hydroxyacylglutathione hydrolase	Pyruvate Metabolism	0.24732	0.139958
+AF_vs_Sham_RA_RNA_adj_user	HOGA1	4-hydroxy-2-oxoglutarate aldolase 1	Pyruvate Metabolism	0.204103	0.236038
+AF_vs_Sham_RA_RNA_adj_user	L2HGDH	L-2-hydroxyglutarate dehydrogenase	Pyruvate Metabolism	-0.11358	0.524753
+AF_vs_Sham_RA_RNA_adj_user	LDHD	lactate dehydrogenase D	Pyruvate Metabolism	-0.152329	0.513631
+AF_vs_Sham_RA_RNA_adj_user	ME1	malic enzyme 1	Pyruvate Metabolism	0.47418	0.107177
+AF_vs_Sham_RA_RNA_adj_user	ME2	malic enzyme 2	Pyruvate Metabolism	-0.112461	0.537564
+AF_vs_Sham_RA_RNA_adj_user	ME3	malic enzyme 3	Pyruvate Metabolism	0.548089	0.00127411
+AF_vs_Sham_RA_RNA_adj_user	MPC1	mitochondrial pyruvate carrier 1	Pyruvate Metabolism	0.663835	0.000285116
+AF_vs_Sham_RA_RNA_adj_user	PCK2	phosphoenolpyruvate carboxykinase 2, mitochondrial	Pyruvate Metabolism	-0.197744	0.68861
+AF_vs_Sham_RA_RNA_adj_user	PDHA1	pyruvate dehydrogenase E1 alpha 1 subunit	Pyruvate Metabolism	0.155712	0.241082
+AF_vs_Sham_RA_RNA_adj_user	PDHB	pyruvate dehydrogenase E1 beta subunit	Pyruvate Metabolism	0.183704	0.0500619
+AF_vs_Sham_RA_RNA_adj_user	PDK1	pyruvate dehydrogenase kinase 1	Pyruvate Metabolism	0.0582436	0.796518
+AF_vs_Sham_RA_RNA_adj_user	PDK2	pyruvate dehydrogenase kinase 2	Pyruvate Metabolism	0.224475	0.106981
+AF_vs_Sham_RA_RNA_adj_user	PDK3	pyruvate dehydrogenase kinase 3	Pyruvate Metabolism	-0.202463	0.476684
+AF_vs_Sham_RA_RNA_adj_user	PDK4	pyruvate dehydrogenase kinase 4	Pyruvate Metabolism	-0.0507551	0.924101
+AF_vs_Sham_RA_RNA_adj_user	PDP1	pyruvate dehyrogenase phosphatase catalytic subunit 1	Pyruvate Metabolism	-0.29375	0.262492
+AF_vs_Sham_RA_RNA_adj_user	PDP2	pyruvate dehyrogenase phosphatase catalytic subunit 2	Pyruvate Metabolism	-0.289256	0.210692
+AF_vs_Sham_RA_RNA_adj_user	PDPR	pyruvate dehydrogenase phosphatase regulatory subunit	Pyruvate Metabolism	-0.385849	0.0616822
+AF_vs_Sham_RA_RNA_adj_user	CAT	catalase	ROS Defense	0.258698	0.287699
+AF_vs_Sham_RA_RNA_adj_user	GCLC	glutamate-cysteine ligase catalytic subunit	ROS Defense	-0.356677	0.272285
+AF_vs_Sham_RA_RNA_adj_user	GCLM	glutamate-cysteine ligase modifier subunit	ROS Defense	0.198675	0.293399
+AF_vs_Sham_RA_RNA_adj_user	GLRX2	glutaredoxin 2	ROS Defense	0.484273	0.0689967
+AF_vs_Sham_RA_RNA_adj_user	GPX4	glutathione peroxidase 4	ROS Defense	0.155038	0.467585
+AF_vs_Sham_RA_RNA_adj_user	GSR	glutathione-disulfide reductase	ROS Defense	0.0256108	0.930434
+AF_vs_Sham_RA_RNA_adj_user	GSS	glutathione synthetase	ROS Defense	-0.354515	0.293761
+AF_vs_Sham_RA_RNA_adj_user	GSTA4	glutathione S-transferase alpha 4	ROS Defense	-0.224756	0.109621
+AF_vs_Sham_RA_RNA_adj_user	MPV17	mitochondrial inner membrane protein MPV17	ROS Defense	0.613871	0.00459824
+AF_vs_Sham_RA_RNA_adj_user	MPV17L	MPV17 mitochondrial inner membrane protein like	ROS Defense	0.0958349	0.890032
+AF_vs_Sham_RA_RNA_adj_user	MSRA	methionine sulfoxide reductase A	ROS Defense	0.0689803	0.806463
+AF_vs_Sham_RA_RNA_adj_user	MSRB3	methionine sulfoxide reductase B3	ROS Defense	0.0287472	0.855803
+AF_vs_Sham_RA_RNA_adj_user	NUDT2	nudix hydrolase 2	ROS Defense	0.119048	0.570389
+AF_vs_Sham_RA_RNA_adj_user	OGG1	8-oxoguanine DNA glycosylase	ROS Defense	0.277535	0.404661
+AF_vs_Sham_RA_RNA_adj_user	OXR1	oxidation resistance 1	ROS Defense	-0.149914	0.242956
+AF_vs_Sham_RA_RNA_adj_user	PARK7	Parkinsonism associated deglycase	ROS Defense	0.302169	0.075478
+AF_vs_Sham_RA_RNA_adj_user	PRDX1	peroxiredoxin 1	ROS Defense	0.0602812	0.76808
+AF_vs_Sham_RA_RNA_adj_user	PRDX3	peroxiredoxin 3	ROS Defense	0.141271	0.308891
+AF_vs_Sham_RA_RNA_adj_user	PRDX5	peroxiredoxin 5	ROS Defense	0.372885	0.0335348
+AF_vs_Sham_RA_RNA_adj_user	SOD1	superoxide dismutase 1	ROS Defense	0.278781	0.114663
+AF_vs_Sham_RA_RNA_adj_user	SOD2	superoxide dismutase 2	ROS Defense	0.110877	0.364592
+AF_vs_Sham_RA_RNA_adj_user	TXN	thioredoxin	ROS Defense	0.157209	0.548834
+AF_vs_Sham_RA_RNA_adj_user	TXN2	thioredoxin 2	ROS Defense	0.344464	0.0159933
+AF_vs_Sham_RA_RNA_adj_user	TXNRD1	thioredoxin reductase 1	ROS Defense	-0.328083	0.040338
+AF_vs_Sham_RA_RNA_adj_user	TXNRD2	thioredoxin reductase 2	ROS Defense	-0.258638	0.384673
+AF_vs_Sham_RA_RNA_adj_user	ALKBH1	alkB homolog 1, histone H2A dioxygenase	Replication & Transcription	0.0833519	0.796417
+AF_vs_Sham_RA_RNA_adj_user	APEX1	apurinic/apyrimidinic endodeoxyribonuclease 1	Replication & Transcription	0.158531	0.231449
+AF_vs_Sham_RA_RNA_adj_user	APEX2	apurinic/apyrimidinic endodeoxyribonuclease 2	Replication & Transcription	-0.284972	0.113688
+AF_vs_Sham_RA_RNA_adj_user	CMPK2	cytidine/uridine monophosphate kinase 2	Replication & Transcription	0.2337	0.713727
+AF_vs_Sham_RA_RNA_adj_user	DGUOK	deoxyguanosine kinase	Replication & Transcription	-0.174538	0.635471
+AF_vs_Sham_RA_RNA_adj_user	DHX29	DExH-box helicase 29	Replication & Transcription	-0.0883091	0.651764
+AF_vs_Sham_RA_RNA_adj_user	DHX30	DExH-box helicase 30	Replication & Transcription	0.0642309	0.680822
+AF_vs_Sham_RA_RNA_adj_user	ENDOG	endonuclease G	Replication & Transcription	0.953586	0.0000177552
+AF_vs_Sham_RA_RNA_adj_user	EXOG	exo/endonuclease G	Replication & Transcription	-0.480458	0.0263592
+AF_vs_Sham_RA_RNA_adj_user	FEN1	flap structure-specific endonuclease 1	Replication & Transcription	0.278257	0.301767
+AF_vs_Sham_RA_RNA_adj_user	LIG1	DNA ligase 1	Replication & Transcription	-0.469007	0.145402
+AF_vs_Sham_RA_RNA_adj_user	LIG3	DNA ligase 3	Replication & Transcription	-0.0803351	0.683012
+AF_vs_Sham_RA_RNA_adj_user	MGME1	mitochondrial genome maintenance exonuclease 1	Replication & Transcription	0.178091	0.727962
+AF_vs_Sham_RA_RNA_adj_user	MSH5	mutS homolog 5	Replication & Transcription	-0.423584	0.19372
+AF_vs_Sham_RA_RNA_adj_user	MTERF1	mitochondrial transcription termination factor 1	Replication & Transcription	-0.333306	0.328256
+AF_vs_Sham_RA_RNA_adj_user	MTERF2	mitochondrial transcription termination factor 2	Replication & Transcription	0.127073	0.568816
+AF_vs_Sham_RA_RNA_adj_user	MUTYH	mutY DNA glycosylase	Replication & Transcription	-0.208579	0.579237
+AF_vs_Sham_RA_RNA_adj_user	NFE2L2	nuclear factor, erythroid 2 like 2	Replication & Transcription	-0.380233	0.0814266
+AF_vs_Sham_RA_RNA_adj_user	NIF3L1	NGG1 interacting factor 3 like 1	Replication & Transcription	0.0211578	0.933503
+AF_vs_Sham_RA_RNA_adj_user	NSUN2	NOP2/Sun RNA methyltransferase 2	Replication & Transcription	-0.0465331	0.835626
+AF_vs_Sham_RA_RNA_adj_user	NT5M	5',3'-nucleotidase, mitochondrial	Replication & Transcription	-0.00762932	0.970766
+AF_vs_Sham_RA_RNA_adj_user	NTHL1	nth like DNA glycosylase 1	Replication & Transcription	-0.105287	0.765381
+AF_vs_Sham_RA_RNA_adj_user	POLDIP2	DNA polymerase delta interacting protein 2	Replication & Transcription	0.193376	0.0713521
+AF_vs_Sham_RA_RNA_adj_user	POLG	DNA polymerase gamma, catalytic subunit	Replication & Transcription	0.107629	0.531831
+AF_vs_Sham_RA_RNA_adj_user	POLRMT	RNA polymerase mitochondrial	Replication & Transcription	0.133686	0.472449
+AF_vs_Sham_RA_RNA_adj_user	RAD51	RAD51 recombinase	Replication & Transcription	0.0529095	0.900371
+AF_vs_Sham_RA_RNA_adj_user	RNASEH1	ribonuclease H1	Replication & Transcription	0.352999	0.101149
+AF_vs_Sham_RA_RNA_adj_user	RRM2B	ribonucleotide reductase regulatory TP53 inducible subunit M2B	Replication & Transcription	-0.252768	0.22746
+AF_vs_Sham_RA_RNA_adj_user	SSBP1	single stranded DNA binding protein 1	Replication & Transcription	0.0312359	0.933891
+AF_vs_Sham_RA_RNA_adj_user	SUPV3L1	Suv3 like RNA helicase	Replication & Transcription	-0.083927	0.704022
+AF_vs_Sham_RA_RNA_adj_user	TEFM	transcription elongation factor, mitochondrial	Replication & Transcription	0.490222	0.00214087
+AF_vs_Sham_RA_RNA_adj_user	TFB1M	transcription factor B1, mitochondrial	Replication & Transcription	-0.0680083	0.844798
+AF_vs_Sham_RA_RNA_adj_user	TFB2M	transcription factor B2, mitochondrial	Replication & Transcription	0.317436	0.105895
+AF_vs_Sham_RA_RNA_adj_user	TK2	thymidine kinase 1	Replication & Transcription	-0.281333	0.0246802
+AF_vs_Sham_RA_RNA_adj_user	TOP1MT	DNA topoisomerase I mitochondrial	Replication & Transcription	-0.259611	0.532208
+AF_vs_Sham_RA_RNA_adj_user	TOP3A	DNA topoisomerase III alpha	Replication & Transcription	0.0105551	0.957463
+AF_vs_Sham_RA_RNA_adj_user	TRUB2	TruB pseudouridine synthase family member 2	Replication & Transcription	0.012188	0.955135
+AF_vs_Sham_RA_RNA_adj_user	TWNK	twinkle mtDNA helicase	Replication & Transcription	0.456228	0.0673148
+AF_vs_Sham_RA_RNA_adj_user	UNG	uracil DNA glycosylase	Replication & Transcription	0.616797	0.0100726
+AF_vs_Sham_RA_RNA_adj_user	YRDC	yrdC N6-threonylcarbamoyltransferase domain containing	Replication & Transcription	-0.346061	0.064349
+AF_vs_Sham_RA_RNA_adj_user	ARNT	aryl hydrocarbon receptor nuclear translocator	Transcription (nuclear)	-0.430232	0.0200706
+AF_vs_Sham_RA_RNA_adj_user	ATF4	activating transcription factor 4 	Transcription (nuclear)	-0.433443	0.131017
+AF_vs_Sham_RA_RNA_adj_user	CREB1	cAMP responsive element binding protein 1	Transcription (nuclear)	-0.406653	0.163059
+AF_vs_Sham_RA_RNA_adj_user	ESRRA	estrogen related receptor alpha	Transcription (nuclear)	0.231704	0.0274458
+AF_vs_Sham_RA_RNA_adj_user	FOXO3	forkhead box O3 	Transcription (nuclear)	0.0218197	0.940108
+AF_vs_Sham_RA_RNA_adj_user	GABPA	GA binding protein transcription factor subunit alpha	Transcription (nuclear)	-0.268052	0.302847
+AF_vs_Sham_RA_RNA_adj_user	HIF1A	hypoxia inducible factor 1 subunit alpha 	Transcription (nuclear)	-0.0792838	0.83173
+AF_vs_Sham_RA_RNA_adj_user	MITF	melanocyte inducing transcription factor 	Transcription (nuclear)	-0.145258	0.413177
+AF_vs_Sham_RA_RNA_adj_user	MYC	MYC proto-oncogene, bHLH transcription factor	Transcription (nuclear)	-0.252435	0.695019
+AF_vs_Sham_RA_RNA_adj_user	NRF1	nuclear respiratory factor 1	Transcription (nuclear)	-0.0469624	0.887563
+AF_vs_Sham_RA_RNA_adj_user	PPARA	peroxisome proliferator activated receptor alpha	Transcription (nuclear)	-0.0145957	0.980357
+AF_vs_Sham_RA_RNA_adj_user	PPARG	peroxisome proliferator activated receptor gamma	Transcription (nuclear)	-0.449513	0.0911663
+AF_vs_Sham_RA_RNA_adj_user	PPARGC1A	PPARG coactivator 1 alpha	Transcription (nuclear)	-1.40799	0.000137264
+AF_vs_Sham_RA_RNA_adj_user	PPARGC1B	PPARG coactivator 1 beta	Transcription (nuclear)	-0.196892	0.525664
+AF_vs_Sham_RA_RNA_adj_user	PPRC1	PPARG related coactivator 1	Transcription (nuclear)	-0.229092	0.441896
+AF_vs_Sham_RA_RNA_adj_user	RELA	RELA proto-oncogene, NF-kB subunit 	Transcription (nuclear)	-0.590353	0.00198044
+AF_vs_Sham_RA_RNA_adj_user	SP1	Sp1 transcription factor	Transcription (nuclear)	-0.586863	0.117445
+AF_vs_Sham_RA_RNA_adj_user	TFE3	transcription factor binding to IGHM enhancer 3	Transcription (nuclear)	-0.317715	0.075478
+AF_vs_Sham_RA_RNA_adj_user	TFEB	transcription factor EB	Transcription (nuclear)	-0.439537	0.0137813
+AF_vs_Sham_RA_RNA_adj_user	TP53	tumor protein p53	Transcription (nuclear)	-0.339377	0.165092
+AF_vs_Sham_RA_RNA_adj_user	YAP1	Yes associated protein 1	Transcription (nuclear)	-0.37208	0.0528326
+AF_vs_Sham_RA_RNA_adj_user	YY1	YY1 transcription factor	Transcription (nuclear)	-0.00890655	0.962007
+AF_vs_Sham_RA_RNA_adj_user	ABCB10	ATP binding cassette subfamily B member 10	Transmembrane Transport	0.224476	0.195906
+AF_vs_Sham_RA_RNA_adj_user	ABCB6	ATP binding cassette subfamily B member 6 (Langereis blood group)	Transmembrane Transport	0.0432205	0.872795
+AF_vs_Sham_RA_RNA_adj_user	ABCB7	ATP binding cassette subfamily B member 7	Transmembrane Transport	0.0304123	0.874844
+AF_vs_Sham_RA_RNA_adj_user	ABCB8	ATP binding cassette subfamily B member 8	Transmembrane Transport	-0.197065	0.216979
+AF_vs_Sham_RA_RNA_adj_user	ABCD3	ATP binding cassette subfamily D member 3	Transmembrane Transport	-0.0637496	0.770729
+AF_vs_Sham_RA_RNA_adj_user	ABCE1	ATP binding cassette subfamily E member 1	Transmembrane Transport	-0.193834	0.208761
+AF_vs_Sham_RA_RNA_adj_user	ABCF2	ATP binding cassette subfamily F member 2	Transmembrane Transport	0.0224573	0.9111
+AF_vs_Sham_RA_RNA_adj_user	FAM210B	family with sequence similarity 210 member B	Transmembrane Transport	0.174482	0.277687
+AF_vs_Sham_RA_RNA_adj_user	MRS2	magnesium transporter MRS2	Transmembrane Transport	0.269439	0.0358058
+AF_vs_Sham_RA_RNA_adj_user	NIPSNAP3A	nipsnap homolog 3A	Transmembrane Transport	0.127488	0.773716
+AF_vs_Sham_RA_RNA_adj_user	NIPSNAP3B	nipsnap homolog 3B	Transmembrane Transport	-0.063192	0.771766
+AF_vs_Sham_RA_RNA_adj_user	SFXN1	sideroflexin 1	Transmembrane Transport	-0.161333	0.818061
+AF_vs_Sham_RA_RNA_adj_user	SFXN3	sideroflexin 3	Transmembrane Transport	-0.618748	0.0827954
+AF_vs_Sham_RA_RNA_adj_user	SFXN4	sideroflexin 4	Transmembrane Transport	0.380181	0.0741892
+AF_vs_Sham_RA_RNA_adj_user	SFXN5	sideroflexin 5	Transmembrane Transport	-0.15856	0.646327
+AF_vs_Sham_RA_RNA_adj_user	VDAC1	voltage dependent anion channel 1	Transmembrane Transport	0.0794075	0.515735
+AF_vs_Sham_RA_RNA_adj_user	VDAC2	voltage dependent anion channel 2	Transmembrane Transport	0.0854335	0.361419
+AF_vs_Sham_RA_RNA_adj_user	VDAC3	voltage dependent anion channel 3	Transmembrane Transport	-0.00335536	0.98842
+AF_vs_Sham_RA_RNA_adj_user	ACO1	aconitase 1	Tricarboxylic Acid Cycle	0.270892	0.147153
+AF_vs_Sham_RA_RNA_adj_user	ACO2	aconitase 2	Tricarboxylic Acid Cycle	0.130919	0.351437
+AF_vs_Sham_RA_RNA_adj_user	CS	citrate synthase	Tricarboxylic Acid Cycle	0.169053	0.0901255
+AF_vs_Sham_RA_RNA_adj_user	DLD	dihydrolipoamide dehydrogenase	Tricarboxylic Acid Cycle	0.190286	0.119093
+AF_vs_Sham_RA_RNA_adj_user	DLST	dihydrolipoamide S-succinyltransferase	Tricarboxylic Acid Cycle	-0.000510169	0.997233
+AF_vs_Sham_RA_RNA_adj_user	FH	fumarate hydratase	Tricarboxylic Acid Cycle	0.191218	0.0872907
+AF_vs_Sham_RA_RNA_adj_user	IDH1	isocitrate dehydrogenase (NADP(+)) 1, cytosolic	Tricarboxylic Acid Cycle	0.0217572	0.946482
+AF_vs_Sham_RA_RNA_adj_user	IDH2	isocitrate dehydrogenase (NADP(+)) 2, mitochondrial	Tricarboxylic Acid Cycle	0.0816013	0.521197
+AF_vs_Sham_RA_RNA_adj_user	IDH3A	isocitrate dehydrogenase 3 (NAD(+)) alpha	Tricarboxylic Acid Cycle	0.218465	0.0359792
+AF_vs_Sham_RA_RNA_adj_user	IDH3B	isocitrate dehydrogenase 3 (NAD(+)) beta	Tricarboxylic Acid Cycle	0.175861	0.118226
+AF_vs_Sham_RA_RNA_adj_user	IDH3G	isocitrate dehydrogenase 3 (NAD(+)) gamma	Tricarboxylic Acid Cycle	-0.122117	0.328778
+AF_vs_Sham_RA_RNA_adj_user	MDH1	malate dehydrogenase 1	Tricarboxylic Acid Cycle	0.0383605	0.784081
+AF_vs_Sham_RA_RNA_adj_user	MDH2	malate dehydrogenase 2	Tricarboxylic Acid Cycle	0.09652	0.462277
+AF_vs_Sham_RA_RNA_adj_user	NNT	nicotinamide nucleotide transhydrogenase	Tricarboxylic Acid Cycle	0.225736	0.355317
+AF_vs_Sham_RA_RNA_adj_user	OGDH	oxoglutarate dehydrogenase	Tricarboxylic Acid Cycle	0.0174415	0.908707
+AF_vs_Sham_RA_RNA_adj_user	OGDHL	oxoglutarate dehydrogenase like	Tricarboxylic Acid Cycle	-0.380662	0.558143
+AF_vs_Sham_RA_RNA_adj_user	PDHX	pyruvate dehydrogenase complex component X	Tricarboxylic Acid Cycle	0.240685	0.017314
+AF_vs_Sham_RA_RNA_adj_user	PPTC7	PTC7 protein phosphatase homolog	Tricarboxylic Acid Cycle	0.316964	0.143128
+AF_vs_Sham_RA_RNA_adj_user	SUCLA2	succinate-CoA ligase ADP-forming beta subunit	Tricarboxylic Acid Cycle	0.0255146	0.858028
+AF_vs_Sham_RA_RNA_adj_user	SUCLG2	succinate-CoA ligase GDP-forming beta subunit	Tricarboxylic Acid Cycle	0.00522187	0.975328
+AF_vs_Sham_RA_RNA_adj_user	ATF5	activating transcription factor 5	UPRmt	-0.281504	0.249123
+AF_vs_Sham_RA_RNA_adj_user	DDIT3	DNA damage inducible transcript 3	UPRmt	-1.05307	0.0000115319
+AF_vs_Sham_RA_RNA_adj_user	KDM6B	lysine demethylase 6B	UPRmt	-0.822436	0.149338
+AF_vs_Sham_RA_RNA_adj_user	PHF8	PHD finger protein 8	UPRmt	-0.57302	0.0125478
+AF_vs_Sham_RA_RNA_adj_user	SATB1	SATB homeobox 1	UPRmt	-0.465344	0.0416546
+AF_vs_Sham_RA_RNA_adj_user	UBL5	ubiquitin like 5 	UPRmt	0.432327	0.0185492
+AF_vs_Sham_RA_RNA_adj_user	COQ2	coenzyme Q2, polyprenyltransferase	Ubiquinone Biosynthesis	0.230561	0.0783588
+AF_vs_Sham_RA_RNA_adj_user	COQ3	coenzyme Q3, methyltransferase	Ubiquinone Biosynthesis	-0.00131324	0.997233
+AF_vs_Sham_RA_RNA_adj_user	COQ4	coenzyme Q4	Ubiquinone Biosynthesis	0.197101	0.253507
+AF_vs_Sham_RA_RNA_adj_user	COQ5	coenzyme Q5, methyltransferase	Ubiquinone Biosynthesis	0.123625	0.336501
+AF_vs_Sham_RA_RNA_adj_user	COQ6	coenzyme Q6, monooxygenase	Ubiquinone Biosynthesis	0.214685	0.120625
+AF_vs_Sham_RA_RNA_adj_user	COQ7	coenzyme Q7, hydroxylase	Ubiquinone Biosynthesis	0.450672	0.0161894
+AF_vs_Sham_RA_RNA_adj_user	COQ9	coenzyme Q9	Ubiquinone Biosynthesis	0.228864	0.129338
+AF_vs_Sham_RA_RNA_adj_user	PDSS1	decaprenyl diphosphate synthase subunit 1	Ubiquinone Biosynthesis	0.044255	0.919025
+AF_vs_Sham_RA_RNA_adj_user	PDSS2	decaprenyl diphosphate synthase subunit 2	Ubiquinone Biosynthesis	0.143887	0.51622
+AF_vs_Sham_RA_RNA_adj_user	CHCHD7	coiled-coil-helix-coiled-coil-helix domain containing 7	Unknown	0.0644309	0.84775
+AF_vs_Sham_RA_RNA_adj_user	HSDL1	hydroxysteroid dehydrogenase like 1	Unknown	-0.131789	0.556404
+AF_vs_Sham_RA_RNA_adj_user	PNKD	PNKD metallo-beta-lactamase domain containing	Unknown	-0.0344875	0.867021
+AF_vs_Sham_RA_RNA_adj_user	RSAD1	radical S-adenosyl methionine domain containing 1	Unknown	0.0469212	0.815318
+AF_vs_Sham_RA_RNA_adj_user	TMEM126A	transmembrane protein 126A	Unknown	0.416201	0.0310932
+AF_vs_Sham_RA_RNA_adj_user	TMEM143	transmembrane protein 143	Unknown	0.0992208	0.601185
+----------------------------
+----------------------------
+
