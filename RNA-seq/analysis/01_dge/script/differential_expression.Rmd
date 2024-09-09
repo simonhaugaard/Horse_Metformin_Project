@@ -384,7 +384,10 @@ print(volcano_plots[["met_vs_placebo_LA"]])
 combined_plot <- ((volcano_plots[["AF_vs_sham_RA"]]) | (volcano_plots[["AF_vs_sham_LA"]])) / ((volcano_plots[["met_vs_placebo_RA"]]) | (volcano_plots[["met_vs_placebo_LA"]]))
 print(combined_plot)
 ```
-# Heatmap Generator
+
+# Diagnostics 
+
+## Heatmap Generator
 
 **#TODO:** Just suggestions below. It is up to you if you would like to organize accordingly. 
 
@@ -392,6 +395,8 @@ print(combined_plot)
 - These sections are still relevant to keep in this document:
     - Venn diagrams
     - Heatmaps with only differentially expressed gene results
+
+**#TODO:** You don't need `meta` if you are using `meta_reordered` in your `generate_pheatmap_for_goid()`. Or the other way around... (It seems like this is ChatGPT generated, is it right? Nothing wrong with using ChatGPT though :) )
 
 ```{r Heatmaps, fig.height=10, fig.width=10}
 
@@ -566,13 +571,17 @@ generate_pheatmap_for_goid(
 )
 
 ```
-#Sanity check on SCN5A
+
+### Sanity check on SCN5A
 ```{r}
 # Ensure SCN5A is in the dataset
 scn5a_ensembl <- annot %>% filter(GENENAME == "SCN5A") %>% pull(ENSEMBL)
 
 # Extract SCN5A raw expression data
+#TODO: Don't use count, use logCPM to view expression
 scn5a_raw <- count[scn5a_ensembl, ]
+
+
 
 # Convert row names to a column temporarily for merging
 meta_with_sample <- meta %>% rownames_to_column(var = "Sample")
@@ -615,14 +624,29 @@ ggplot(scn5a_logCPM_melted, aes(x = Group, y = Expression, fill = Group)) +
 
 #Question for ALI: How come my SCN5A expression is mostly blue in the metformin treated group for the RA in the heatmap, when I can see that this is just not true on raw data points? Is it because of the batch-correction and if so, why does that not carry over to the limma-analysis? 
 
-#TO DO: Include heatmap on ionchannels! 
+#Answer from ALI: 
+#1) You should NEVER use raw expression (count) values, always use logCPM or batch corrected logCPM
+#2) I get the same heatmap values with the code. Note that ENSECAG00000000813 = SCN5A
+ra_id <- grepl(pattern = "_RA$", x = colnames(logCPM_batchRemoved))
+pheatmap(logCPM_batchRemoved[c("ENSECAG00000000813","ENSECAG00000023015"),ra_id], 
+         cluster_rows = TRUE, 
+         cluster_cols = TRUE, 
+         scale = "row", 
+         annotation_col = meta_reordered[,c("Region", "Group")],
+         color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+         fontsize = 10,
+         fontsize_row = 8,
+         fontsize_col = 8,
+         )
+
+#TODO: Include heatmap on ionchannels! 
 
 
 ```
 
 
 
-#Venn-diagrams to understand effect of disease and treatment in RA
+## Venn-diagrams to understand effect of disease and treatment in RA
 ```{r}
 # Ensure res_all is a data.table
 res_all <- as.data.table(res_all)
@@ -657,7 +681,7 @@ ggvenn(list(Up_met = met_up_RA, Down_met = met_down_RA, AF_up = af_up_RA, AF_dow
 
 ```
 
-#Heatmaps for genes inversely regulated in metformin treatment and AF
+## Heatmaps for genes inversely regulated in metformin treatment and AF
 ```{r}
 # Load GO annotations
 go_file <- "../../../data/gene_annotation/horse_GO.tsv.gz"
@@ -757,4 +781,9 @@ generate_pheatmap_for_goid(
   meta_reordered = meta_reordered,
   region = "RA"                           # Specified region (RA)
 )
+```
+
+# Session Info
+```{r session_info}
+sessionInfo()
 ```
