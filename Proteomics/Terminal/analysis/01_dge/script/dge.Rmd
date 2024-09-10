@@ -922,8 +922,11 @@ plot_protein_expression("FBLN1", logCounts, data_imp_qrilc, meta)
 
 
 ```
+## TO:DO 
+```{r Question for Thilde, fig.height=10, fig.width=10}
+#Thilde, hvordan kan det være, at kollagen-6 proteinerne ser ud til at være mindre abundant på mit sanity check, men ikke på mine heatmaps? 
 
-
+```
 
 #Sanity check - simplify design matrix
 ```{r sanity check, fig.height=10, fig.width=10}
