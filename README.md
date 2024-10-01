@@ -13,13 +13,13 @@ The project is divided into the following main analysis workflows:
 
 ### Proteomics
 1. **Terminal Samples**: Analyzes terminal samples for differential protein abundance, enrichment, and pathway interactions.
-2. **Timecourse Samples**: Evaluates dynamic changes in protein abundance across different time points in horses treated with metformin compared to controls. Only available for the right atrium (RA).
+2. **Timecourse Samples**: Evaluates dynamic changes in protein abundance across different time points in horses treated with metformin compared to controls. Only available for the right atrium. 
 
 ### RNA-seq
-Performs transcriptome-wide differential expression analysis and gene enrichment using RNA-seq data.
+Performs transcriptome-wide differential expression analysis and gene enrichment on left- and right atrial terminal samples. 
 
 ### Integration of Omics
-Combines multi-omics data (proteomics and transcriptomics) for joint dimensionality reduction analysis (MCIA) and functional enrichment of high-loading features.
+Combines multi-omics data (proteomics and transcriptomics) for joint dimensionality reduction analysis (MCIA) and functional enrichment of high-loading features. Only looking at the effect of metformin in the right atrium, as this is were the phenotypical difference was present. 
 
 ## Directory Structure
 - Horse_Metformin_project.Rproj
