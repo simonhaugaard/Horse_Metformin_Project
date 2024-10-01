@@ -19,102 +19,123 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Required R libraries
 ```{r libraries}
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load("magrittr")
-pacman::p_load("data.table")
-pacman::p_load("clusterProfiler")
-library(jsonlite)
-library(httr)
-library(data.table)
-library(stringi)
-
+# Install and load the necessary libraries using pacman
+if (!require("pacman")) install.packages("pacman")  
+pacman::p_load("magrittr",                          
+               "data.table",                        
+               "clusterProfiler",                   
+               "jsonlite",                          
+               "httr",                             
+               "stringi")    
 ```
 
 
 ## Read data
 ```{r read_data}
-# read data
+# Read differential gene expression (DGE) results from a specified file path
 dge_file <- "../../01_dge/output/dge_results.tsv.gz"
-dge <- fread(dge_file)
+dge <- fread(dge_file)  # Read in the DGE results file using fread
+
+# Add a new column to categorize upregulated and downregulated genes based on log fold-change (logFC)
 dge[, Direction := ifelse(logFC > 0, "up", "down")]
 
-# Read gene annotation data
+# Read gene annotation data from a specified file path
 geneinfo_file <- "../../../data/gene_annotation/horse_gene_annotation.tsv.gz"
 geneinfo <- fread(geneinfo_file)
+
+# Set new column names for better clarity
 setnames(geneinfo, new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
                            "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
 
-# Remove unwanted columns and duplicate entries
-geneinfo <- geneinfo[, c("ENSEMBLv", "Description_detailed") := NULL]
-geneinfo <- geneinfo[!duplicated(ENSEMBL), ]
+# Remove unwanted columns and duplicated entries based on ENSEMBL IDs
+geneinfo <- geneinfo[, c("ENSEMBLv", "Description_detailed") := NULL]  # Remove columns not needed
+geneinfo <- geneinfo[!duplicated(ENSEMBL), ]                           # Retain only unique entries
 
-# Extract GENENAME from DGE file (assuming "GeneName" column exists in DGE)
+# Extract gene names (GENENAME) from DGE data, assuming "GeneName" column exists in DGE file
 dge[, GENENAME := sub(".*_", "", GeneName)]
 
 # Merge DGE data with gene annotation data based on GENENAME
+# The merge is performed to align DGE results with additional annotation information
 dge <- merge(dge, geneinfo[, .(ENSEMBL, GENENAME, ENTREZID)], by = "GENENAME", all.x = TRUE)
+
+# Reorder columns to prioritize key identifiers (ENSEMBL, GENENAME, ENTREZID)
 setcolorder(dge, c("ENSEMBL", "GENENAME", "ENTREZID", setdiff(names(dge), c("ENSEMBL", "GENENAME", "ENTREZID"))))
 
+# Convert ENTREZID column to character for downstream compatibility
 dge[, ENTREZID := as.character(ENTREZID)]
 
-# subset relevant contrasts
-dge <- dge[Contrast %in% c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_RA", "Metformin_vs_AF_LA", "AverageTreatmentEffect", "AverageDiseaseEffect")]
+# Filter the DGE results for specific relevant contrasts of interest
+dge <- dge[Contrast %in% c("AF_vs_Sham_RA", "AF_vs_Sham_LA", 
+                           "Metformin_vs_AF_RA", "Metformin_vs_AF_LA", 
+                           "AverageTreatmentEffect", "AverageDiseaseEffect")]
 
-# DGE results with only valid Entrez IDs
+# Keep only entries with valid Entrez IDs for enrichment analysis
 dge_entrez <- dge[!is.na(ENTREZID),]
 
-# significance cut-off
-dge_cut <- 0.05
-enrich_cut <- 0.05
+# Define statistical cutoffs for differential gene expression and enrichment analysis
+dge_cut <- 0.05        # Significance cutoff for differential gene expression (p-value)
+enrich_cut <- 0.05     # Significance cutoff for enrichment analysis (q-value)
+
+
 ```
 
 The analysis will be performed according to following statistical cutoffs.
 
-- *Differential gene expression:* adjusted p-value (FDR) < `r dge_cut`
+- *Differential gene expression:* p-value < `r dge_cut`
 - *Enrichment analysis:* adjusted p-value (Q-value) < `r enrich_cut`
 
 # GO
-
-We can use "ENSEMBL" IDs for **GO** enrichment analysis as the downloaded ontology information has more ENSEMBL IDs within a GO ontology more than ENTREZ (NCBI Gene) IDs. Normally, majority of ontology databases still use ENTREZ IDs. 
-
 ```{r go}
-# Read & clean GO data
+# Read & Clean Gene Ontology (GO) Data
+# The GO file contains the gene-to-GO term mappings necessary for enrichment analysis
 go_file <- "../../../data/gene_annotation/horse_GO.tsv.gz"
 go <- fread(go_file)
-go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
-setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
+
+# Rename the columns for clarity and consistency
+setnames(go, old = c("Gene stable ID", "GO term accession", "GO term name", "GO domain"),
+         new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
+
+# Filter out rows with missing GO domain information
 go <- go[GOdomain != "", ]
 
+# Split GO mappings by domain (e.g., Biological Process, Molecular Function) into separate lists
 term2gene <- split(go[,c("GOID", "ENSEMBL")], f = go$GOdomain)
 term2name <- split(go[,c("GOID", "Description")], f = go$GOdomain)
 ```
 
 ## ORA on non-adjusted Pvalues
 ```{r go_ora}
+# Split differential gene expression (DGE) data into separate lists by contrast
 dge_split <- split(dge, f = dge$Contrast)
 
+# Initialize an empty list to store GO ORA results
 go_ora <- list()
 
+# Loop over gene sets ("all", "up", and "down"), GO domains, and contrasts to perform enrichment analysis
 for(k in c("all", "up", "down")){
   for (j in names(term2gene)){
     for (i in names(dge_split)){
       message(paste0("Running GO ORA for '", i, "'", " within ", j, " ('", k, "' genes)"))
 
+      # Select genes based on direction ("all", "up", "down") and significance cutoff
       if(k == "all"){
-        gene <- dge_split[[i]][P.Value < dge_cut,ENSEMBL]
-      }else if(k == "up"){
-        gene <- dge_split[[i]][P.Value < dge_cut & Direction == "up",ENSEMBL]
-      }else if(k == "down"){
-        gene <- dge_split[[i]][P.Value < dge_cut & Direction == "down",ENSEMBL]
+        gene <- dge_split[[i]][P.Value < dge_cut, ENSEMBL]
+      } else if(k == "up"){
+        gene <- dge_split[[i]][P.Value < dge_cut & Direction == "up", ENSEMBL]
+      } else if(k == "down"){
+        gene <- dge_split[[i]][P.Value < dge_cut & Direction == "down", ENSEMBL]
       }
-      
+
+      # Skip if no differentially expressed genes (DEGs) found
       if(length(gene) == 0){
         warning("No DEG found, skipping...\n")
         next
       }
-      
-      universe <- dge_split[[i]][,ENSEMBL]
-      
+
+      # Define the universe of genes to use as background in enrichment analysis
+      universe <- dge_split[[i]][, ENSEMBL]
+
+      # Perform GO enrichment analysis using the `enricher` function from clusterProfiler
       go_ora[[i]][[j]][[k]] <- enricher(gene = gene, 
                                      TERM2GENE = term2gene[[j]],
                                      TERM2NAME = term2name[[j]],
@@ -125,32 +146,41 @@ for(k in c("all", "up", "down")){
                                      maxGSSize = 500, 
                                      universe = universe
       )@result
+
+      # Annotate the resulting data with contrast, database, and direction
       go_ora[[i]][[j]][[k]]$Contrast <- i
       go_ora[[i]][[j]][[k]]$Database <- j
       go_ora[[i]][[j]][[k]]$Direction <- k
-      
     }
   }
 }
 
+# Combine and convert the list of results into a single data table
 go_ora_res <- do.call(rbind, go_ora %>% unlist(recursive=FALSE) %>% unlist(recursive = F)) %>% setDT
+
+# Display the first few rows of the results for inspection
 head(go_ora_res)
-go_ora_res[qvalue < enrich_cut,]
 
-#Create output data
-fwrite(x = go_ora_res, file = "../output/GO_ora.tsv.gz", sep = "\t")
-go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
-openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora.xlsx", asTable = TRUE)
+# Filter for significant terms based on the adjusted q-value cutoff
+go_ora_res_significant <- go_ora_res[qvalue < enrich_cut, ]
 
-filtered_go_ora_res <- go_ora_res %>% 
-  filter(Direction != "all")
+# Save results to disk (commented out to avoid overwriting during testing)
+# fwrite(x = go_ora_res, file = "../output/GO_ora.tsv.gz", sep = "\t")
+# go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
+# openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora.xlsx", asTable = TRUE)
 
-# Function to plot dot plots for each contrast
+# Remove the "all" category for plotting purposes
+filtered_go_ora_res <- go_ora_res %>% filter(Direction != "all")
+
+# Function to generate dot plots for enrichment results for specific contrasts
 plot_dotplot_for_contrast <- function(data, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
                                       direction = "Direction", group = "Contrast", dot = "GeneRatio", qval = "qvalue", 
                                       term.id = "ID", term.name = "Description") {
   for (contrast in contrasts) {
+    # Filter data for the given contrast
     filtered_data <- data %>% filter(Contrast == contrast)
+    
+    # If data is available for the contrast, plot it
     if (nrow(filtered_data) > 0) {
       print(aamisc::dotplotEnrich(dt = filtered_data, 
                                   topn = topn, 
@@ -164,16 +194,17 @@ plot_dotplot_for_contrast <- function(data, contrasts, topn = 10, topn.pref = "q
                                   term.id = term.id, 
                                   term.name = term.name))
     } else {
+      # Display a message if no data is available for the contrast
       message(paste("No data for contrast:", contrast))
     }
   }
 }
 
-# Example usage
-# Assuming filtered_go_ora_res is your GO enrichment result data frame
+# Define a list of contrasts to plot
 contrasts <- c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_LA", "AverageDiseaseEffect", "AverageTreatmentEffect")
-plot_dotplot_for_contrast(data = filtered_go_ora_res, contrasts = contrasts)
 
+# Generate dot plots for the defined contrasts
+plot_dotplot_for_contrast(data = filtered_go_ora_res, contrasts = contrasts)
 
 ```
 
@@ -224,8 +255,8 @@ go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
 #Output data
 go_gsea_res_split <- split(go_gsea_res, f = go_gsea_res$Contrast)
 
-openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea.xlsx", asTable = TRUE)
-fwrite(x = go_gsea_res_split, file = "../output/go_gsea.tsv.gz", sep = "\t")
+# openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea.xlsx", asTable = TRUE)
+# fwrite(x = go_gsea_res_split, file = "../output/go_gsea.tsv.gz", sep = "\t")
 
 # Function to plot dot plots for each contrast
 plot_dotplot_for_contrast <- function(data_split, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
@@ -260,85 +291,11 @@ contrasts <- c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_RA", "Metformi
 plot_dotplot_for_contrast(data_split = go_gsea_res_split, contrasts = contrasts)
 
 ```
-###Revigo - reduce redundant terms and plot
-```{r}
-# Function to process GSEA data and submit to REVIGO, fetch results, and plot
-process_gsea_data <- function(data, cutoff = 0.5, valueType = "pvalue", speciesTaxon = "0", measure = "Simrel", enrich_cut = 0.05) {
-  # Filter significant terms and create submission string
-  significant_terms <- data[p.adjust < 0.05, ]
-  go_list_string <- paste(significant_terms$ID, significant_terms$p.adjust, sep=" ", collapse="\n")
-
-  # Submit to Revigo and return job ID
-  response <- POST("http://revigo.irb.hr/StartJob", body = list(
-    cutoff = cutoff,
-    valueType = valueType,
-    speciesTaxon = speciesTaxon,
-    measure = measure,
-    goList = go_list_string
-  ), encode = "form")
-  job_id <- fromJSON(content(response, type = "text", encoding = "UTF-8"))$jobid
-
-  # Wait for job completion
-  running <- "1"
-  while (running != "0") {
-    response <- GET("http://revigo.irb.hr/QueryJob", query = list(jobid = job_id, type="jstatus"))
-    running <- fromJSON(content(response, type = "text", encoding = "UTF-8"))$running
-    Sys.sleep(1)
-  }
-
-  # Fetch and combine results from all namespaces
-  namespaces <- c("1", "2", "3")
-  results <- lapply(namespaces, function(ns) {
-    response <- GET("http://revigo.irb.hr/QueryJob", query = list(jobid = job_id, namespace = ns, type = "table"))
-    fread(text = content(response, type = "text", encoding = "UTF-8"))
-  })
-  combined_results <- rbindlist(results, use.names = TRUE, fill = TRUE)
-
-  # Filter null terms and match with original data
-  null_term_ids <- combined_results[Representative == "null", .(TermID)]
-  reduced_terms <- data[ID %in% null_term_ids$TermID]
-
-  # Plot results
-  aamisc::dotplotEnrich(dt = reduced_terms, 
-                topn = 10, 
-                topn.pref = "qval", 
-                qcut = enrich_cut, 
-                nchar = 60, 
-                direction = "direction",
-                group = "Contrast", 
-                dot = "NES", 
-                qval = "qvalue", 
-                term.id = "ID",
-                term.name = "Description")
-}
-
-# Plot for LA and RA GO-GSEA
-process_gsea_data(go_gsea_res_split[["AF_vs_Sham_RA"]])
-process_gsea_data(go_gsea_res_split[["AF_vs_Sham_LA"]])
-process_gsea_data(go_gsea_res_split[["Metformin_vs_AF_RA"]])
-process_gsea_data(go_gsea_res_split[["Metformin_vs_AF_LA"]])
-process_gsea_data(go_gsea_res_split[["AverageDiseaseEffect"]])
-
-
-```
-
 
 # KEGG
 ## ORA
 ```{r kegg_ora}
-#KEGG_ora_all <- compareCluster(ENTREZID ~ Contrast,  #No differences found, going straight to up/Down
-                          #data          = dge_entrez[P.Value < dge_cut,],
-                          #fun           = "enrichKEGG",
-                          #universe      = dge_entrez[, ENTREZID],
-                         # organism      = "ecb",
-                         # pAdjustMethod = "BH",
-                         # minGSSize     = 10,
-                         # maxGSSize     = 500,
-                         # pvalueCutoff  = enrich_cut,
-                        #  qvalueCutoff  = enrich_cut)@compareClusterResult %>% setDT
-#KEGG_ora_all$Direction <- "all"
-#aamisc::moveMeDataTable(KEGG_ora_all, tomove = "Direction", where = "after", ba = "Contrast")
-
+# This section performs KEGG pathway enrichment analysis using overrepresentation analysis (ORA).
 KEGG_ora_upDown <- compareCluster(ENTREZID ~ Contrast + Direction, 
                              data          = dge_entrez[P.Value < dge_cut,],
                              fun           = "enrichKEGG",
@@ -402,6 +359,8 @@ plot_dotplot_for_contrast_kegg(data = filtered_KEGG_ora, contrasts = contrasts)
 
 ## GSEA 
 ```{r kegg_gsea}
+# This section performs Gene Set Enrichment Analysis (GSEA) on KEGG pathways using the `gseKEGG` function.
+# The analysis is performed for each contrast separately using ENTREZ IDs.
 dge_split <- split(dge_entrez, f = dge_entrez$Contrast)
 kegg_gsea <- list()
 
@@ -465,14 +424,4 @@ plot_dotplot_for_contrast_kegg_gsea <- function(data_split, contrasts, topn = 10
 # Plot
 plot_dotplot_for_contrast_kegg_gsea(data_split = kegg_gsea, contrasts = contrasts)
 ```
-
-# Extracellular Matrix Profiling
-```{r}
-# Filtrer significant genes (any comparisons) for GO:0031012
-
-
-
-
-```
-
 

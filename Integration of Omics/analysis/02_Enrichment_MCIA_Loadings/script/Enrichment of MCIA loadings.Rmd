@@ -1,0 +1,122 @@
+---
+title: "Enrichments of overlap"
+author: "Simon Haugaard"
+date: "2024-08-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Gene enrichment analysis
+
+## Required R libraries
+```{r libraries}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("magrittr")
+pacman::p_load("data.table")
+pacman::p_load("clusterProfiler")
+library(jsonlite)
+library(httr)
+library(data.table)
+library(stringi)
+```
+
+
+#GSEA on loadings from MCIA (Supplementary File_MultiOmics)
+```{r}
+# Load MCIA results
+# We perform GSEA on the maximum loadings (either gene or protein) contributing the most to the joint dimension reduction (jDR).
+# The positive loadings correspond to control horses, while the negative loadings correspond to metformin-treated horses.
+loadings_MCIA <- fread("../../../data/loading_result_mcia_condition_RA")
+
+# Convert Loading1 to numeric
+loadings_MCIA[, Loading1 := as.numeric(gsub(",", ".", Loading1))]
+
+# Extract the maximum loading (considering absolute value) for each gene label
+max_loadings <- loadings_MCIA[, .SD[which.max(abs(Loading1))], by = label]
+
+# View the resulting table with 'label' and maximum 'Loading1'
+result <- max_loadings[, .(Gene, Loading1, label)]
+print(result)
+
+# Create the gene list for GSEA, containing the loadings from component 1 for each gene/protein
+gene_list <- result$Loading1
+names(gene_list) <- result$label
+
+# Sort the gene list by Loading1 values in decreasing order
+gene_list <- sort(gene_list, decreasing = TRUE)
+
+
+# Load gene annotation data to map between gene names and ENSEMBL IDs
+geneinfo_file <- "../../../../Proteomics/terminal/data/gene_annotation/horse_gene_annotation.tsv.gz"
+geneinfo <- fread(geneinfo_file)
+setnames(geneinfo, new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
+                           "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
+
+# Filter out entries without a GO domain and split into term2gene and term2name lists
+go_file <- "../../../../RNA-seq/data/gene_annotation/horse_GO.tsv.gz"
+go <- fread(go_file)
+go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
+setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
+go <- go[GOdomain != "", ]
+
+term2gene <- split(go[,c("GOID", "ENSEMBL")], f = go$GOdomain)
+term2name <- split(go[,c("GOID", "Description")], f = go$GOdomain)
+
+# Map GENENAME to ENSEMBL IDs
+# This ensures that the gene names in 'gene_list' are correctly matched with ENSEMBL IDs
+mapped_ensembl <- geneinfo$ENSEMBL[match(names(gene_list), geneinfo$GENENAME)]
+
+# Create a new gene list with ENSEMBL IDs as names
+gene_list_mapped <- gene_list
+names(gene_list_mapped) <- mapped_ensembl
+
+# Remove entries with missing ENSEMBL IDs
+gene_list_mapped <- gene_list_mapped[!is.na(names(gene_list_mapped))]
+
+
+# Initialize the list to store GSEA results
+go_gsea <- list()
+
+# Loop over each GO domain (biological_process, molecular_function, cellular_component)
+for (j in names(term2gene)) {
+    message(paste0("Running GO GSEA for the gene list within ", j))
+    
+    # Ensure the gene list is sorted for GSEA
+    gene_list_mapped <- sort(gene_list_mapped, decreasing = TRUE)
+    
+    # Run GSEA
+    go_gsea[[j]] <- GSEA(geneList = gene_list_mapped, 
+                         TERM2GENE = term2gene[[j]], 
+                         TERM2NAME = term2name[[j]], 
+                         pvalueCutoff = 0.05,   # Adjust as needed
+                         minGSSize = 10, 
+                         maxGSSize = 500, 
+                         eps = 0, 
+                         nPermSimple = 10000)@result  # Adjust 'nPermSimple' based on your needs
+    
+    # Add domain information to the results
+    go_gsea[[j]]$Database <- j
+}
+
+go_gsea_res <- do.call(rbind, go_gsea) %>% setDT()
+head(go_gsea_res)
+go_gsea_res[qvalue < 0.05,]
+go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
+
+# Save the GSEA results to Excel for downstream analysis and visualization
+
+openxlsx::write.xlsx(x = go_gsea_res, file = "../output/GO_gsea_loadings_MCIA.xlsx", asTable = TRUE)
+
+# Output summary of GSEA results for quick inspection
+print(head(go_gsea_res))
+print(go_gsea_res[qvalue < 0.05, ])
+
+# Note: In the context of these GSEA results, "up" refers to positive loadings, indicating a stronger association with control horses, 
+# while "down" refers to negative loadings, indicating a stronger association with metformin-treated horses.
+
+
+```
+

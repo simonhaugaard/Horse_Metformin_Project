@@ -7,7 +7,7 @@ output:
     toc: true
     toc_float: true
     toc_collapsed: true
-    toc_depth: 3
+    toc_depth: 4
     number_sections: true
 ---
 
@@ -16,34 +16,54 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Gene enrichment analysis
+This script performs gene ontology (GO) and KEGG enrichment analysis on differential gene expression results.
+The analysis uses predefined contrasts and statistical cut-offs for both differential expression and enrichment analysis.
+Required R libraries are loaded, and the input data files are read, processed, and analyzed using `clusterProfiler`.
 
 ## Required R libraries
 ```{r libraries}
+# Install `pacman` if not already available
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load("magrittr")
-pacman::p_load("data.table")
-pacman::p_load("clusterProfiler")
-library(jsonlite)
-library(httr)
-library(data.table)
-library(stringi)
+
+# Use `pacman` to load and manage required packages
+pacman::p_load("magrittr")           # Piping operations (%>%)
+pacman::p_load("data.table")         # High-performance data manipulation
+pacman::p_load("clusterProfiler")    # GO and pathway enrichment analysis
+pacman::p_load("stringi")            # String manipulation (e.g., regex operations)
+pacman::p_load("httr")               # HTTP requests for web API interactions (e.g., Revigo)
+pacman::p_load("jsonlite")           # JSON handling for processing Revigo responses
+pacman::p_load_gh("altintasali/aamisc") # Custom library for MDS, dot plots, and enrichment visualization
+
+# Ensure `aamisc` is installed from GitHub if not already available.
+# `aamisc` provides custom visualization functions such as `dotplotEnrich` used in this analysis.
+if (!requireNamespace("aamisc", quietly = TRUE)) {
+  if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")  # Install `devtools` if not already installed
+  devtools::install_github("altintasali/aamisc")  # Install `aamisc` from GitHub
+  library(aamisc)  # Load `aamisc`
+}
+
+# Verify that `httr` and `jsonlite` are correctly installed and loaded for web requests
+if (!requireNamespace("httr", quietly = TRUE)) install.packages("httr")
+if (!requireNamespace("jsonlite", quietly = TRUE)) install.packages("jsonlite")
 ```
 
 
 ## Read data
 ```{r read_data}
-# read data
+#Read the differential gene expression (DGE) results.
+# The `dge_file` contains differential expression results, including log fold-changes and adjusted p-values.
 dge_file <- "../../01_dge/output/dge_results.tsv.gz"
 dge <- fread(dge_file)
+# Add a new column "Direction" to indicate whether a gene is upregulated or downregulated based on logFC.
 dge[, Direction := ifelse(logFC > 0, "up", "down")]
+# Convert ENTREZID to character for compatibility with downstream enrichment functions.
 dge[, ENTREZID := as.character(ENTREZID)]
 
 # subset relevant contrasts
 contrasts <- c("AF_vs_sham_RA", "AF_vs_sham_LA", "met_vs_placebo_RA", "met_vs_placebo_LA", "AverageTreatmentEffect", "AverageDiseaseEffect")
 dge <- dge[Contrast %in% contrasts]
-# TODO: Feel free to update this part accordingly
 
-# DGE results with only valid Entrez IDs
+# Filter the DGE results to retain only rows with valid Entrez IDs.
 dge_entrez <- dge[!is.na(ENTREZID),]
 
 # significance cut-off
@@ -58,75 +78,108 @@ The analysis will be performed according to following statistical cutoffs.
 
 # GO
 
-We can use "ENSEMBL" IDs for **GO** enrichment analysis as the downloaded ontology information has more ENSEMBL IDs within a GO ontology more than ENTREZ (NCBI Gene) IDs. Normally, majority of ontology databases still use ENTREZ IDs. 
+We can use "ENSEMBL" IDs for **GO** enrichment analysis as the downloaded ontology information has more ENSEMBL IDs within a GO ontology more than ENTREZ (NCBI Gene) IDs. 
 
 ```{r go}
-# Read & clean GO data
+# Read and clean GO data for enrichment analysis.
+# The GO data file contains mappings between gene identifiers (ENSEMBL) and GO terms.
 go_file <- "../../../data/gene_annotation/horse_GO.tsv.gz"
 go <- fread(go_file)
+
+# Select and rename relevant columns for compatibility with clusterProfiler.
 go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
 setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
+
+# Filter out rows without a specified GO domain to retain only valid GO entries.
 go <- go[GOdomain != "", ]
 
+# Prepare two lists required for GO enrichment analysis:
+# - term2gene: A mapping of GO terms (GOID) to ENSEMBL gene IDs.
+# - term2name: A mapping of GO terms (GOID) to their respective descriptions.
 term2gene <- split(go[,c("GOID", "ENSEMBL")], f = go$GOdomain)
 term2name <- split(go[,c("GOID", "Description")], f = go$GOdomain)
+
+# The term2gene and term2name lists will be used in subsequent enrichment analyses with clusterProfiler.
 ```
 
-## ORA
-
+## ORA - Overrepresentation Analysis for Gene Ontology (GO) Terms
 ```{r go_ora}
+# Split the DGE results by contrast for individual enrichment analysis.
 dge_split <- split(dge, f = dge$Contrast)
 
+# Initialize an empty list to store enrichment analysis results.
 go_ora <- list()
 
+# Loop over different gene sets ("all", "up", "down") and GO databases.
 for(k in c("all", "up", "down")){
   for (j in names(term2gene)){
     for (i in names(dge_split)){
       message(paste0("Running GO ORA for '", i, "'", " within ", j, " ('", k, "' genes)"))
 
+      # Select genes based on the specified direction and significance cut-off.
       if(k == "all"){
-        gene <- dge_split[[i]][adj.P.Val < dge_cut,ENSEMBL]
-      }else if(k == "up"){
-        gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "up",ENSEMBL]
-      }else if(k == "down"){
-        gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "down",ENSEMBL]
+        gene <- dge_split[[i]][adj.P.Val < dge_cut, ENSEMBL]
+      } else if(k == "up"){
+        gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "up", ENSEMBL]
+      } else if(k == "down"){
+        gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "down", ENSEMBL]
       }
       
+      # Skip analysis if no significant genes are found.
       if(length(gene) == 0){
         warning("No DEG found, skipping...\n")
         next
       }
       
-      universe <- dge_split[[i]][,ENSEMBL]
+      # Define the "universe" of genes for enrichment testing.
+      universe <- dge_split[[i]][, ENSEMBL]
       
-      go_ora[[i]][[j]][[k]] <- enricher(gene = gene, 
-                                     TERM2GENE = term2gene[[j]],
-                                     TERM2NAME = term2name[[j]],
-                                     pAdjustMethod = "BH",
-                                     pvalueCutoff = 1, 
-                                     qvalueCutoff = 1,
-                                     minGSSize = 10, 
-                                     maxGSSize = 500, 
-                                     universe = universe
-      )@result
-      go_ora[[i]][[j]][[k]]$Contrast <- i
-      go_ora[[i]][[j]][[k]]$Database <- j
-      go_ora[[i]][[j]][[k]]$Direction <- k
+      # Run enrichment analysis using the `enricher` function from clusterProfiler.
+      # Use `tryCatch()` to handle cases where enrichment returns an empty result.
+      go_ora[[i]][[j]][[k]] <- tryCatch(
+        {
+          enricher(gene = gene, 
+                   TERM2GENE = term2gene[[j]],    # Mapping of GO terms to genes
+                   TERM2NAME = term2name[[j]],    # Mapping of GO terms to descriptions
+                   pAdjustMethod = "BH",          # Use Benjamini-Hochberg correction for p-values
+                   pvalueCutoff = dge_cut,        # Set p-value cut-off
+                   qvalueCutoff = enrich_cut,     # Set q-value cut-off
+                   minGSSize = 10,                # Minimum number of genes in a GO term
+                   maxGSSize = 500,               # Maximum number of genes in a GO term
+                   universe = universe            # Background universe of genes for testing
+          )@result
+        },
+        error = function(e){
+          message(paste("Error in ORA for", i, "within", j, "for", k, "direction:", e$message))
+          NULL
+        }
+      )
       
+      # If the result is not empty, add contrast, database, and direction annotations.
+      if (!is.null(go_ora[[i]][[j]][[k]])) {
+        go_ora[[i]][[j]][[k]]$Contrast <- i
+        go_ora[[i]][[j]][[k]]$Database <- j
+        go_ora[[i]][[j]][[k]]$Direction <- k
+      }
     }
   }
 }
 
+# Combine the results into a single data table for downstream analysis and visualization.
 go_ora_res <- do.call(rbind, go_ora %>% unlist(recursive=FALSE) %>% unlist(recursive = F)) %>% setDT
+
+# Display the first few rows of the combined enrichment results.
 head(go_ora_res)
-go_ora_res[qvalue < enrich_cut,]
 
-#Create output data
-fwrite(x = go_ora_res, file = "../output/GO_ora.tsv.gz", sep = "\t")
-go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
-openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora.xlsx", asTable = TRUE)
+# Filter and display significant enrichment results based on the defined q-value cut-off.
+go_ora_res[qvalue < enrich_cut, ]
 
-#Plot results
+# (Optional) Create output data files - Uncomment if you want to save the results locally.
+# fwrite(x = go_ora_res, file = "../output/GO_ora.tsv.gz", sep = "\t")
+# go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
+# openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora.xlsx", asTable = TRUE)
+
+# Plot the top 10 GO terms for each contrast using the `dotplotEnrich` function from `aamisc`.
 aamisc::dotplotEnrich(dt = go_ora_res, 
                       topn = 10, 
                       topn.pref = "qval", 
@@ -139,25 +192,12 @@ aamisc::dotplotEnrich(dt = go_ora_res,
                       term.id = "ID",
                       term.name = "Description")
 
+# Generate dot plots for individual contrasts, excluding the "all" direction.
+# This visualization focuses on "up" and "down" regulated genes, which are more informative.
+filtered_go_ora_res <- go_ora_res %>% filter(Direction != "all")
 
-#Plot results without "all" direction as it seems redundant
-##First RA
-filtered_go_ora_res <- go_ora_res %>% 
-  filter(Direction != "all")
-aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% 
-                        filter(Contrast == "AF_vs_sham_RA"), 
-                      topn = 10, 
-                      topn.pref = "qval", 
-                      qcut = enrich_cut, 
-                      nchar = 60, 
-                      direction = "Direction", 
-                      group = "Contrast", 
-                      dot = "GeneRatio", 
-                      qval = "qvalue", 
-                      term.id = "ID",
-                      term.name = "Description")
-aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% 
-                        filter(Contrast == "AF_vs_sham_LA"), 
+# Generate dot plots for specific contrasts.
+aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% filter(Contrast == "AF_vs_sham_RA"), 
                       topn = 10, 
                       topn.pref = "qval", 
                       qcut = enrich_cut, 
@@ -169,8 +209,7 @@ aamisc::dotplotEnrich(dt = filtered_go_ora_res %>%
                       term.id = "ID",
                       term.name = "Description")
 
-aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% 
-                        filter(Contrast == "met_vs_placebo_RA"), 
+aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% filter(Contrast == "AF_vs_sham_LA"), 
                       topn = 10, 
                       topn.pref = "qval", 
                       qcut = enrich_cut, 
@@ -182,8 +221,9 @@ aamisc::dotplotEnrich(dt = filtered_go_ora_res %>%
                       term.id = "ID",
                       term.name = "Description")
 
-aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% 
-                        filter(Contrast == "AverageTreatmentEffect"), 
+# Additional contrasts can be visualized similarly:
+# Example for Metformin vs. Placebo in RA
+aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% filter(Contrast == "met_vs_placebo_RA"), 
                       topn = 10, 
                       topn.pref = "qval", 
                       qcut = enrich_cut, 
@@ -195,8 +235,8 @@ aamisc::dotplotEnrich(dt = filtered_go_ora_res %>%
                       term.id = "ID",
                       term.name = "Description")
 
-aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% 
-                        filter(Contrast == "AverageDiseaseEffect"), 
+# Average Treatment and Disease Effects
+aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% filter(Contrast == "AverageTreatmentEffect"), 
                       topn = 10, 
                       topn.pref = "qval", 
                       qcut = enrich_cut, 
@@ -208,129 +248,192 @@ aamisc::dotplotEnrich(dt = filtered_go_ora_res %>%
                       term.id = "ID",
                       term.name = "Description")
 
+aamisc::dotplotEnrich(dt = filtered_go_ora_res %>% filter(Contrast == "AverageDiseaseEffect"), 
+                      topn = 10, 
+                      topn.pref = "qval", 
+                      qcut = enrich_cut, 
+                      nchar = 60, 
+                      direction = "Direction", 
+                      group = "Contrast", 
+                      dot = "GeneRatio", 
+                      qval = "qvalue", 
+                      term.id = "ID",
+                      term.name = "Description")
 ```
 
-###Revigo - reduce redundant terms and plot
-```{r}
+### Revigo - Reduce Redundant Terms and Plot
+```{r Revigo}
+# This function submits gene ontology (GO) enrichment results to Revigo,
+# a web tool that reduces GO terms based on semantic similarity, and then plots
+# the reduced terms using the `dotplotEnrich` function from the `aamisc` package.
+# Arguments:
+# - data: A data frame containing GO enrichment results (e.g., `go_ora_res`).
+# - cutoff: Similarity threshold for term reduction in Revigo (e.g., 0.5).
+# - valueType: Type of value used for Revigo input, typically "pvalue".
+# - speciesTaxon: Taxonomic ID for species. "0" corresponds to generic GO terms.
+# - measure: Semantic similarity measure for Revigo (e.g., "SIMREL").
+# - enrich_cut: Q-value cut-off for enrichment visualization.
+# - contrasts: A vector of contrasts for which to generate visualizations.
+
 fetch_and_process_revigo <- function(data, cutoff, valueType = "pvalue", speciesTaxon = "0", measure = "SIMREL", enrich_cut = 0.05, contrasts = c("AF_vs_sham_RA", "AF_vs_sham_LA")) {
-  # Filter significant terms and create submission string
-  significant_terms <- data[p.adjust < 0.05, ]
-  go_list_string <- paste(significant_terms$ID, significant_terms$p.adjust, sep=" ", collapse="\n")
   
-  # Submit to Revigo
+  # Filter significant GO terms based on the adjusted p-value threshold.
+  significant_terms <- data[p.adjust < 0.05, ]
+  
+  # Create a submission string in the format expected by Revigo.
+  # The string includes GO term IDs and their associated p-values.
+  go_list_string <- paste(significant_terms$ID, significant_terms$p.adjust, sep = " ", collapse = "\n")
+  
+  # Submit the GO terms to Revigo using an HTTP POST request.
+  # Revigo processes the terms and assigns a job ID for tracking.
   response <- POST("http://revigo.irb.hr/StartJob", body = list(
-    cutoff = cutoff,
-    valueType = valueType,
-    speciesTaxon = speciesTaxon,
-    measure = measure,
-    goList = go_list_string
+    cutoff = cutoff,               
+    valueType = valueType,        
+    speciesTaxon = speciesTaxon,    
+    measure = measure,             
+    goList = go_list_string        
   ), encode = "form")
+
+  # Extract the job ID returned by Revigo for tracking.
   job_id <- fromJSON(content(response, type = "text", encoding = "UTF-8"))$jobid
   
-  # Wait for job completion
-  while ((running <- fromJSON(content(GET("http://revigo.irb.hr/QueryJob", query = list(jobid = job_id, type="jstatus")), type = "text", encoding = "UTF-8"))$running) != "0") {
-    Sys.sleep(1)
+  # Poll the Revigo server to check job status. Wait until the job is complete.
+  while ((running <- fromJSON(content(GET("http://revigo.irb.hr/QueryJob", query = list(jobid = job_id, type = "jstatus")), type = "text", encoding = "UTF-8"))$running) != "0") {
+    Sys.sleep(1)  # Wait 1 second before checking job status again.
   }
   
-  # Fetch results for all namespaces and combine
+  # Fetch the results from Revigo for all namespaces and combine them.
+  # Namespaces correspond to "Biological Process", "Molecular Function", and "Cellular Component".
   namespaces <- c("1", "2", "3")
   results <- lapply(namespaces, function(ns) {
     response <- GET("http://revigo.irb.hr/QueryJob", query = list(jobid = job_id, namespace = ns, type = "table"))
-    fread(text = content(response, type = "text", encoding = "UTF-8"))
+    fread(text = content(response, type = "text", encoding = "UTF-8"))  # Read the Revigo output into a data table.
   })
-  combined_results <- rbindlist(results, use.names = TRUE, fill = TRUE)
-  
-  # Filter null terms and match with original data
+  combined_results <- rbindlist(results, use.names = TRUE, fill = TRUE)  # Combine results from all namespaces.
+
+  # Identify and filter out "null" terms (redundant or uninformative terms) from the Revigo output.
   null_term_ids <- combined_results[Representative == "null", .(TermID)]
-  final_terms <- data[ID %in% null_term_ids$TermID]
-  final_terms <- final_terms[!(Direction %in% c("all")), ]
   
-  # Plot results for all specified contrasts
+  # Match the remaining terms with the original GO enrichment data.
+  final_terms <- data[ID %in% null_term_ids$TermID]
+  final_terms <- final_terms[!(Direction %in% c("all")), ]  # Remove "all" directions as they are redundant.
+
+  # Generate dot plots for all specified contrasts using `dotplotEnrich`.
   lapply(contrasts, function(contrast) {
+    # Filter the data for the current contrast.
     plot_data <- final_terms %>% filter(Contrast == contrast)
+    
+    # Generate a dot plot of the top 10 GO terms using the filtered data.
     aamisc::dotplotEnrich(
-      dt = plot_data,
-      topn = 10,
-      topn.pref = "qval",
-      qcut = enrich_cut,
-      nchar = 60,
-      direction = "Direction",
-      group = "Contrast",
-      dot = if ("GeneRatio" %in% names(plot_data)) "GeneRatio" else "setSize",
-      qval = "qvalue",
-      term.id = "ID",
-      term.name = "Description"
+      dt = plot_data,                 # Data table containing GO terms and enrichment results.
+      topn = 10,                      # Plot the top 10 terms.
+      topn.pref = "qval",             # Preference for top terms based on q-values.
+      qcut = enrich_cut,              # Q-value cut-off for plotting.
+      nchar = 60,                     # Maximum number of characters for term names in the plot.
+      direction = "Direction",        # Direction of regulation (up or down).
+      group = "Contrast",             # Group by contrast.
+      dot = if ("GeneRatio" %in% names(plot_data)) "GeneRatio" else "setSize",  # Use GeneRatio if available.
+      qval = "qvalue",                # Q-value column for dot size scaling.
+      term.id = "ID",                 # Term ID column.
+      term.name = "Description"       # Term name column for labeling.
     )
   })
 }
 
-# Example usage
+# Example usage of the `fetch_and_process_revigo` function:
+# Perform Revigo processing and plotting for various contrasts.
+
 fetch_and_process_revigo(filtered_go_ora_res, cutoff = 0.5, enrich_cut = 0.05, contrasts = c("AF_vs_sham_LA"))
 fetch_and_process_revigo(filtered_go_ora_res, cutoff = 0.5, enrich_cut = 0.05, contrasts = c("AF_vs_sham_RA"))
 fetch_and_process_revigo(filtered_go_ora_res, cutoff = 0.5, enrich_cut = 0.05, contrasts = c("met_vs_placebo_RA"))
 fetch_and_process_revigo(filtered_go_ora_res, cutoff = 0.5, enrich_cut = 0.05, contrasts = c("AverageTreatmentEffect"))
 fetch_and_process_revigo(filtered_go_ora_res, cutoff = 0.5, enrich_cut = 0.05, contrasts = c("AverageDiseaseEffect"))
 
+
 ```
 
-
-## GSEA
+## GSEA Analysis
 ```{r go_gsea}
+# Set the number of permutations for GSEA
+# Adjust based on computational power and desired precision
+num_permutations <- 10000   # Default set to 10,000; can be increased for higher precision.
+
+# Initialize list to store GSEA results.
 go_gsea <- list()
 
-for (j in names(term2gene)){
-    for (i in names(dge_split)){
-      message(paste0("Running GO GSEA for '", i, "'", " within ", j))
-      geneList <- dge_split[[i]]$logFC
-      names(geneList) <- dge_split[[i]]$ENSEMBL
-      geneList <- sort(geneList, decreasing = TRUE)
-      
-      go_gsea[[i]][[j]] <- GSEA(geneList = geneList, 
-                 TERM2GENE = term2gene[[j]], 
-                 TERM2NAME = term2name[[j]], 
-                 pvalueCutoff = enrich_cut,
-                 minGSSize = 10, 
-                 maxGSSize = 500, 
-                 eps = 0, 
-                 nPermSimple = 10000 # TODO: set it to 1 million for robust results
-                 )@result
-      
+# Loop through each GO category and contrast to perform GSEA.
+for (j in names(term2gene)) {
+  for (i in names(dge_split)) {
+    message(paste0("Running GO GSEA for '", i, "' within ", j))
+    
+    # Prepare gene list for GSEA ranked by logFC.
+    geneList <- dge_split[[i]]$logFC
+    names(geneList) <- dge_split[[i]]$ENSEMBL
+    geneList <- sort(geneList, decreasing = TRUE)
+    
+    # Run GSEA analysis using the `GSEA` function from `clusterProfiler`.
+    # Use tryCatch to handle any potential errors during computation.
+    go_gsea[[i]][[j]] <- tryCatch(
+      {
+        GSEA(geneList = geneList, 
+             TERM2GENE = term2gene[[j]], 
+             TERM2NAME = term2name[[j]], 
+             pvalueCutoff = enrich_cut,  # Use the defined enrichment cut-off.
+             minGSSize = 10,             # Minimum gene set size
+             maxGSSize = 500,            # Maximum gene set size
+             eps = 0,                    # Numerical tolerance for p-value calculation (0 for exact)
+             nPermSimple = num_permutations  # Number of permutations for the analysis
+        )@result
+      },
+      error = function(e) {
+        message(paste("Error in GSEA for", i, "within", j, ":", e$message))
+        NULL
+      }
+    )
+    
+    # If results are available, add metadata columns for contrast and database.
+    if (!is.null(go_gsea[[i]][[j]])) {
       go_gsea[[i]][[j]]$Contrast <- i
       go_gsea[[i]][[j]]$Database <- j
-      
     }
   }
+}
 
-go_gsea_res <- do.call(rbind, go_gsea %>% unlist(recursive=FALSE)) %>% setDT
+# Combine GSEA results into a single data table for downstream analysis.
+go_gsea_res <- do.call(rbind, go_gsea %>% unlist(recursive = FALSE)) %>% setDT
 head(go_gsea_res)
-go_gsea_res[qvalue < enrich_cut,]
+
+# Filter significant results based on q-value and add "direction" column based on NES (Normalized Enrichment Score).
+go_gsea_res[qvalue < enrich_cut, ]
 go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
 
-#Output data
+# Save GSEA results to Excel and TSV files (Optional).
+# Uncomment the following lines to write outputs.
 go_gsea_res_split <- split(go_gsea_res, f = go_gsea_res$Contrast)
+# openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea.xlsx", asTable = TRUE)
+# fwrite(x = go_gsea_res_split, file = "../output/go_gsea.tsv.gz", sep = "\t")
 
-openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea.xlsx", asTable = TRUE)
-fwrite(x = go_gsea_res_split, file = "../output/go_gsea.tsv.gz", sep = "\t")
-
-# Loop through each contrast and plot results
+# Loop through each contrast to visualize GSEA results using `dotplotEnrich`.
 for (contrast in contrasts) {
-  # Check if the contrast exists in the split data
+  # Check if the contrast exists in the split data.
   if (contrast %in% names(go_gsea_res_split)) {
     dt <- go_gsea_res_split[[contrast]]
     
-    # Check if there are significant terms
+    # Check if there are significant terms for visualization.
     if (nrow(dt) > 0) {
-      print(aamisc::dotplotEnrich(dt = dt, 
-                                  topn = 10, 
-                                  topn.pref = "qval", 
-                                  qcut = enrich_cut, 
-                                  nchar = 60, 
-                                  direction = "direction", 
-                                  group = "Contrast", 
-                                  dot = "NES", 
-                                  qval = "qvalue", 
-                                  term.id = "ID",
-                                  term.name = "Description"))
+      print(aamisc::dotplotEnrich(
+        dt = dt, 
+        topn = 10, 
+        topn.pref = "qval", 
+        qcut = enrich_cut, 
+        nchar = 60, 
+        direction = "direction", 
+        group = "Contrast", 
+        dot = "NES", 
+        qval = "qvalue", 
+        term.id = "ID",
+        term.name = "Description"
+      ))
     } else {
       message(paste("No significant terms for contrast:", contrast))
     }
@@ -339,18 +442,24 @@ for (contrast in contrasts) {
   }
 }
 
-
 ```
 
-###Revigo - reduce redundant terms and plot
+### Revigo - Reduce Redundant Terms and Plot
 ```{r}
-# Function to process GSEA data and submit to REVIGO, fetch results, and plot
+# Function to process GSEA data and submit to REVIGO, fetch results, and plot.
 process_gsea_data <- function(data, cutoff = 0.5, valueType = "pvalue", speciesTaxon = "0", measure = "Simrel", enrich_cut = 0.05) {
-  # Filter significant terms and create submission string
-  significant_terms <- data[p.adjust < 0.05, ]
-  go_list_string <- paste(significant_terms$ID, significant_terms$p.adjust, sep=" ", collapse="\n")
+  
+  # Check if there are any significant terms before proceeding.
+  if (nrow(data[p.adjust < enrich_cut, ]) == 0) {
+    message("No significant terms found for this dataset, skipping Revigo processing.")
+    return(NULL)
+  }
+  
+  # Filter significant terms based on adjusted p-value and prepare the submission string for REVIGO.
+  significant_terms <- data[p.adjust < enrich_cut, ]
+  go_list_string <- paste(significant_terms$ID, significant_terms$p.adjust, sep = " ", collapse = "\n")
 
-  # Submit to Revigo and return job ID
+  # Submit the GO list to REVIGO and obtain a job ID for tracking.
   response <- POST("http://revigo.irb.hr/StartJob", body = list(
     cutoff = cutoff,
     valueType = valueType,
@@ -358,70 +467,106 @@ process_gsea_data <- function(data, cutoff = 0.5, valueType = "pvalue", speciesT
     measure = measure,
     goList = go_list_string
   ), encode = "form")
+  
+  # Error handling: Check if the POST request was successful.
+  if (response$status_code != 200) {
+    stop("Failed to submit job to Revigo. Check your internet connection or Revigo server status.")
+  }
+  
+  # Extract the job ID from the Revigo response.
   job_id <- fromJSON(content(response, type = "text", encoding = "UTF-8"))$jobid
-
-  # Wait for job completion
+  
+  # Poll the Revigo server for job completion status.
   running <- "1"
   while (running != "0") {
-    response <- GET("http://revigo.irb.hr/QueryJob", query = list(jobid = job_id, type="jstatus"))
+    response <- GET("http://revigo.irb.hr/QueryJob", query = list(jobid = job_id, type = "jstatus"))
     running <- fromJSON(content(response, type = "text", encoding = "UTF-8"))$running
-    Sys.sleep(1)
+    Sys.sleep(1)  # Wait 1 second before checking again to avoid excessive polling.
   }
 
-  # Fetch and combine results from all namespaces
+  # Fetch and combine results from all namespaces (Biological Process, Molecular Function, Cellular Component).
   namespaces <- c("1", "2", "3")
   results <- lapply(namespaces, function(ns) {
     response <- GET("http://revigo.irb.hr/QueryJob", query = list(jobid = job_id, namespace = ns, type = "table"))
-    fread(text = content(response, type = "text", encoding = "UTF-8"))
+    
+    # Check if response contains valid data.
+    if (response$status_code == 200) {
+      return(fread(text = content(response, type = "text", encoding = "UTF-8")))
+    } else {
+      warning(paste("Failed to fetch results for namespace:", ns))
+      return(NULL)
+    }
   })
+  
+  # Combine results from different namespaces, excluding any NULL entries.
+  results <- results[!sapply(results, is.null)]
+  if (length(results) == 0) {
+    warning("No valid results returned from Revigo. Skipping further processing.")
+    return(NULL)
+  }
   combined_results <- rbindlist(results, use.names = TRUE, fill = TRUE)
 
-  # Filter null terms and match with original data
+  # Filter out "null" terms (redundant or non-informative terms).
   null_term_ids <- combined_results[Representative == "null", .(TermID)]
   reduced_terms <- data[ID %in% null_term_ids$TermID]
+  
+  # Check if there are any remaining terms after reduction.
+  if (nrow(reduced_terms) == 0) {
+    warning("No terms left after Revigo reduction. Skipping plot generation.")
+    return(NULL)
+  }
 
-  # Plot results
-  aamisc::dotplotEnrich(dt = reduced_terms, 
-                topn = 10, 
-                topn.pref = "qval", 
-                qcut = enrich_cut, 
-                nchar = 60, 
-                direction = "direction",
-                group = "Contrast", 
-                dot = "NES", 
-                qval = "qvalue", 
-                term.id = "ID",
-                term.name = "Description")
+  # Generate dot plot for the reduced GO terms using `dotplotEnrich`.
+  aamisc::dotplotEnrich(
+    dt = reduced_terms, 
+    topn = 10,                       # Plot top 10 terms.
+    topn.pref = "qval",              # Preference for top terms based on q-values.
+    qcut = enrich_cut,               # Q-value threshold for significance.
+    nchar = 60,                      # Maximum number of characters in term names.
+    direction = "direction",         # Direction of regulation (up or down).
+    group = "Contrast",              # Group by contrast.
+    dot = "NES",                     # Use NES (Normalized Enrichment Score) for dot size.
+    qval = "qvalue",                 # Use q-value for dot color.
+    term.id = "ID",                  # Column for term ID.
+    term.name = "Description"        # Column for term name.
+  )
 }
 
-# Plot for LA and RA GO-GSEA
+# Example usage of the `process_gsea_data` function for different contrasts.
+# Check and plot for each contrast in the GSEA results.
 process_gsea_data(go_gsea_res_split[["AF_vs_sham_RA"]])
 process_gsea_data(go_gsea_res_split[["AF_vs_sham_LA"]])
 process_gsea_data(go_gsea_res_split[["met_vs_placebo_RA"]])
 process_gsea_data(go_gsea_res_split[["met_vs_placebo_LA"]])
 process_gsea_data(go_gsea_res_split[["AverageTreatmentEffect"]])
 process_gsea_data(go_gsea_res_split[["AverageDiseaseEffect"]])
-
 ```
 
 # KEGG
-## ORA
-
+## Overrepresentation Analysis (ORA) - Using clusterProfiler
 ```{r kegg_ora}
-
+# This section performs KEGG pathway enrichment analysis using overrepresentation analysis (ORA).
+# Perform KEGG ORA for all significant genes (regardless of direction).
+# The `compareCluster` function from `clusterProfiler` is used to perform enrichment analysis across multiple contrasts.
 KEGG_ora_all <- compareCluster(ENTREZID ~ Contrast, 
-                          data          = dge_entrez[adj.P.Val < dge_cut,],
-                          fun           = "enrichKEGG",
-                          universe      = dge_entrez[, ENTREZID],
-                          organism      = "ecb",
-                          pAdjustMethod = "BH",
-                          minGSSize     = 10,
-                          maxGSSize     = 500,
-                          pvalueCutoff  = enrich_cut,
-                          qvalueCutoff  = enrich_cut)@compareClusterResult %>% setDT
+                          data          = dge_entrez[adj.P.Val < dge_cut,],  # Filter by adjusted p-value
+                          fun           = "enrichKEGG",                      # Perform KEGG enrichment analysis
+                          universe      = dge_entrez[, ENTREZID],            # Define background universe
+                          organism      = "ecb",                             # Organism code for horse ("ecb")
+                          pAdjustMethod = "BH",                              # Use Benjamini-Hochberg correction
+                          minGSSize     = 10,                                # Minimum gene set size
+                          maxGSSize     = 500,                               # Maximum gene set size
+                          pvalueCutoff  = enrich_cut,                        # p-value cutoff for filtering
+                          qvalueCutoff  = enrich_cut                         # q-value cutoff for filtering
+)@compareClusterResult %>% setDT  # Convert the result to a data table for easy manipulation
+
+# Add a column indicating that this result includes all directions.
 KEGG_ora_all$Direction <- "all"
+# Reorder the column so that "Direction" appears after "Contrast".
 aamisc::moveMeDataTable(KEGG_ora_all, tomove = "Direction", where = "after", ba = "Contrast")
 
+# Perform KEGG ORA for direction-specific analysis ("up" or "down").
+# `compareCluster` is used with the "Direction" variable added for better resolution of gene regulation.
 KEGG_ora_upDown <- compareCluster(ENTREZID ~ Contrast + Direction, 
                              data          = dge_entrez[adj.P.Val < dge_cut,],
                              fun           = "enrichKEGG",
@@ -429,148 +574,198 @@ KEGG_ora_upDown <- compareCluster(ENTREZID ~ Contrast + Direction,
                              organism      = "ecb",
                              pAdjustMethod = "BH",
                              pvalueCutoff  = enrich_cut,
-                             qvalueCutoff  = enrich_cut)@compareClusterResult %>% setDT
+                             qvalueCutoff  = enrich_cut
+)@compareClusterResult %>% setDT
 
+# Combine the "all" and direction-specific results into a single data table.
 KEGG_ora <- rbindlist(list(KEGG_ora_all, KEGG_ora_upDown))
-fwrite(x = KEGG_ora, file = "../output/kegg_ora.tsv.gz", sep = "\t")
 
-KEGG_ora_split <- split(KEGG_ora, f = KEGG_ora$Contrast)
-openxlsx::write.xlsx(x = KEGG_ora_split, file = "../output/kegg_ora.xlsx", asTable = TRUE)
+# Save the KEGG ORA results to file.
+# Note: Commented out for now
+# fwrite(x = KEGG_ora, file = "../output/kegg_ora.tsv.gz", sep = "\t")
+# KEGG_ora_split <- split(KEGG_ora, f = KEGG_ora$Contrast)
+# openxlsx::write.xlsx(x = KEGG_ora_split, file = "../output/kegg_ora.xlsx", asTable = TRUE)
 
-# Plot results
-aamisc::dotplotEnrich(dt = KEGG_ora, 
-                      topn = 10, 
-                      topn.pref = "qval", 
-                      qcut = enrich_cut, 
-                      nchar = 60, 
-                      direction = "Direction", 
-                      group = "Contrast", 
-                      dot = "GeneRatio", 
-                      qval = "qvalue", 
-                      term.id = "ID",
-                      term.name = "Description")
+# Visualize the top 10 enriched KEGG pathways using the `dotplotEnrich` function.
+aamisc::dotplotEnrich(
+  dt = KEGG_ora, 
+  topn = 10, 
+  topn.pref = "qval", 
+  qcut = enrich_cut, 
+  nchar = 60, 
+  direction = "Direction", 
+  group = "Contrast", 
+  dot = "GeneRatio", 
+  qval = "qvalue", 
+  term.id = "ID",
+  term.name = "Description"
+)
 
-# Plot seperate regions
-filtered_KEGG_ora  <- KEGG_ora  %>% 
-  filter(Direction != "all")
+# Visualize specific contrasts excluding the "all" direction, which can be redundant.
+# Filter out "all" directions for better clarity in the plots.
+filtered_KEGG_ora <- KEGG_ora %>% filter(Direction != "all")
 
-aamisc::dotplotEnrich(dt = filtered_KEGG_ora %>% 
-                        filter(Contrast == "AF_vs_sham_RA"), 
-                      topn = 10, 
-                      topn.pref = "qval", 
-                      qcut = enrich_cut, 
-                      nchar = 60, 
-                      direction = "Direction", 
-                      group = "Contrast", 
-                      dot = "GeneRatio", 
-                      qval = "qvalue", 
-                      term.id = "ID",
-                      term.name = "Description")
+# Generate dot plots for each specific contrast.
+# This section plots individual contrasts to provide a detailed view of KEGG enrichment.
+# AF vs. Sham in RA
+aamisc::dotplotEnrich(
+  dt = filtered_KEGG_ora %>% filter(Contrast == "AF_vs_sham_RA"), 
+  topn = 10, 
+  topn.pref = "qval", 
+  qcut = enrich_cut, 
+  nchar = 60, 
+  direction = "Direction", 
+  group = "Contrast", 
+  dot = "GeneRatio", 
+  qval = "qvalue", 
+  term.id = "ID",
+  term.name = "Description"
+)
 
-aamisc::dotplotEnrich(dt = filtered_KEGG_ora %>% 
-                        filter(Contrast == "AF_vs_sham_LA"), 
-                      topn = 10, 
-                      topn.pref = "qval", 
-                      qcut = enrich_cut, 
-                      nchar = 60, 
-                      direction = "Direction", 
-                      group = "Contrast", 
-                      dot = "GeneRatio", 
-                      qval = "qvalue", 
-                      term.id = "ID",
-                      term.name = "Description")
+# AF vs. Sham in LA
+aamisc::dotplotEnrich(
+  dt = filtered_KEGG_ora %>% filter(Contrast == "AF_vs_sham_LA"), 
+  topn = 10, 
+  topn.pref = "qval", 
+  qcut = enrich_cut, 
+  nchar = 60, 
+  direction = "Direction", 
+  group = "Contrast", 
+  dot = "GeneRatio", 
+  qval = "qvalue", 
+  term.id = "ID",
+  term.name = "Description"
+)
 
-aamisc::dotplotEnrich(dt = filtered_KEGG_ora %>% 
-                        filter(Contrast == "met_vs_placebo_RA"), 
-                      topn = 10, 
-                      topn.pref = "qval", 
-                      qcut = enrich_cut, 
-                      nchar = 60, 
-                      direction = "Direction", 
-                      group = "Contrast", 
-                      dot = "GeneRatio", 
-                      qval = "qvalue", 
-                      term.id = "ID",
-                      term.name = "Description")
+# Metformin vs. Placebo in RA
+aamisc::dotplotEnrich(
+  dt = filtered_KEGG_ora %>% filter(Contrast == "met_vs_placebo_RA"), 
+  topn = 10, 
+  topn.pref = "qval", 
+  qcut = enrich_cut, 
+  nchar = 60, 
+  direction = "Direction", 
+  group = "Contrast", 
+  dot = "GeneRatio", 
+  qval = "qvalue", 
+  term.id = "ID",
+  term.name = "Description"
+)
 
-aamisc::dotplotEnrich(dt = filtered_KEGG_ora %>% 
-                        filter(Contrast == "AverageTreatmentEffect"), 
-                      topn = 10, 
-                      topn.pref = "qval", 
-                      qcut = enrich_cut, 
-                      nchar = 60, 
-                      direction = "Direction", 
-                      group = "Contrast", 
-                      dot = "GeneRatio", 
-                      qval = "qvalue", 
-                      term.id = "ID",
-                      term.name = "Description")
+# Average Treatment Effect
+aamisc::dotplotEnrich(
+  dt = filtered_KEGG_ora %>% filter(Contrast == "AverageTreatmentEffect"), 
+  topn = 10, 
+  topn.pref = "qval", 
+  qcut = enrich_cut, 
+  nchar = 60, 
+  direction = "Direction", 
+  group = "Contrast", 
+  dot = "GeneRatio", 
+  qval = "qvalue", 
+  term.id = "ID",
+  term.name = "Description"
+)
 
-aamisc::dotplotEnrich(dt = filtered_KEGG_ora %>% 
-                        filter(Contrast == "AverageDiseaseEffect"), 
-                      topn = 10, 
-                      topn.pref = "qval", 
-                      qcut = enrich_cut, 
-                      nchar = 60, 
-                      direction = "Direction", 
-                      group = "Contrast", 
-                      dot = "GeneRatio", 
-                      qval = "qvalue", 
-                      term.id = "ID",
-                      term.name = "Description")
-
+# Average Disease Effect
+aamisc::dotplotEnrich(
+  dt = filtered_KEGG_ora %>% filter(Contrast == "AverageDiseaseEffect"), 
+  topn = 10, 
+  topn.pref = "qval", 
+  qcut = enrich_cut, 
+  nchar = 60, 
+  direction = "Direction", 
+  group = "Contrast", 
+  dot = "GeneRatio", 
+  qval = "qvalue", 
+  term.id = "ID",
+  term.name = "Description"
+)
 ```
 
 
 ## GSEA 
 ```{r kegg_gsea}
+# This section performs Gene Set Enrichment Analysis (GSEA) on KEGG pathways using the `gseKEGG` function.
+# The analysis is performed for each contrast separately using ENTREZ IDs.
+
+# Split the DGE (Differential Gene Expression) results by contrast.
 dge_split <- split(dge_entrez, f = dge_entrez$Contrast)
+
+# Initialize an empty list to store GSEA results.
 kegg_gsea <- list()
 
-for (i in names(dge_split)){
+# Define number of permutations for GSEA. Can be adjusted based on computational resources.
+num_permutations <- 10000  
+
+# Loop through each contrast and perform GSEA.
+for (i in names(dge_split)) {
+  # Prepare the ranked gene list for GSEA, sorted by log fold change (logFC).
   geneList <- dge_split[[i]]$logFC
   names(geneList) <- dge_split[[i]]$ENTREZID
   geneList <- sort(geneList, decreasing = TRUE)
   
-  kegg_gsea[[i]] <-  gseKEGG(geneList     = geneList,
-                        organism     = 'ecb',
-                        pvalueCutoff = enrich_cut,
-                        minGSSize = 10, 
-                        maxGSSize = 500, 
-                        eps = 0, 
-                        nPermSimple = 10000, # TODO: set it to 1 million for robust results
-                        verbose      = TRUE
-                        )@result %>% setDT
-  kegg_gsea[[i]][, Direction := ifelse(test = NES > 0, yes = "up", no = "down"), ]
-  kegg_gsea[[i]]$Contrast <- i
+  # Perform GSEA on the ranked gene list using `gseKEGG`.
+  # Error handling: Use `tryCatch` to skip contrasts that do not produce valid results.
+  kegg_gsea[[i]] <- tryCatch(
+    {
+      gseKEGG(geneList = geneList,
+              organism = 'ecb',            # Organism code for horse in KEGG
+              pvalueCutoff = enrich_cut,   # p-value threshold for filtering
+              minGSSize = 10,              # Minimum gene set size
+              maxGSSize = 500,             # Maximum gene set size
+              eps = 0,                     # Numerical tolerance for p-value calculation (0 for exact)
+              nPermSimple = num_permutations, # Number of permutations for GSEA (adjustable)
+              verbose = TRUE               # Print progress messages
+      )@result %>% setDT
+    },
+    error = function(e) {
+      message(paste("Error in GSEA for contrast:", i, ":", e$message))
+      return(NULL)  # Return NULL if an error occurs
+    }
+  )
+  
+  # If results are available, add a "Direction" column based on NES (Normalized Enrichment Score).
+  if (!is.null(kegg_gsea[[i]])) {
+    kegg_gsea[[i]][, Direction := ifelse(NES > 0, "up", "down"), ]
+    kegg_gsea[[i]]$Contrast <- i  # Add contrast identifier.
+  }
 }
 
-openxlsx::write.xlsx(x = kegg_gsea, file = "../output/kegg_gsea.xlsx", asTable = TRUE)
-kegg_gsea <- rbindlist(kegg_gsea)
-fwrite(x = kegg_gsea, file = "../output/kegg_gsea.tsv.gz", sep = "\t")
+# Combine all GSEA results into a single data table for further analysis.
+kegg_gsea <- rbindlist(kegg_gsea, use.names = TRUE, fill = TRUE)
 
-#Output data
+# Save the combined GSEA results to Excel and TSV files.
+# Note: Commented out by default to avoid overwriting.
+# openxlsx::write.xlsx(x = kegg_gsea, file = "../output/kegg_gsea.xlsx", asTable = TRUE)
+# fwrite(x = kegg_gsea, file = "../output/kegg_gsea.tsv.gz", sep = "\t")
+
+# Split the GSEA results by contrast for separate plotting.
 kegg_gsea_res_split <- split(kegg_gsea, f = kegg_gsea$Contrast)
 
-# Loop through each contrast and plot results for kegg_gsea_res_split
+# Loop through each contrast to visualize the results using `dotplotEnrich`.
 for (contrast in contrasts) {
-  # Check if the contrast exists in the split data
+  # Check if the contrast exists in the split data.
   if (contrast %in% names(kegg_gsea_res_split)) {
     dt <- kegg_gsea_res_split[[contrast]]
     
-    # Check if there are significant terms
+    # Check if there are significant terms for visualization.
     if (nrow(dt) > 0) {
-      print(aamisc::dotplotEnrich(dt = dt, 
-                                  topn = 10, 
-                                  topn.pref = "qval", 
-                                  qcut = enrich_cut, 
-                                  nchar = 60, 
-                                  direction = "Direction", 
-                                  group = "Contrast", 
-                                  dot = "NES", 
-                                  qval = "qvalue", 
-                                  term.id = "ID",
-                                  term.name = "Description"))
+      print(
+        aamisc::dotplotEnrich(
+          dt = dt, 
+          topn = 10,                      # Display top 10 enriched terms
+          topn.pref = "qval",             # Prefer top terms based on q-values
+          qcut = enrich_cut,              # Q-value threshold for significance
+          nchar = 60,                     # Maximum characters in term names
+          direction = "Direction",        # Direction of regulation
+          group = "Contrast",             # Group by contrast
+          dot = "NES",                    # Use NES for dot size
+          qval = "qvalue",                # Use q-value for dot color
+          term.id = "ID",                 # Term ID column
+          term.name = "Description"       # Term name column
+        )
+      )
     } else {
       message(paste("No significant terms for contrast:", contrast))
     }
@@ -578,17 +773,5 @@ for (contrast in contrasts) {
     message(paste("Contrast not found in the data:", contrast))
   }
 }
-
-
-
-
 ```
-
-
-
-
-# Verdict
-There were multiple enrichments observed in GO and KEGG pathways (not wiki), in particular in RA, where multiple genes exhibited differential expression, using obth ORA and GSEA. 
-
-
 

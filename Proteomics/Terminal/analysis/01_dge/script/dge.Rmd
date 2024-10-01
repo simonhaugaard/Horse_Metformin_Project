@@ -1,5 +1,5 @@
 ---
-title: "Differential Gene Expression"
+title: "Differential Abundance Analysis"
 author: "Simon Haugaard"
 date: "`r Sys.Date()`"
 output:output: 
@@ -29,6 +29,7 @@ pacman::p_load("ggplot2")
 pacman::p_load("data.table")
 pacman::p_load("ggplot2", "patchwork")
 pacman::p_load("openxlsx")
+pacman::p_load("pheatmap")
 library(dplyr)
 library(missForest)
 library(RColorBrewer)
@@ -40,75 +41,81 @@ library(SummarizedExperiment)
 library(Metrics)
 library(fdrtool)
 library(aamisc)
-pacman::p_load("pheatmap")
+# Install and load custom libraries if not already present
+# Uncomment the following lines if installing from archived packages or GitHub
+# pacman::p_load("qvalue", "rain", "limma", "devtools")
+# url <- "https://cran.r-project.org/src/contrib/Archive/HarmonicRegression/HarmonicRegression_1.0.tar.gz"
+# pkgFile <- "HarmonicRegression_1.0.tar.gz"
+# download.file(url = url, destfile = pkgFile)
+# install.packages(pkgs=pkgFile, type="source", repos=NULL)
+# file.remove(pkgFile)
+# pacman::p_load_gh("altintasali/aamisc")  # Load `aamisc` package from GitHub repository
 
+# Set color palette for publication visuals
+publication_colors <- c("Control" = "#285291",    # Blue color for Control group
+                        "Metformin" = "#7C1516",  # Red color for Metformin group
+                        "Sham" = "#9B9B9B")       # Grey color for Sham group
 
-# install aamisc package for MDS and Volcano plots
-#pacman::p_load("qvalue", "rain", "limma", "devtools")
-#url <- "https://cran.r-project.org/src/contrib/Archive/HarmonicRegression/HarmonicRegression_1.0.tar.gz"
-#pkgFile <- "HarmonicRegression_1.0.tar.gz"
-#download.file(url = url, destfile = pkgFile)
-#install.packages(pkgs=pkgFile, type="source", repos=NULL)
-#file.remove(pkgFile)
-#pacman::p_load_gh("altintasali/aamisc")
-
-# Colours for publication
-publication_colors <- c("Control" = "#285291", "Metformin" = "#7C1516", "Sham" = "#9B9B9B")
 ```
-
-# Read data and filtrer
+# Load and Filter Proteomics Data
 ```{r read_data}
-# Load count data from a local file and metadata through Excel
-# Define file paths
+# Define file paths for proteomics data, metadata, and gene annotations
 count_file <- "../../../data/count/report.unique_genes_matrix.tsv"
 meta_file <- "../../../data/metadata/meta_proteomics.xlsx"
 geneinfo_file <- "../../../data/gene_annotation/horse_gene_annotation.tsv.gz"
 
-# Read count data
+# 1. Read the Proteomics Count Data
 count <- readr::read_delim(count_file)
 
-# Read metadata
+# 2. Read Metadata
 meta <- readxl::read_excel(meta_file)
 
-# Remove blank column (from MS machine)
+# 3. Clean Count Data
+# Remove any unnecessary blank columns created during MS processing
 count <- count %>% select(-matches("D:\\\\Mass_spectrometry\\\\Raw_data\\\\Joakim\\\\Simon Horse second run2\\\\10A_RA11_1_24830.d"))
 
-# Load gene annotation from horse
-geneinfo <- fread(geneinfo_file)
-setnames(geneinfo, old = names(geneinfo), new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
-                                                  "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
-geneinfo <- geneinfo %>% select(-ENSEMBLv, -Description_detailed) %>% distinct(ENSEMBL, .keep_all = TRUE)
+# 4. Load and Clean Gene Annotation Data
+geneinfo <- fread(geneinfo_file)  # Load gene annotation
+# Rename columns and remove duplicates
+setnames(geneinfo, old = names(geneinfo), new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
+geneinfo <- geneinfo %>%
+  select(-ENSEMBLv, -Description_detailed) %>%  # Remove unnecessary columns
+  distinct(ENSEMBL, .keep_all = TRUE)            # Remove duplicates based on ENSEMBL
 
-# Merge gene annotation with count data
+# 5. Merge Gene Annotations with Count Data
 annot <- merge(count[, "Genes", drop = FALSE], geneinfo, by.x = "Genes", by.y = "GENENAME", all.x = TRUE)
 
-# Clean count data
-count <- count %>% remove_rownames() %>% column_to_rownames(var="Genes")
+# 6. Set Row Names for Count Data
+count <- count %>%
+  remove_rownames() %>%
+  column_to_rownames(var = "Genes")  # Set "Genes" column as row names for easier subsetting
+
+# Clean sample names to match metadata
 cleaned_names <- gsub("D:\\\\Mass_spectrometry\\\\Raw_data\\\\Joakim\\\\Simon Horse second run2\\\\|_.*", "", colnames(count))
 colnames(count) <- cleaned_names
 meta$`Sample ID` <- cleaned_names
 
-# Remove low count samples from Count and Meta
-samples_to_remove <- c("25C", "12A", "22A", "19A")
+# 7. Remove Low-Quality Samples from Count and Meta
+samples_to_remove <- c("25C", "12A", "22A", "19A")  # Specify samples to remove
 count <- count[, !colnames(count) %in% samples_to_remove]
 meta <- meta %>% filter(!`Sample ID` %in% samples_to_remove)
 
-# Subset meta & count to include only terminal samples
+# 8. Subset Meta and Count to Include Only Terminal Samples
 valid_conditions <- c("LA_Metformin_4months", "LA_Control_4months", "RA_Metformin_4months", "RA_Control_4months", "LA_Sham_4months", "RA_Sham_4months")
 meta <- meta %>% filter(Condition %in% valid_conditions)
 count <- count[, colnames(count) %in% meta$`Sample ID`]
 
-# Calculate the number of proteins in each sample
-num_proteins <- colSums(!is.na(count))
-num_proteins <- num_proteins[meta$`Sample ID`]  # Ensure matching order with meta
+# 9. Calculate Number of Proteins in Each Sample Before Filtering
+num_proteins <- colSums(!is.na(count))  # Count non-NA values (proteins) per sample
+num_proteins <- num_proteins[meta$`Sample ID`]  # Match order with metadata
 
-# Define color scheme for groups
-KUalt <- c("#7C1516", "#285291", "#434343", "#999999")  # Custom color palette
+# Define color scheme for groups based on publication color palette
+KUalt <- c("#7C1516", "#285291", "#434343", "#999999")
 group_colors <- setNames(KUalt[1:length(unique(meta$Group))], unique(meta$Group))
 bar_colors <- group_colors[meta$Group]
 
-# Plot the number of proteins in each sample before filtering
-par(mfrow = c(1, 1))
+# Plot: Number of Proteins in Each Sample Before Filtering
+par(mfrow = c(1, 1))  # Reset plot layout
 barplot(num_proteins, 
         main = "Number of Proteins in Each Sample\nBefore Filtering",
         xlab = "Sample",
@@ -116,29 +123,29 @@ barplot(num_proteins,
         col = bar_colors,
         border = "black",
         ylim = c(0, 2500),
-        las = 2)
+        las = 2)  # Rotate x-axis labels
 
-# Print the total number of proteins before filtering
-cat("The total number of proteins before filtering was", max(num_proteins), "\n")
+# Print Total Number of Proteins Before Filtering
+cat("Total number of proteins before filtering:", max(num_proteins), "\n")
 
-# Identify genes with less than three valid values in any condition
+# 10. Identify and Remove Genes with Less Than Three Valid Values in Any Condition
 invalid_genes <- unique(unlist(lapply(unique(meta$Condition), function(condition) {
   condition_columns <- meta$`Sample ID`[meta$Condition == condition]
   condition_count <- count[, condition_columns, drop = FALSE]
   rownames(condition_count)[rowSums(!is.na(condition_count)) < 3]
 })))
 
-# Remove invalid genes from the original count table
+# Remove Invalid Genes from Count Data
 filtered_count <- count[!rownames(count) %in% invalid_genes, ]
 
-# Calculate the number of proteins in each sample after filtering
+# 11. Calculate Number of Proteins in Each Sample After Filtering
 num_proteins_after <- colSums(!is.na(filtered_count))
-num_proteins_after <- num_proteins_after[meta$`Sample ID`]  # Ensure matching order with meta
+num_proteins_after <- num_proteins_after[meta$`Sample ID`]  # Ensure matching order with metadata
 
-# Plot settings
-par(mfrow = c(1, 2))
+# Plot Settings for Before and After Comparison
+par(mfrow = c(1, 2))  # Set plot layout to 1 row and 2 columns
 
-# First plot: Number of proteins in each sample before filtering
+# Plot 1: Number of Proteins Before Filtering
 barplot(num_proteins, 
         main = "Number of Proteins in Each Sample\nBefore Filtering",
         xlab = "Sample",
@@ -148,7 +155,7 @@ barplot(num_proteins,
         ylim = c(0, 2500),
         las = 2)
 
-# Second plot: Number of proteins in each sample after filtering
+# Plot 2: Number of Proteins After Filtering
 barplot(num_proteins_after, 
         main = "Number of Proteins in Each Sample\nAfter Filtering",
         xlab = "Sample",
@@ -158,123 +165,140 @@ barplot(num_proteins_after,
         ylim = c(0, 2500),
         las = 2)
 
-# Print the total and average number of proteins before and after filtering
-cat("The total number of proteins before filtering was", max(num_proteins), "\n")
-cat("The average number of proteins before filtering was", mean(num_proteins), "\n")
-cat("The total number of proteins after filtering was", max(num_proteins_after), "\n")
-cat("The average number of proteins after filtering was", mean(num_proteins_after), "\n")
+# Print Total and Average Number of Proteins Before and After Filtering
+cat("Total number of proteins before filtering:", max(num_proteins), "\n")
+cat("Average number of proteins before filtering:", mean(num_proteins), "\n")
+cat("Total number of proteins after filtering:", max(num_proteins_after), "\n")
+cat("Average number of proteins after filtering:", mean(num_proteins_after), "\n")
+
 ```
-#DEP-package  https://bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/DEP.html
-##Generate a SummarizedExperiment object
+# DEP-package  https://bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/DEP.html
+## Generate a SummarizedExperiment object
 ```{r DEP - create SE object}
-#Create an SE-object that appears like the sample for the DEP package
-unfiltered_count <- (count)
+# Define the raw count data as `unfiltered_count`
+unfiltered_count <- count
 
-# Create proxy columns
-proxy_column_names <- c("Protein.IDs", "Majority.protein.IDs", "Protein.names", "Gene.names", 
-                        "Fasta.headers", "Peptides", "Razor...unique.peptides", "Unique.peptides", 
-                        "Only.identified.by.site", "Reverse", "Potential.contaminant")
-proxy_df <- data.frame(matrix(NA, nrow=nrow(unfiltered_count), ncol=length(proxy_column_names)))
-colnames(proxy_df) <- proxy_column_names
+# Step 1: Create annotation columns for the DEP package, using actual data if available
+# If you don't have annotation data, these can remain as NA placeholders.
+proxy_columns <- c("Protein.IDs", "Majority.protein.IDs", "Protein.names", "Gene.names", 
+                   "Fasta.headers", "Peptides", "Razor...unique.peptides", "Unique.peptides", 
+                   "Only.identified.by.site", "Reverse", "Potential.contaminant")
 
-# Assign row names to specific columns
-rownames_to_columns <- rownames(unfiltered_count)
-proxy_df[1:4] <- lapply(1:4, function(i) rownames_to_columns)
+# Create a data frame with NA values for proxy columns and rownames from `unfiltered_count`
+proxy_df <- data.frame(matrix(NA, nrow = nrow(unfiltered_count), ncol = length(proxy_columns)))
+colnames(proxy_df) <- proxy_columns
 
-# Merge and rename sample columns
+# Assign the row names of `unfiltered_count` to the first few proxy columns to have a base
+proxy_df[, 1:4] <- lapply(1:4, function(i) rownames(unfiltered_count))
+
+# Step 2: Merge proxy annotations with LFQ data and rename LFQ columns to match DEP format
 merged_df <- cbind(proxy_df, unfiltered_count)
 colnames(merged_df)[12:ncol(merged_df)] <- paste0("LFQ.intensity.", colnames(unfiltered_count))
 
-# Reorder columns
-lfq_columns <- grep("^LFQ.intensity", colnames(merged_df), value = TRUE)
-new_order <- c(proxy_column_names[1:8], lfq_columns, proxy_column_names[9:11])
-data <- merged_df[, new_order]
+# Step 3: Rearrange columns to have LFQ intensities adjacent to annotation columns
+lfq_columns <- grep("^LFQ.intensity", colnames(merged_df), value = TRUE)  # Find LFQ columns
+rearranged_columns <- c(proxy_columns[1:8], lfq_columns, proxy_columns[9:11])
+data <- merged_df[, rearranged_columns]
 
-print(colnames(data))
+# Check for duplicated gene names (important for SE object creation)
+if (any(duplicated(data$Gene.names))) {
+  message("Warning: There are duplicated gene names in the dataset.")
+}
 
-#Are there any duplicated gene names?
-data$Gene.names %>% duplicated() %>% any()
-
-# Make unique names using the annotation in the "Gene.names" column as primary names and the annotation in "Protein.IDs" as name for those that do not have an gene name.
+# Step 4: Use `make_unique` to generate unique identifiers for each protein entry
+# Using "Gene.names" as primary names and "Protein.IDs" as backup identifiers for uniqueness
 data_unique <- make_unique(data, "Gene.names", "Protein.IDs", delim = ";")
 
-# Generate a SummarizedExperiment object using an experimental design
-LFQ_columns <- grep("LFQ.", colnames(data_unique)) # get LFQ column numbers
+# Step 5: Create an experimental design data frame
+# Define LFQ intensity columns and set up the experimental design structure
+LFQ_columns <- grep("LFQ.", colnames(data_unique))  # Get column numbers for LFQ intensities
 
-# Define experimental design including a placeholder replicate column
+# Generate an experimental design based on the metadata (`meta`) from the earlier step
 experimental_design <- data.frame(
-  label = colnames(unfiltered_count),
-  condition = meta$Condition,
-  replicate = NA  # Initialize replicate column with NA
+  label = colnames(unfiltered_count),    # Column names from unfiltered data as labels
+  condition = meta$Condition,            # Condition information from metadata
+  replicate = NA                         # Initialize a placeholder column for replicates
 )
 
-# Assign replicate numbers within each condition
+# Assign replicate numbers within each condition group
 experimental_design <- experimental_design %>%
   group_by(condition) %>%
-  mutate(replicate = row_number()) %>%
+  mutate(replicate = row_number()) %>%  # Assign replicate numbers within each condition
   ungroup()
 
-# Set row names
+# Ensure row names of the experimental design match the column names of `data_unique`
 row.names(experimental_design) <- experimental_design$label
 
-# Ensure the row names of experimental_design are unique
-experimental_design <- as.data.frame(experimental_design)
-rownames(experimental_design) <- make.unique(rownames(experimental_design))
-
-# Print the experimental design to verify
+# Print experimental design for verification
 print(experimental_design)
 
-# Generate a SummarizedExperiment object using an experimental design
+# Step 6: Generate the SummarizedExperiment object using the `make_se` function from DEP
+# This function requires unique identifiers for rows and an experimental design matrix
 data_se <- make_se(data_unique, LFQ_columns, experimental_design)
-
-#TO do: update so that it does not include proxy data - however, Ive tried for hours and it gives me downstream issues. 
 
 ```
 
-##Protein Coverage and filtrering
+## Protein Coverage and filtrering
 ```{r Protein Coverage}
-# Plot a barplot of the protein identification overlap between samples
+# Plot Frequency of Identified Proteins Across Samples
 plot_frequency(data_se)
 
-#No need for further filtrering as this is already done manually before creating SE-object
-# Plot a barplot of the number of identified proteins per samples
+# Note: No additional filtering is performed here as the initial filtering was conducted manually before creating the SE object
+# Visualizes the number of proteins identified in each sample, providing insight into sample quality.
 plot_numbers(data_se)
 
-# Plot a barplot of the protein identification overlap between samples
+# Displays the overlap in protein identifications across all samples, which helps assess batch effects or discrepancies.
 plot_coverage(data_se)
 
-# Filter for proteins that are identified in all replicates of at least one condition
+# Filter Proteins Based on Missing Values Across Replicates
+# Filters for proteins that are identified in all replicates of at least one condition.
+# This reduces the dataset to proteins with consistent detection, improving downstream analysis reliability.
+# Set `thr = 0` to filter out proteins with missing values in all replicates.
 data_filt <- filter_missval(data_se, thr = 0)
+
+# Visualize the Frequency of Identified Proteins After Filtering
+# Check how the distribution of protein frequency has changed after filtering out proteins with missing values.
 plot_frequency(data_filt)
 
+# Visualize the Number of Proteins Identified Per Sample After Filtering
 plot_numbers(data_filt)
 
+# Visualize Protein Identification Coverage Between Samples After Filtering
 plot_coverage(data_filt)
 
 ```
-##Normalizaiton
+## Normalizaiton
 ```{r Normalization}
 #Check un-normalized data
 plot_normalization(data_filt)
 
-#VSN-normalization
+# Apply Variance-Stabilizing Normalization (VSN)
+# Normalize the filtered data to stabilize variance across the range of intensities.
+# VSN is commonly used for proteomics data to handle high dynamic range and heteroscedasticity.
 data_filt_norm <- normalize_vsn(data_filt)
 
-#Plot VSN-norm data
+# Plot VSN-Normalized Data
+# After normalization, this plot helps assess whether the variance has been stabilized.
+# A successful normalization will show that the mean-variance relationship is approximately constant.
 meanSdPlot(data_filt_norm, rank = TRUE)
 plot_normalization(data_filt_norm)
 
-###Verdict: After variance stabilisation, the median (a reasonable estimator of the standard deviation of feature level data conditional on the mean) is approximately a horizontal line.
+# Verdict: The mean-SD plot shows that after variance stabilization,  the median (which serves as a reasonable estimator of the standard deviation of feature-level data
+# conditional on the mean) is approximately a horizontal line. This indicates that the normalization has successfully stabilized the variance, and the data is suitable for downstream differential analysis.
 ```
-###Impute data for missing values
+### Impute data for missing values
 ```{r Imputation for Missing Values}
-# Plot a heatmap of proteins with missing values
+# Visualize Proteins with Missing Values
 plot_missval(data_filt_norm)
 
-# Plot intensity distributions and cumulative fraction of proteins with and without missing values
+# Visualize Intensity Distributions and Cumulative Fraction of Proteins
 plot_detect(data_filt_norm)
 
-#The nature of the missing-ness:  the proteins with missing values have low intensities on average. This data (MNAR and close to the detection limit) should be imputed by a left-censored imputation method, such as the quantile regression-based left-censored function (“QRILC”) or random draws from a left-shifted distribution (“MinProb” and “man”). 
+# Typically, missing values in proteomics data are "Missing Not At Random" (MNAR),
+# meaning proteins with missing values often have lower intensities and are close to the detection limit.
+# For MNAR data, appropriate imputation methods include left-censored imputation techniques such as:
+# - Quantile Regression-based Left-Censored (QRILC)
+# - Random draws from a left-shifted distribution ("MinProb" or "man")
 
 # Impute missing data using random draws from a Gaussian distribution centered around a minimal value (for MNAR)
 data_imp_MinProb <- impute(data_filt_norm, fun = "MinProb", q = 0.01) 
@@ -282,53 +306,79 @@ data_imp_MinProb <- impute(data_filt_norm, fun = "MinProb", q = 0.01)
 # Impute missing data using random draws from a manually defined left-shifted Gaussian distribution (for MNAR)
 data_imp_man <- impute( data_filt_norm, fun = "man", shift = 1.8, scale = 0.3) 
 
-
-# Impute missing data using Quantile Regression Imputation of Left-Censored Data (It’s particularly useful when missing values are expected to be low or below a detection limit.)
+# Impute missing data using Quantile Regression Imputation of Left-Censored Data 
+# QRILC is particularly useful when missing values are assumed to be low or below the detection limit.
 data_imp_qrilc <- impute( data_filt_norm, fun = "QRILC") 
 
 # Plot intensity distributions before and after imputation
+# This plot helps assess the effectiveness of each imputation method by visualizing the changes in intensity distributions.
 plot_imputation( data_filt_norm, data_imp_MinProb, data_imp_man, data_imp_qrilc)
 
-###Verdict: data_imp_qrilC seems to be  addressing MNAR the best, and will be used downstream. 
+### Verdict: After visual inspection, it appears that the QRILC method (`data_imp_qrilc`) handles the MNAR nature of the data best. and will be used downstream. 
 ```
 
-##Differential abundance analysis using DEP
+## Differential abundance analysis using DEP
 ```{r DEP differential abundance analyisis}
-#Set contrasts
-con <- c("RA_Control_4months_vs_RA_Sham_4months", "LA_Control_4months_vs_LA_Sham_4months", "RA_Metformin_4months_vs_RA_Control_4months", "LA_Metformin_4months_vs_LA_Control_4months" )
+# Note: This analysis is intended as an extra quality control (QC) step.
+# The main differential abundance analysis is performed using the `limma` package due to the more complex study design.
+# Here, DEP is used to test for differential protein abundance in a straightforward manner.
 
-# Perform differential analysis using the specified contrasts - best on non-imputed data, honestly
-data_diff <- test_diff(data_imp_qrilc, type = "manual", test = con)
+# Define contrasts for differential analysis
+# The contrasts compare different conditions (e.g., Metformin vs Control) within each region (RA/LA).
+contrasts <- c("RA_Control_4months_vs_RA_Sham_4months", 
+               "LA_Control_4months_vs_LA_Sham_4months", 
+               "RA_Metformin_4months_vs_RA_Control_4months", 
+               "LA_Metformin_4months_vs_LA_Control_4months")
 
-# Denote significant proteins based on user defined cutoffs
+# Perform Differential Abundance Analysis Using the Specified Contrasts
+# This analysis is based on the imputed data (`data_imp_qrilc`) and compares protein abundance between the conditions.
+# Since the imputation may affect the statistical results, it's best to cross-check results with non-imputed data if feasible.
+data_diff <- test_diff(data_imp_qrilc, type = "manual", test = contrasts)
+
+# Denote Significant Proteins Based on User-Defined Cutoffs
+# Mark proteins as significant if they meet the defined criteria: FDR (alpha) < 0.05 and log fold change (lfc) > log2(0).
+# Setting lfc = log2(0) indicates we are testing for any change, regardless of direction or magnitude.
 dep <- add_rejections(data_diff, alpha = 0.05, lfc = log2(0))
+
 ```
 
-##Volcano plots and DAE using DEP
+## Volcano plots and DAE using DEP
 ```{r DEP - Volacano}
-# Plot a volcano plot
+# Plot Volcano Plots for Each Contrast
+# Volcano plots show the relationship between fold change and significance for each contrast.
+# Proteins with large fold changes and high significance (low p-values) are highlighted.
 plot_volcano(dep, contrast = "RA_Control_4months_vs_RA_Sham_4months", label_size = 2, add_names = TRUE)
 plot_volcano(dep, contrast = "LA_Control_4months_vs_LA_Sham_4months", label_size = 2, add_names = TRUE)
 plot_volcano(dep, contrast = "RA_Metformin_4months_vs_RA_Control_4months", label_size = 2, add_names = TRUE)
 plot_volcano(dep, contrast = "LA_Metformin_4months_vs_LA_Control_4months", label_size = 2, add_names = TRUE)
 
-# Plot a frequency plot of significant proteins for the different conditions
+# Plot Frequency of Significant Proteins Across Conditions
+# This plot summarizes the number of significant proteins detected for each condition,
+# providing an overview of the differential abundance results.
 plot_cond(dep)
 
-# Generate a results table
+# Generate and View Results Table
+# Extract results from the DEP object into a structured data frame for further analysis.
 data_results <- get_results(dep)
 
-# Number of significant proteins
-data_results %>% filter(significant) %>% nrow()
+# Display the First Few Rows of the Results Table (optional)
+head(data_results)
 
+# Calculate and Print the Number of Significant Proteins
+# This step helps evaluate the number of differentially abundant proteins detected at the given cutoffs.
+num_significant_proteins <- data_results %>% filter(significant) %>% nrow()
+cat("Number of significant proteins detected across all contrasts:", num_significant_proteins, "\n")
 
 ```
-#MDS-plots on non-imputed data
+# MDS-plots on non-imputed data
 ```{r MDS plots}
-#Log-transformation 
+# Log-Transformation of Count Data
+# Apply log2 transformation to raw count data to stabilize variance and make the data more suitable for MDS.
 logCounts <- log2(count)
-#For PCA plot, we will remove the NAs - 
-logCounts_noNA  <- na.omit(logCounts)
+
+# Remove NA Values for PCA and MDS
+# MDS cannot handle missing values, so we remove rows with any NA values before generating plots.
+logCounts_noNA <- na.omit(logCounts)
 
 meta$Group <- factor(meta$Group, levels = names(publication_colors))
 
@@ -337,7 +387,7 @@ annot_reordered <- annot[match(rownames(logCounts_noNA), annot$Genes), ]
 d <- DGEList(counts = logCounts_noNA, genes = annot_reordered, samples = meta)
 design <- model.matrix(~0 + Condition, d$samples)
 
-# Remove batch
+# Remove batch effect, related to each horse contributing with two samples (RA and LA) - "paired design"
 logCounts_batchRemoved <- removeBatchEffect(logCounts_noNA, 
                                             batch = as.factor(d$samples$Horse), 
                                             design = design)
@@ -385,8 +435,15 @@ print(plot2)
 
 ```
 
-#Checking histograms of normalized-unimputed (data_filt_norm), imputed (data_imp_MinProb) and raw log-counts (filtred_counts) before limma
+# Checking histograms of normalized-unimputed (data_filt_norm), imputed (data_imp_MinProb) and raw log-counts (filtred_counts) before limma
 ```{r Intensity-Histograms, fig.height=5, fig.width=10}
+# Prepare Data for Histogram Visualization
+# Histograms will be generated for four datasets:
+# 1. `normalized_unimputed`: Normalized but not imputed data.
+# 2. `imputed_data_MinProb`: Data imputed using the "MinProb" method.
+# 3. `imputed_data_qrilc`: Data imputed using the "QRILC" method.
+# 4. `unfiltered_count`: Raw log-transformed counts after initial filtering.
+
 # Extract the assay data from data_filt_norm (normalized_unimputed)
 normalized_unimputed <- as.data.frame(assay(data_filt_norm))
 colnames(normalized_unimputed) <- colnames(unfiltered_count)
@@ -409,75 +466,58 @@ hist(as.vector(as.matrix(imputed_data_MinProb)), breaks = 50, main = "MinProb Im
 hist(as.vector(as.matrix(imputed_data_qrilc)), breaks = 50, main = "QRILC Imputed Data", xlab = "Intensity")
 hist(as.vector(as.matrix(unfiltered_count)), breaks = 50, main = "Filtered Data", xlab = "Intensity")
 
-#Moving on with imputed data!
+# Comment on the Histograms
+# The histograms provide an overview of the intensity distributions at various stages of data preprocessing.
+# Moving on, we will use the `QRILC` imputed data (`data_imp_qrilc`) for downstream analysis as it best addresses missing values.
 ```
 #Export normalized, filtrered and imputed data for multiomics data integration
-```{r}
+```{r Export Data}
 # Define the mapping from old names to new names
 rename_mapping <- c(
-  "1B" = "M1_RA",
-  "1C" = "M1_LA",
-  "2B" = "M2_RA",
-  "2C" = "M2_LA",
-  "3B" = "M3_RA",
-  "3C" = "M3_LA",
-  "4B" = "M4_RA",
-  "4C" = "M4_LA",
-  "5B" = "M5_RA",
-  "5C" = "M5_LA",
-  "6B" = "M6_RA",
-  "6C" = "M6_LA",
-  "7B" = "M7_RA",
-  "7C" = "M7_LA",
-  "8B" = "M8_RA",
-  "8C" = "M8_LA",
-  "9B" = "M9_RA",
-  "9C" = "M9_LA",
-  "10B" = "M10_RA",
-  "10C" = "M10_LA",
-  "11B" = "M11_RA",
-  "11C" = "M11_LA",
-  "12B" = "M12_RA",
-  "12C" = "M12_LA",
-  "13B" = "M13_RA",
-  "13C" = "M13_LA",
-  "14B" = "M14_RA",
-  "14C" = "M14_LA",
-  "15B" = "M15_RA",
-  "15C" = "M15_LA",
-  "16B" = "M16_RA",
-  "16C" = "M16_LA",
-  "17B" = "M17_RA",
-  "17C" = "M17_LA",
-  "18B" = "M18_RA",
-  "18C" = "M18_LA",
-  "19B" = "M19_RA",
-  "19C" = "M19_LA",
-  "20B" = "M20_RA",
-  "20C" = "M20_LA",
-  "22B" = "M22_RA",
-  "22C" = "M22_LA",
-  "23B" = "M23_RA",
-  "23C" = "M23_LA",
-  "24B" = "M24_RA",
-  "24C" = "M24_LA",
+  "1B" = "M1_RA",  "1C" = "M1_LA",
+  "2B" = "M2_RA",  "2C" = "M2_LA",
+  "3B" = "M3_RA",  "3C" = "M3_LA",
+  "4B" = "M4_RA",  "4C" = "M4_LA",
+  "5B" = "M5_RA",  "5C" = "M5_LA",
+  "6B" = "M6_RA",  "6C" = "M6_LA",
+  "7B" = "M7_RA",  "7C" = "M7_LA",
+  "8B" = "M8_RA",  "8C" = "M8_LA",
+  "9B" = "M9_RA",  "9C" = "M9_LA",
+  "10B" = "M10_RA", "10C" = "M10_LA",
+  "11B" = "M11_RA", "11C" = "M11_LA",
+  "12B" = "M12_RA", "12C" = "M12_LA",
+  "13B" = "M13_RA", "13C" = "M13_LA",
+  "14B" = "M14_RA", "14C" = "M14_LA",
+  "15B" = "M15_RA", "15C" = "M15_LA",
+  "16B" = "M16_RA", "16C" = "M16_LA",
+  "17B" = "M17_RA", "17C" = "M17_LA",
+  "18B" = "M18_RA", "18C" = "M18_LA",
+  "19B" = "M19_RA", "19C" = "M19_LA",
+  "20B" = "M20_RA", "20C" = "M20_LA",
+  "22B" = "M22_RA", "22C" = "M22_LA",
+  "23B" = "M23_RA", "23C" = "M23_LA",
+  "24B" = "M24_RA", "24C" = "M24_LA",
   "25B" = "M25_RA"
 )
+
 
 # Rename the columns using the mapping
 norm_proteomics <- imputed_data_qrilc %>% rename_with(~ rename_mapping[.x], everything())
 norm_proteomics <- as.data.frame(norm_proteomics)
 
-#Save
-# Write the dataframe to a text file
+#Save the Normalized Proteomics Data for Integration
+# Save the renamed and imputed proteomics data as a text file for further integration with other omics data.
+# Note: The line below is commented out to avoid overwriting files unintentionally.
 # write.table(norm_proteomics, file="../../../../../Proteomics/Terminal/analysis/01_dge/output/proteomics_data.txt", sep="\t", col.names=NA, quote=FALSE)
 
-#Save for Matrisome
-saveRDS(data_imp_qrilc,file="../../../../../Proteomics/Terminal/analysis/01_dge/output/data_imp_qrilc.rds")
+# Step 4: Save the QRILC Imputed Data as an RDS Object for Further Analysis
+# Save the `data_imp_qrilc` object as an RDS file for use in downstream applications.
+# This is useful for restoring the exact imputed data structure later without re-running the imputation process.
+# saveRDS(data_imp_qrilc, file = "../../../../../Proteomics/Terminal/analysis/01_dge/output/data_imp_qrilc.rds")
 
 ```
 
-#Limma on normalized qrilc_imputed data
+# Differential Abundance Analysis using Limma
 ```{r limma, fig.height=10, fig.width=10}
 #Set the design
 design <- model.matrix(~0 + Condition , d$samples)
@@ -498,25 +538,28 @@ con <- makeContrasts(AF_vs_Sham_RA = RA_Control_4months - RA_Sham_4months,
 con
 
 
-#Run limma whilst blocking for "horse" 
-corfit <- duplicateCorrelation(imputed_data_qrilc, design, block=as.factor(d$samples$Horse))
-fit <- lmFit(imputed_data_qrilc, design, block=as.factor(d$samples$Horse), correlation=corfit$consensus.correlation)
-rownames(fit$coefficients) <- rownames(imputed_data_qrilc)
+#Run limma whilst blocking for "horse"/Estimate Correlation due to Repeated Measures (Blocking for "Horse")
+# Correlation within horses is accounted for using `duplicateCorrelation`.
+corfit <- duplicateCorrelation(imputed_data_qrilc, design, block = as.factor(d$samples$Horse))
+fit <- lmFit(imputed_data_qrilc, design, block = as.factor(d$samples$Horse), correlation = corfit$consensus.correlation)
+rownames(fit$coefficients) <- rownames(imputed_data_qrilc)  # Retain row names for downstream mapping
 
 # Obtain DGE results with FDR correction using fdrtool
 res <- list() # list for DGE results
 for (i in colnames(con)) {
   fit.contrast <- contrasts.fit(fit, contrasts = con)
-  fit.contrast <- eBayes(fit.contrast, robust = TRUE, trend = TRUE)
-  res_tmp <- topTable(fit.contrast, coef = i, number = Inf) #FDR-adjust (adjust.method = fdr)
-  res_tmp <- res_tmp[!is.na(res_tmp$t), ]
+  fit.contrast <- eBayes(fit.contrast, robust = TRUE, trend = TRUE)  # Fit contrasts and apply Empirical Bayes moderation
+  res_tmp <- topTable(fit.contrast, coef = i, number = Inf) 
+  res_tmp <- res_tmp[!is.na(res_tmp$t), ]  # Remove NA values
   
   # Apply FDR correction using fdrtool
   fdr_res <- fdrtool(res_tmp$t, plot = FALSE, verbose = FALSE)
-  res_tmp$qval <- fdr_res$qval
-  res_tmp$lfdr <- fdr_res$lfdr
-  res_tmp$Contrast <- rep(i, nrow(res_tmp))
-  res[[i]] <- data.frame(res_tmp)
+  res_tmp$qval <- fdr_res$qval # FDR-corrected q-values
+  res_tmp$lfdr <- fdr_res$lfdr # Local FDR values
+  res_tmp$Contrast <- rep(i, nrow(res_tmp))  # Store contrast identifier
+  res[[i]] <- data.frame(res_tmp)  # Append results to the list
+  
+  ## We use the fdrtool package for FDR correction to align with the DEP package and ensure consistency in our proteomics analysis workflow. This method models the distribution of test statistics directly, providing both q-values and local false discovery rates (lfdr) for a more refined control of type I error.
   
   # Print the number of differentially abundant genes
   n_qval <- res_tmp %>% filter(qval < 0.05) %>% nrow()
@@ -524,56 +567,26 @@ for (i in colnames(con)) {
   print(paste('Number of differentially abundant genes for', i, 'based on q-value (FDR) =', n_qval))
   print(paste('Number of differentially abundant genes for', i, 'based on adjusted p-value =', n_adj_pval))
 }
-res_all <- do.call(rbind, res)
+res_all <- do.call(rbind, res) # Combine results across all contrasts
 
-#Add genename manually
+# Map Gene Names Manually
 res_all$GeneName <- sapply(seq_len(nrow(res_all)), function(i) {
   gsub(paste0("^", res_all$Contrast[i], "\\."), "", rownames(res_all)[i])
 })
-res_split <- split(res_all, res_all$Contrast)
+res_split <- split(res_all, res_all$Contrast) # Split the combined results based on contrast for easier output
 
 # Create output Excel file
-openxlsx::write.xlsx(x = res_split, file = "../../../../Terminal/analysis/01_dge/output/dge_results.xlsx", asTable = TRUE)
+# Commented out 
+# openxlsx::write.xlsx(x = res_split, file = "../../../../Terminal/analysis/01_dge/output/dge_results.xlsx", asTable = TRUE)
 
 # Create output TSV file
-data.table::fwrite(x = res_all, file = "../../../../Terminal/analysis/01_dge/output/dge_results.tsv.gz", sep = "\t")
-
-#Using FDR as adjustment method did not change the limma-outcome (I think it does this automatically)
-```
-
-## p-value histograms
-```{r pvalue_histograms, fig.height=10, fig.width=10}
-ggplot(res_all, aes(x = P.Value)) + 
-  geom_histogram(fill = "lightgray",
-                 color = "black",
-                 breaks = seq(0, 1, by = 0.05),
-                 closed = "right",
-                 lwd = 0.2) + 
-  facet_wrap(~ Contrast, nrow = 3, scales = "free") + 
-  theme_bw()
-```
-
-
-### Volcano plots with adjusted
-```{r volcano_plots_adjusted, fig.height=10, fig.width=10}
-volcano_plots <- list()
-for (i in names(res)){
-  volcano_plots[[i]] <- ggVolcano(x = res[[i]], 
-                                  fdr = 0.05,
-                                  fdr.column = "adj.P.Val", 
-                                  pvalue.column = "P.Value", 
-                                  logFC = 0, 
-                                  logFC.column = "logFC", 
-                                  text.size = 2) + 
-    theme_bw(base_size = 10) + 
-    ggtitle(i)
-}
-
-patchwork::wrap_plots(volcano_plots, ncol = 3)
+# Commeneted out 
+# data.table::fwrite(x = res_all, file = "../../../../Terminal/analysis/01_dge/output/dge_results.tsv.gz", sep = "\t")
 
 ```
 
-### Volcano plots with unadjusted
+
+### Volcano plots with P values
 ```{r volcano_plots, fig.height=10, fig.width=10}
 volcano_plots <- list()
 for (i in names(res)){
@@ -590,391 +603,6 @@ for (i in names(res)){
 
 patchwork::wrap_plots(volcano_plots, ncol = 3)
 
-```
+# Here, P-values are used rather than FDR values on the y-axis. In the manuscript figures, the y-axis has therefore been manually changed to reflect the actual used p-value. 
 
-# TO do: Make treatment and disease effects using group contrast and merge with table before exporting and before making enrichments
-#Heatmap
-```{r Heatmaps, fig.height=10, fig.width=10}
-#Read annotations
-go_file  <-  "../../../data/gene_annotation/horse_GO.tsv.gz"
-logCounts_batchRemoved <- as.data.frame(logCounts_batchRemoved)
-meta <- as.data.frame(meta)
-
-
-# Function to generate heatmaps for a given GO term in both RA and LA regions
-generate_pheatmap_for_goid <- function(goid, contrast1, contrast2, region1, region2) {
-  # Load and process GO annotations
-  go <- fread(go_file)
-  go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
-  setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
-  go <- go[GOdomain != "", ]
-
-  # Filter for the specified GO term
-  go_activity <- go[GOID == goid, "ENSEMBL"]
-  go_ensembl <- annot[annot$ENSEMBL %in% go_activity$ENSEMBL, c("Genes", "ENSEMBL")]
-
-  # Subset logCounts data
-  subset_logCounts <- logCounts_batchRemoved[rownames(logCounts_batchRemoved) %in% go_ensembl$Genes, ]
-
-  # Filter significant genes
-  sig_genes <- res_all[res_all$GeneName %in% go_ensembl$Genes & res_all$P.Value < 0.05, ]
-
-  # Filter significant genes for each contrast
-  sig_contrast1_genes <- sig_genes[sig_genes$Contrast == contrast1, "GeneName"]
-  sig_contrast2_genes <- sig_genes[sig_genes$Contrast == contrast2, "GeneName"]
-
-  # Subset logCounts data for the first region
-  region1_subset_logCounts <- subset_logCounts[, meta$Region == region1]
-  region1_subset_logCounts <- region1_subset_logCounts[rownames(region1_subset_logCounts) %in% sig_contrast1_genes, ]
-  region1_subset_logCounts <- as.matrix(region1_subset_logCounts)
-
-  # Reorder the meta data frame to match the order of columns in region1_subset_logCounts
-  meta_ordered1 <- meta[match(colnames(region1_subset_logCounts), meta$`Sample ID`), ]
-  annotation_col1 <- meta_ordered1[, "Group", drop=FALSE]
-  rownames(annotation_col1) <- meta_ordered1$`Sample ID`
-
-  # Generate heatmap for the first region with annotations and gene names
-  pheatmap(region1_subset_logCounts,
-           annotation_col = annotation_col1,
-           annotation_colors = list(Group = publication_colors),
-           scale = "row",
-           show_rownames = TRUE,
-           fontsize = 10,
-           fontsize_row = 8,
-           fontsize_col = 8,
-           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-           main = paste("Heatmap for", goid, "in", region1))
-
-  # Subset logCounts data for the second region
-  region2_subset_logCounts <- subset_logCounts[, meta$Region == region2]
-  region2_subset_logCounts <- region2_subset_logCounts[rownames(region2_subset_logCounts) %in% sig_contrast2_genes, ]
-  region2_subset_logCounts <- as.matrix(region2_subset_logCounts)
-
-  # Reorder the meta data frame to match the order of columns in region2_subset_logCounts
-  meta_ordered2 <- meta[match(colnames(region2_subset_logCounts), meta$`Sample ID`), ]
-  annotation_col2 <- meta_ordered2[, "Group", drop=FALSE]
-  rownames(annotation_col2) <- meta_ordered2$`Sample ID`
-
-  # Generate heatmap for the second region with annotations and gene names
-  pheatmap(region2_subset_logCounts,
-           annotation_col = annotation_col2,
-           annotation_colors = list(Group = publication_colors),
-           scale = "row",
-           show_rownames = TRUE,
-           fontsize = 10,
-           fontsize_row = 8,
-           fontsize_col = 8,
-           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-           main = paste("Heatmap for", goid, "in", region2))
-}
-
-# Example usage
-generate_pheatmap_for_goid(
-  goid = "GO:0031012",          # Extracellular Region
-  contrast1 = "AF_vs_Sham_RA",  # Example Contrast 1
-  contrast2 = "AF_vs_Sham_LA",  # Example Contrast 2
-  region1 = "RA",               # Example Region 1
-  region2 = "LA"                # Example Region 2
-)
-
-generate_pheatmap_for_goid(
-  goid = "GO:0005524",          # ATP-binding
-  contrast1 = "Metformin_vs_AF_RA",  # Example Contrast 1
-  contrast2 = "Metformin_vs_AF_LA",  # Example Contrast 2
-  region1 = "RA",               # Example Region 1
-  region2 = "LA"                # Example Region 2
-)
-
-generate_pheatmap_for_goid(
-  goid = "GO:0006468",          # Protein Phosphorylation
-  contrast1 = "AF_vs_Sham_LA",  # Example Contrast 1
-  contrast2 = "AF_vs_Sham_RA",  # Example Contrast 2
-  region1 = "LA",               # Example Region 1
-  region2 = "RA"                # Example Region 2
-)
-
-```
-# All extracellular
-```{r ECM enrichment, fig.height=10, fig.width=10}
-# Function to generate a heatmap for all significant proteins related to extracellular GO terms
-generate_combined_pheatmap_for_extracellular <- function(contrast1, contrast2, region1, region2) {
-  # Load and process GO annotations
-  go <- fread(go_file)
-  go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
-  setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
-  go <- go[GOdomain != "", ]
-
-  # Search for GO terms with "extracellular" in their description
-  extracellular_goids <- go[grep("extracellular", Description, ignore.case = TRUE), "ENSEMBL"]
-  go_ensembl <- annot[annot$ENSEMBL %in% extracellular_goids$ENSEMBL, c("Genes", "ENSEMBL")]
-
-  # Subset logCounts data
-  subset_logCounts <- logCounts_batchRemoved[rownames(logCounts_batchRemoved) %in% go_ensembl$Genes, ]
-
-  # Filter significant genes
-  sig_genes <- res_all[res_all$GeneName %in% go_ensembl$Genes & res_all$P.Value < 0.05, ]
-
-  # Filter significant genes for each contrast
-  sig_contrast1_genes <- sig_genes[sig_genes$Contrast == contrast1, "GeneName"]
-  sig_contrast2_genes <- sig_genes[sig_genes$Contrast == contrast2, "GeneName"]
-  
-  # Subset logCounts data for the first region
-  region1_subset_logCounts <- subset_logCounts[, meta$Region == region1]
-  region1_subset_logCounts <- region1_subset_logCounts[rownames(region1_subset_logCounts) %in% sig_contrast1_genes, ]
-  region1_subset_logCounts <- as.matrix(region1_subset_logCounts)
-
-  # Reorder the meta data frame to match the order of columns in region1_subset_logCounts
-  meta_ordered1 <- meta[match(colnames(region1_subset_logCounts), meta$`Sample ID`), ]
-  annotation_col1 <- meta_ordered1[, "Group", drop=FALSE]
-  rownames(annotation_col1) <- meta_ordered1$`Sample ID`
-
-  # Generate heatmap for the first region with annotations and gene names
-  pheatmap(region1_subset_logCounts,
-           annotation_col = annotation_col1,
-           annotation_colors = list(Group = publication_colors),
-           scale = "row",
-           show_rownames = TRUE,
-           fontsize = 10,
-           fontsize_row = 8,
-           fontsize_col = 8,
-           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-           main = paste("Heatmap for Significant Extracellular Proteins", "in", region1))
-
-  # Subset logCounts data for the second region
-  region2_subset_logCounts <- subset_logCounts[, meta$Region == region2]
-  region2_subset_logCounts <- region2_subset_logCounts[rownames(region2_subset_logCounts) %in% sig_contrast2_genes, ]
-  region2_subset_logCounts <- as.matrix(region2_subset_logCounts)
-
-  # Reorder the meta data frame to match the order of columns in region2_subset_logCounts
-  meta_ordered2 <- meta[match(colnames(region2_subset_logCounts), meta$`Sample ID`), ]
-  annotation_col2 <- meta_ordered2[, "Group", drop=FALSE]
-  rownames(annotation_col2) <- meta_ordered2$`Sample ID`
-
-  # Generate heatmap for the second region with annotations and gene names
-  pheatmap(region2_subset_logCounts,
-           annotation_col = annotation_col2,
-           annotation_colors = list(Group = publication_colors),
-           scale = "row",
-           show_rownames = TRUE,
-           fontsize = 10,
-           fontsize_row = 8,
-           fontsize_col = 8,
-           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-           main = paste("Heatmap for Significant Extracellular Proteins", "in", region1))
-}
-
-
-# Usage for all extracellular 
-generate_combined_pheatmap_for_extracellular(
-  contrast1 = "AF_vs_Sham_RA",  # Example Contrast 1
-  contrast2 = "AF_vs_Sham_LA",  # Example Contrast 2
-  region1 = "RA",               # Example Region 1
-  region2 = "LA"                # Example Region 2
-)
-
-
-```
-
-#Matrisome Enrichment
-```{r Matrisome enrichment, fig.height=10, fig.width=10}
-#Remove batch-effect from data_imp_qrilc
-logCounts_batchRemoved <- removeBatchEffect(imputed_data_qrilc, 
-                                            batch = as.factor(d$samples$Horse), 
-                                            design = design)
-# Ensure matrisome data is loaded
-matrisome <- "../../../data/gene_annotation/Hs_Matrisome_Masterlist_downloaded_08_09_2024.csv"
-matrisome <- fread(matrisome)
-
-# Filter matrisome genes from the significant results
-matrisome_genes <- matrisome$`Gene Symbol`
-
-# Filter the res_all dataframe to include only matrisome genes and relevant contrasts
-significant_matrisome_genes <- res_all %>%
-  filter(GeneName %in% matrisome_genes) %>%
-  filter(Contrast %in%  c("AF_vs_Sham_RA", "Metformin_vs_AF_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_LA")) %>%
-  group_by(GeneName) %>%
-  filter(any(P.Value < 0.05)) %>%
-  ungroup()
-
-generate_pheatmap_for_matrisome <- function(region1_contrasts, region2_contrasts, region1, region2) {
-  # Filter significant genes for region 1 contrasts
-  region1_significant_genes <- significant_matrisome_genes %>%
-    filter(Contrast %in% region1_contrasts) %>%
-    filter(P.Value < 0.05) %>%
-    pull(GeneName) %>%
-    unique()
-
-  # Subset logCounts data for the first region
-  region1_subset_logCounts <- logCounts_batchRemoved[
-    rownames(logCounts_batchRemoved) %in% region1_significant_genes, 
-    meta$Region == region1
-  ]
-  region1_subset_logCounts <- as.matrix(region1_subset_logCounts)
-
-  # Reorder the meta data frame to match the order of columns in region1_subset_logCounts
-  meta_ordered1 <- meta[match(colnames(region1_subset_logCounts), meta$`Sample ID`), ]
-  annotation_col1 <- meta_ordered1[, "Group", drop=FALSE]
-  rownames(annotation_col1) <- meta_ordered1$`Sample ID`
-
-  # Generate heatmap for the first region
-  pheatmap(region1_subset_logCounts,
-           annotation_col = annotation_col1,
-           annotation_colors = list(Group = publication_colors),
-           scale = "row",
-           show_rownames = TRUE,
-           fontsize = 10,
-           fontsize_row = 8,
-           fontsize_col = 8,
-           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-           main = paste("Heatmap for Significant Matrisome Proteins in", region1))
-
-  # Filter significant genes for region 2 contrasts
-  region2_significant_genes <- significant_matrisome_genes %>%
-    filter(Contrast %in% region2_contrasts) %>%
-    filter(P.Value < 0.05) %>%
-    pull(GeneName) %>%
-    unique()
-
-  # Subset logCounts data for the second region
-  region2_subset_logCounts <- logCounts_batchRemoved[
-    rownames(logCounts_batchRemoved) %in% region2_significant_genes, 
-    meta$Region == region2
-  ]
-  region2_subset_logCounts <- as.matrix(region2_subset_logCounts)
-
-  # Reorder the meta data frame to match the order of columns in region2_subset_logCounts
-  meta_ordered2 <- meta[match(colnames(region2_subset_logCounts), meta$`Sample ID`), ]
-  annotation_col2 <- meta_ordered2[, "Group", drop=FALSE]
-  rownames(annotation_col2) <- meta_ordered2$`Sample ID`
-
-  # Generate heatmap for the second region
-  pheatmap(region2_subset_logCounts,
-           annotation_col = annotation_col2,
-           annotation_colors = list(Group = publication_colors),
-           scale = "row",
-           show_rownames = TRUE,
-           fontsize = 10,
-           fontsize_row = 8,
-           fontsize_col = 8,
-           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-           main = paste("Heatmap for Significant Matrisome Proteins in", region2))
-  
-  print(dim(region1_subset_logCounts))
-print(dim(meta_ordered1))
-print(dim(region2_subset_logCounts))
-print(dim(meta_ordered2))
-}
-
-# Example usage
-generate_pheatmap_for_matrisome(
-  region1_contrasts = c("AF_vs_Sham_RA", "Metformin_vs_AF_RA"),  # Contrasts for RA
-  region2_contrasts = c("AF_vs_Sham_LA", "Metformin_vs_AF_LA"),  # Contrasts for LA
-  region1 = "RA",               # Region 1: RA
-  region2 = "LA"                # Region 2: LA
-)
-
-#Question: Is it okay to perform heatmaps on batch-corrected values? 
-```
-
-#Sanity Check Col6a3 
-```{r}
-plot_protein_expression <- function(protein_name, logCounts, data_imp_qrilc, meta) {
-  # Extract data for the specified protein
-  col6a3_raw <- logCounts[protein_name, ]
-  col6a3_imputed <- assay(data_imp_qrilc)[protein_name, ]
-  
-  # Ensure meta$Group is properly set up as a factor
-  meta$Group <- as.factor(meta$Group)
-  
-  # Create the plot_data dataframe
-  plot_data <- data.frame(
-    Sample = rep(colnames(col6a3_raw), 2),  # Sample IDs
-    Expression = c(as.numeric(col6a3_raw), as.numeric(col6a3_imputed)),  # Expression levels
-    Type = rep(c("Raw", "Imputed"), each = length(col6a3_raw)),  # Data type
-    Group = rep(meta$Group, 2)  # Group information from metadata
-  )
-  
-  plot_data$Region <- rep(meta$Region, 2)
-  
-  # Generate the plot
-  ggplot(plot_data, aes(x = Group, y = Expression, fill = Type)) +
-    geom_boxplot(outlier.shape = NA, alpha = 0.5) +  # Box plot without outliers
-    geom_jitter(position = position_jitter(0.2), size = 1, alpha = 0.8) +  # Add jittered points
-    facet_wrap(~Region + Type, scales = "free_y") +  # Separate plots by Region and Type
-    theme_minimal() +
-    labs(
-      title = paste("Expression of", protein_name, "Across Groups and Regions"),
-      x = "Group",
-      y = "Expression Level (log2)",
-      fill = "Data Type"
-    ) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Adjust x-axis text for readability
-}
-
-# Example usage
-plot_protein_expression("COL6A6", logCounts, data_imp_qrilc, meta)
-plot_protein_expression("COL6A1", logCounts, data_imp_qrilc, meta)
-plot_protein_expression("COL6A2", logCounts, data_imp_qrilc, meta)
-plot_protein_expression("COL6A3", logCounts, data_imp_qrilc, meta)
-plot_protein_expression("NID2", logCounts, data_imp_qrilc, meta)
-plot_protein_expression("S100A12", logCounts, data_imp_qrilc, meta)
-plot_protein_expression("FBLN1", logCounts, data_imp_qrilc, meta)
-
-
-```
-
-
-
-#Sanity check - simplify design matrix
-```{r sanity check, fig.height=10, fig.width=10}
-#Set the design
-design <- model.matrix(~0 + Group , d$samples)
-colnames(design) <- gsub("Group", "", colnames(design))
-
-con <- makeContrasts(DiseaseEffect = (Control) - (Sham),
-  TreatmentEffect = (Metformin) - (Control),
-  levels = design)
-con
-
-#Run limma whilst blocking for "horse" 
-corfit <- duplicateCorrelation(imputed_data_qrilc, design, block=as.factor(d$samples$Horse))
-fit <- lmFit(imputed_data_qrilc, design, block=as.factor(d$samples$Horse), correlation=corfit$consensus.correlation)
-rownames(fit$coefficients) <- rownames(imputed_data_qrilc)
-
-# Obtain DGE results with FDR correction using fdrtool
-res <- list() # list for DGE results
-for (i in colnames(con)) {
-  fit.contrast <- contrasts.fit(fit, contrasts = con)
-  fit.contrast <- eBayes(fit.contrast, robust = TRUE, trend = TRUE)
-  res_tmp <- topTable(fit.contrast, coef = i, number = Inf) #FDR-adjust (adjust.method = fdr)
-  res_tmp <- res_tmp[!is.na(res_tmp$t), ]
-  
-  # Apply FDR correction using fdrtool
-  fdr_res <- fdrtool(res_tmp$t, plot = FALSE, verbose = FALSE)
-  res_tmp$qval <- fdr_res$qval
-  res_tmp$lfdr <- fdr_res$lfdr
-  res_tmp$Contrast <- rep(i, nrow(res_tmp))
-  res[[i]] <- data.frame(res_tmp)
-  
-  # Print the number of differentially abundant genes
-  n_qval <- res_tmp %>% filter(qval < 0.05) %>% nrow()
-  n_adj_pval <- res_tmp %>% filter(adj.P.Val < 0.05) %>% nrow()
-  print(paste('Number of differentially abundant genes for', i, 'based on q-value (FDR) =', n_qval))
-  print(paste('Number of differentially abundant genes for', i, 'based on adjusted p-value =', n_adj_pval))
-}
-res_all <- do.call(rbind, res)
-
-#Add genename manually
-res_all$GeneName <- sapply(seq_len(nrow(res_all)), function(i) {
-  gsub(paste0("^", res_all$Contrast[i], "\\."), "", rownames(res_all)[i])
-})
-res_split <- split(res_all, res_all$Contrast)
-
-# Create output Excel file
-openxlsx::write.xlsx(x = res_split, file = "../../../../Terminal/analysis/01_dge/output/dge_results_sanity.xlsx", asTable = TRUE)
-
-# Create output TSV file
-data.table::fwrite(x = res_all, file = "../../../../Terminal/analysis/01_dge/output/dge_results_sanity.tsv.gz", sep = "\t")
-
-#Verdict: AverageTreatment and AverageDisease performs correctly!
 ```

@@ -192,3 +192,6 @@ ggplot(combined_counts, aes(x = PROCESS, y = Significance, size = Count, color =
 
 ```
 
+#Verdict 
+  None of the generated graphs are as effective at conveying the message as the interactive plot available on the MitoXplorer web platform. 
+  Therefore, I will use the MitoXplorer visualization for this purpose. However, to maintain consistency with the color scheme used throughout the publication, I will manually adjust the logFC values before uploading,   ensuring that red represents upregulation and blue represents downregulation.

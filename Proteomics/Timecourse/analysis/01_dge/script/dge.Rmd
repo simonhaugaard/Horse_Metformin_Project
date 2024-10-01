@@ -1,5 +1,5 @@
 ---
-title: "Differential Gene Expression"
+title: "Differential Abundance Analysis"
 author: "Simon Haugaard"
 date: "`r Sys.Date()`"
 output:output: 
@@ -20,41 +20,24 @@ knitr::opts_chunk$set(echo = TRUE)
 # Required R libraries
 ```{r library}
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load("edgeR")
-pacman::p_load("readr")
-pacman::p_load("readxl")
-pacman::p_load("biomaRt")
-pacman::p_load("magrittr")
-pacman::p_load("tibble")
-pacman::p_load("stringr")
-pacman::p_load("ggplot2")
-pacman::p_load("data.table")
-pacman::p_load("ggplot2", "patchwork")
-pacman::p_load("openxlsx")
-library(dplyr)
-library(missForest)
-library(RColorBrewer)
-library(limma)
-library(DEqMS)
-library(preprocessCore)
-library(DEP)
-library(SummarizedExperiment)
-library(Metrics)
-library(fdrtool)
-library(aamisc)
-
+pacman::p_load("edgeR", "readr", "readxl", "biomaRt", "magrittr", "tibble", "stringr", 
+               "ggplot2", "data.table", "patchwork", "openxlsx", "dplyr", "missForest", 
+               "RColorBrewer", "limma", "DEqMS", "preprocessCore", "DEP", 
+               "SummarizedExperiment", "Metrics", "fdrtool", "aamisc")
 
 # install aamisc package for MDS and Volcano plots
-#pacman::p_load("qvalue", "rain", "limma", "devtools")
-#url <- "https://cran.r-project.org/src/contrib/Archive/HarmonicRegression/HarmonicRegression_1.0.tar.gz"
-#pkgFile <- "HarmonicRegression_1.0.tar.gz"
-#download.file(url = url, destfile = pkgFile)
-#install.packages(pkgs=pkgFile, type="source", repos=NULL)
-#file.remove(pkgFile)
-#pacman::p_load_gh("altintasali/aamisc")
+# Commented out for future use:
+# pacman::p_load("qvalue", "rain", "limma", "devtools")
+# url <- "https://cran.r-project.org/src/contrib/Archive/HarmonicRegression/HarmonicRegression_1.0.tar.gz"
+# pkgFile <- "HarmonicRegression_1.0.tar.gz"
+# download.file(url = url, destfile = pkgFile)
+# install.packages(pkgs=pkgFile, type="source", repos=NULL)
+# file.remove(pkgFile)
+# pacman::p_load_gh("altintasali/aamisc")
 
 # Colours for publication
 publication_colors <- c("Control" = "#285291", "Metformin" = "#7C1516", "Sham" = "#9B9B9B")
+
 ```
 
 # Read data and filtrer
@@ -71,10 +54,10 @@ count <- readr::read_delim(count_file)
 # Read metadata
 meta <- readxl::read_excel(meta_file)
 
-# Remove blank column (from MS machine)
+# Remove unnecessary or blank columns from MS machine
 count <- count %>% select(-matches("D:\\\\Mass_spectrometry\\\\Raw_data\\\\Joakim\\\\Simon Horse second run2\\\\10A_RA11_1_24830.d"))
 
-# Load gene annotation from horse
+# Read and clean gene annotation file
 geneinfo <- fread(geneinfo_file)
 setnames(geneinfo, old = names(geneinfo), new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
                                                   "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
@@ -165,13 +148,10 @@ cat("The average number of proteins before filtering was", mean(num_proteins), "
 cat("The total number of proteins after filtering was", max(num_proteins_after), "\n")
 cat("The average number of proteins after filtering was", mean(num_proteins_after), "\n")
 ```
-#DEP-package  https://bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/DEP.html
-##Generate a SummarizedExperiment object
+# DEP-package  https://bioconductor.org/packages/release/bioc/vignettes/DEP/inst/doc/DEP.html
+## Generate a SummarizedExperiment object
 ```{r DEP - create SE object}
-#Log2 transform (as per vignette, input should be log2transformed, even though it messes up volcano plots)
-filtered_count <- filtered_count
-
-# Create proxy columns to make SE-object similar to the input for the DEP package
+# Generate proxy columns similar to DEP's sample data to make the structure compatible.
 proxy_column_names <- c("Protein.IDs", "Majority.protein.IDs", "Protein.names", "Gene.names", 
                         "Fasta.headers", "Peptides", "Razor...unique.peptides", "Unique.peptides", 
                         "Only.identified.by.site", "Reverse", "Potential.contaminant")
@@ -202,7 +182,7 @@ data_unique <- make_unique(data, "Gene.names", "Protein.IDs", delim = ";")
 # Generate a SummarizedExperiment object using an experimental design
 LFQ_columns <- grep("LFQ.", colnames(data_unique)) # get LFQ column numbers
 
-# Define experimental design including a placeholder replicate column
+# Prepare the metadata for DEP analysis
 experimental_design <- data.frame(
   label = colnames(filtered_count),
   condition = meta$Condition,
@@ -225,11 +205,12 @@ rownames(experimental_design) <- make.unique(rownames(experimental_design))
 # Print the experimental design to verify
 print(experimental_design)
 
-# Generate a SummarizedExperiment object using an experimental design
+# Create the SummarizedExperiment Object
+# This will allow DEP to use the data for further analysis and visualization
 data_se <- make_se(data_unique, LFQ_columns, experimental_design)
 
 ```
-##Protein Coverage & filtrer on missing values
+## Protein Coverage & filtrer on missing values
 ```{r Protein Coverage}
 # Plot a barplot of the protein identification overlap between samples
 plot_frequency(data_se)
@@ -247,7 +228,7 @@ plot_numbers(data_se)
 plot_coverage(data_se)
 
 ```
-##Normalizaiton
+## Normalizaiton
 ```{r Normalization}
 #Check un-normalized data
 plot_normalization(data_se)
@@ -261,7 +242,7 @@ plot_normalization(data_se_norm)
 
 ###Verdict: After variance stabilisation, the median (a reasonable estimator of the standard deviation of feature level data conditional on the mean) is approximately a horizontal line.
 ```
-###Impute data for missing values
+### Impute data for missing values
 ```{r Imputation for Missing Values}
 # Plot a heatmap of proteins with missing values
 plot_missval(data_se_norm)
@@ -287,8 +268,10 @@ plot_imputation( data_se_norm, data_imp_MinProb, data_imp_man, data_imp_qrilc)
 ###Verdict: data_imp_qrilC seems to be  addressing MNAR the best, and will be used downstream. 
 ```
 
-##Differential abundance analysis using DEP
+## Differential abundance analysis using DEP
 ```{r DEP differential abundance analyisis}
+# Note: This analysis is intended as an extra quality control (QC) step.
+# The main differential abundance analysis is performed using the `limma` package due to the more complex study design.
 #Set contrasts
 con <- c("RA_Control_4months_vs_RA_Sham_4months", "RA_Metformin_4months_vs_RA_Control_4months")
 
@@ -322,9 +305,9 @@ data_results %>% filter(significant) %>% nrow()
 
 
 ```
-#MDS-plots on non-imputed data
+# MDS-plots on non-imputed data
 ```{r MDS plots}
-#Log-transformation 
+#Log-transformation
 logCounts <- filtered_count
 #For PCA plot, we will remove the NAs - 
 logCounts_noNA  <- na.omit(logCounts)
@@ -383,6 +366,12 @@ print(plot2)
 
 #Checking histograms of normalized-unimputed (data_se_norm), imputed (data_imp_MinProb) and raw log-counts (filtred_counts) before limma
 ```{r Intensity-Histograms, fig.height=5, fig.width=10}
+# Histograms will be generated for four datasets:
+# 1. `normalized_unimputed`: Normalized but not imputed data.
+# 2. `imputed_data_MinProb`: Data imputed using the "MinProb" method.
+# 3. `imputed_data_qrilc`: Data imputed using the "QRILC" method.
+# 4. `unfiltered_count`: Raw log-transformed counts after initial filtering.
+
 # Extract the assay data from data_se_norm (normalized_unimputed)
 normalized_unimputed <- as.data.frame(assay(data_se_norm))
 colnames(normalized_unimputed) <- colnames(filtered_count)
@@ -405,13 +394,17 @@ hist(as.vector(as.matrix(imputed_data_MinProb)), breaks = 50, main = "MinProb Im
 hist(as.vector(as.matrix(imputed_data_qrilc)), breaks = 50, main = "QRILC Imputed Data", xlab = "Intensity")
 hist(as.vector(as.matrix(filtered_count)), breaks = 50, main = "Unfiltered Data", xlab = "Intensity")
 
-
 #Moving on with QRILC imputed data!
 ```
 
-#Limma with FDR-tools on normalized data
+# Limma on Normalized data
 ```{r Limma with FDR-tools on normalized data}
-#I combine my own Limma code with the FDRtools (which is what the DEP package uses seperately from lmfit/eBayes). I do this to double check that my results align with the DEP package, when I use the same workflow. Not sure if I will continue with FDR values or adj. P. values. 
+# This script performs limma differential analysis combined with FDRtool-based multiple testing correction. 
+# It uses a blocking factor (Horse) and a pre-defined contrast matrix to extract meaningful differential protein abundance.
+
+# Create the design matrix based on experimental conditions
+design <- model.matrix(~0 + Condition, d$samples)
+colnames(design) <- gsub("Condition", "", colnames(design))
 
 # Set the design
 design <- model.matrix(~0 + Condition, d$samples)
@@ -430,20 +423,20 @@ con <- makeContrasts(
 )
 con
 
-# Run limma whilst blocking for "horse" 
+# Run limma with blocking for Horse to account for repeated measures within subjects.
 corfit <- duplicateCorrelation(imputed_data_qrilc, design, block = as.factor(d$samples$Horse))
 fit <- lmFit(imputed_data_qrilc, design, block = as.factor(d$samples$Horse), correlation = corfit$consensus.correlation)
 rownames(fit$coefficients) <- rownames(imputed_data_qrilc)
 
-# Obtain DGE results with FDR correction using fdrtool
+# Fit the Linear Model for Each Contrast and Apply FDRtool 
 res <- list() # list for DGE results
-for (i in colnames(con)) {
+for (i in colnames(con)) {        # Loop through each contrast and perform eBayes fitting and FDR correction
   fit.contrast <- contrasts.fit(fit, contrasts = con)
   fit.contrast <- eBayes(fit.contrast, robust = TRUE, trend = TRUE)
   res_tmp <- topTable(fit.contrast, coef = i, number = Inf)
   res_tmp <- res_tmp[!is.na(res_tmp$t), ]
   
-  # Apply FDR correction using fdrtool
+  # Apply FDR correction using fdrtool to align with DEP package approach
   fdr_res <- fdrtool(res_tmp$t, plot = FALSE, verbose = FALSE)
   res_tmp$qval <- fdr_res$qval
   res_tmp$lfdr <- fdr_res$lfdr
@@ -468,23 +461,13 @@ res_all$GeneName <- sapply(seq_len(nrow(res_all)), function(i) {
 # Split results by contrast
 res_split <- split(res_all, res_all$Contrast)
 
-# Create output Excel file
-openxlsx::write.xlsx(x = res_split, file = "../../../../Timecourse/analysis/01_dge/output/dge_results.xlsx", asTable = TRUE)
+# Comment out the write commands if saving is not needed
+# Save results as Excel file for manual inspection
+#openxlsx::write.xlsx(x = res_split, file = "../../../../Timecourse/analysis/01_dge/output/dge_results.xlsx", asTable = TRUE)
 
-# Create output TSV file
-data.table::fwrite(x = res_all, file = "../../../../Timecourse/analysis/01_dge/output/dge_results.tsv.gz", sep = "\t")
+# Save results as TSV file for data sharing and publication
+#data.table::fwrite(x = res_all, file = "../../../../Timecourse/analysis/01_dge/output/dge_results.tsv.gz", sep = "\t")
 
-```
-## p-value histograms
-```{r pvalue_histograms, fig.height=10, fig.width=10}
-ggplot(res_all, aes(x = P.Value)) + 
-  geom_histogram(fill = "lightgray",
-                 color = "black",
-                 breaks = seq(0, 1, by = 0.05),
-                 closed = "right",
-                 lwd = 0.2) + 
-  facet_wrap(~ Contrast, nrow = 3, scales = "free") + 
-  theme_bw()
 ```
 
 ### Volcano plots
@@ -505,85 +488,87 @@ for (i in names(res)){
 patchwork::wrap_plots(volcano_plots, ncol = 3)
 ```
 
-#Understanding the direciton in diff-treatment
+# Understanding Treatment Direction and Plotting Protein Abundance
 ```{r}
 # Understanding LogFC for "Diff_Treatment"
-# Positive logFC:
-#   a) Metformin group increases, and control group decreases
-#   b) Both groups increase, but the increase is greater in the metformin group
-#   c) Both groups decrease, but the decrease is smaller in the metformin group
-# Overall: Metformin is associated with a relatively higher level, indicating a greater positive change or a smaller negative change.
+# Positive LogFC indicates:
+# 1) Metformin group shows a relatively higher level compared to the control group.
+# 2) This can occur if:
+#    a) Metformin increases and control decreases.
+#    b) Both increase, but metformin shows a greater increase.
+#    c) Both decrease, but metformin shows a smaller decrease.
 
-# Negative logFC:
-#   a) Metformin group decreases, and control group increases
-#   b) Both groups decrease, but the decrease is greater in the metformin group
-#   c) Both groups increase, but the increase is smaller in the metformin group
-# Overall: Metformin is associated with a relatively lower level, indicating a greater negative change or a smaller positive change.
+# Negative LogFC indicates:
+# 1) Metformin group shows a relatively lower level compared to the control group.
+# 2) This can occur if:
+#    a) Metformin decreases and control increases.
+#    b) Both decrease, but metformin shows a greater decrease.
+#    c) Both increase, but metformin shows a smaller increase.
 
-# Function to create boxplots to look at individual proteins
+# Load ggpubr for enhanced visualization
 library(ggpubr)
-# Define the function to create a violin plot with dots and mean line for a given protein
+
+# Step 1: Define the function to create a violin plot with individual points and mean line
 plot_protein_counts <- function(protein_of_interest) {
-  # Ensure that the protein is in the dataset
-  if(protein_of_interest %in% rownames(data_se_norm)) {
-    # Extract the counts for the protein
+  # Check if the protein is present in the dataset
+  if (protein_of_interest %in% rownames(data_se_norm)) {
+    # Extract the normalized counts for the protein
     protein_counts <- assay(data_se_norm)[protein_of_interest,]
     
     # Create a data frame for plotting
     protein_df <- data.frame(
-      SampleID = colnames(data_se_norm),
-      Count = protein_counts,
-      Condition = meta$Condition
+      SampleID = colnames(data_se_norm), # Extract sample IDs
+      Count = protein_counts,            # Protein counts
+      Condition = meta$Condition         # Experimental conditions
     )
     
-    # Plot using ggpubr
+    # Generate violin plot with jitter points and mean line
     p <- ggplot(protein_df, aes(x = Condition, y = Count, fill = Condition)) +
-      geom_violin(trim = FALSE, alpha = 0.5) + # Violin plot
-      geom_jitter(width = 0.2, size = 2, alpha = 0.7) + # Individual data points
-      stat_summary(fun = mean, geom = "crossbar", width = 0.5, fatten = 2, color = "red") + # Mean line
+      geom_violin(trim = FALSE, alpha = 0.5) +                        # Violin plot
+      geom_jitter(width = 0.2, size = 2, alpha = 0.7) +               # Add individual points
+      stat_summary(fun = mean, geom = "crossbar", width = 0.5, fatten = 2, color = "red") +  # Mean line
       labs(
-        title = paste("Violin plot of normalized counts for", protein_of_interest),
-        x = "Condition",
-        y = "Normalized Abundance"
+        title = paste("Violin plot of normalized counts for", protein_of_interest),  # Plot title
+        x = "Condition", y = "Normalized Abundance"                                  # Axis labels
       ) +
-      theme_pubr() + # Apply the ggpubr theme
-      scale_fill_brewer(palette = "Set3")
-    
-    print(p)
+      theme_pubr() +                                                  # Apply a clean theme
+      scale_fill_brewer(palette = "Set3")                             # Color palette
+
+    print(p)  # Display the plot
   } else {
+    # Output message if protein is not found
     cat("The protein", protein_of_interest, "is not present in the dataset.\n")
   }
 }
 
-# Electron transport Chain Genes - treatment difference that are "blue"/negative logFC between treated an untreated
-plot_protein_counts("NDUFA6") #Candidate gene for treatment effect, has been linked with metformin treatment before in relation to Aoritc Aneurysms
-plot_protein_counts("ATP5F1C") #Candidate gene for treatment effect
-plot_protein_counts("KARS1")
+# Step 2: Visualize selected proteins with significant treatment effects to understand, why it is upregulated and downregulated (see comment in beginning of chunk)
 
-# Proteasome proteins - also "blue" treatment difference 
-plot_protein_counts("PSMC5")
-plot_protein_counts("PSMC4") #Candidate gene for ... 
-plot_protein_counts("PSMD11")
+# A) Electron Transport Chain Genes - negatively regulated (blue) in "Diff_Treatment"
+plot_protein_counts("NDUFA6")   # Associated with metformin in studies related to Aortic Aneurysms, increases less in metformin group
+plot_protein_counts("ATP5F1C")  # Important candidate gene for treatment effects, small decrease in metformin group
+plot_protein_counts("KARS1")    # Downregulated in response to treatment 
 
-# Hsp90 proteins - also "blue" treatment difference 
-plot_protein_counts("SUGT1")
-plot_protein_counts("HSP90AA1")
-plot_protein_counts("DYNC1H1")
+# B) Proteasome Proteins - negatively regulated (blue) in "Diff_Treatment"
+plot_protein_counts("PSMC5")    # Protein linked to proteasome function
+plot_protein_counts("PSMC4")    # Another candidate for proteasome-associated mechanisms
+plot_protein_counts("PSMD11")   # Related to proteasome degradation processes
 
-# Detoxification of ROS - red treatment difference
-plot_protein_counts("TXNRD2")
-plot_protein_counts("TXN") #Maybe candidate gene
-plot_protein_counts("SOD3")
+# C) Heat Shock Proteins (Hsp90 Family) - negatively regulated (blue) in "Diff_Treatment"
+plot_protein_counts("SUGT1")    # Chaperone activity protein
+plot_protein_counts("HSP90AA1") # Hsp90 protein linked to stress response
+plot_protein_counts("DYNC1H1")  # Motor protein involved in cellular transport
 
+# D) Detoxification of Reactive Oxygen Species (ROS) - positively regulated (red) in "Diff_Treatment"
+plot_protein_counts("TXNRD2")   # Key enzyme in ROS detoxification
+plot_protein_counts("TXN")      # Thioredoxin, involved in redox regulation
+plot_protein_counts("SOD3")     # Superoxide dismutase, a primary ROS scavenger
 
-plot_protein_counts("DDAH1")
-plot_protein_counts("COQ8A")
-plot_protein_counts("RICTOR")
-
-plot_protein_counts("YWHAE")
-
-plot_protein_counts("TXNDC5")
-
+# Additional Proteins of Interest
+plot_protein_counts("DDAH1")    # Dimethylarginine Dimethylaminohydrolase 1
+plot_protein_counts("COQ8A")    # Coenzyme Q8 homolog
+plot_protein_counts("RICTOR")   # Component of mTOR complex
+plot_protein_counts("YWHAE")    # 14-3-3 protein epsilon, signaling protein
+plot_protein_counts("TXNDC5")   # Protein disulfide isomerase, ROS response
 
 ```
 

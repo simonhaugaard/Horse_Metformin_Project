@@ -1,0 +1,328 @@
+---
+title: "Chord Diagrams"
+author: "Simon Haugaard"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Required R libraries
+```{r library}
+# Install pacman if not already installed
+if (!require("pacman")) install.packages("pacman")
+
+# Load all necessary packages using pacman for easy management
+pacman::p_load(
+  "edgeR", "readr", "readxl", "magrittr", "tibble", "stringr",
+  "ggplot2", "data.table", "patchwork", "openxlsx", "GOplot",
+  "dplyr", "missForest", "RColorBrewer", "ggpubr", "tidyr",
+  "SummarizedExperiment", "GenomicRanges", "BiocGenerics",
+  "S4Vectors", "IRanges", "GenomeInfoDb", "Biobase", "pheatmap"
+)
+
+```
+
+# Chord Diagram on ORA (Over Representation Analysis) for Control Vs Sham in the Right Atrium 
+
+```{r ORA Disease Effect RA, fig.height=10, fig.width=10}
+# 1. Load GO ORA results
+go_file <- "../../02_gene-enrichment/output/GO_ora.tsv.gz"
+go_ora <- fread(go_file)  # Read in the GO ORA results
+
+# Define selected GO terms and expected regulation direction (up/down regulation)
+selected_go_terms <- c("mitochondrial inner membrane", "calcium ion binding", 
+                       "angiogenesis", "adherens junction", "protein phosphorylation")
+
+go_term_direction <- list(
+  "mitochondrial inner membrane" = "up",
+  "calcium ion binding" = "down",
+  "angiogenesis" = "down",
+  "adherens junction" = "down",
+  "protein phosphorylation" = "down"
+)
+
+# 2. Filter GO ORA data based on selected GO terms and regulation direction for "AF_vs_sham_RA"
+filtered_go_ora <- go_ora %>%
+  filter(Contrast == "AF_vs_sham_RA" & Description %in% selected_go_terms) %>%
+  rowwise() %>%
+  filter(go_term_direction[[Description]] %in% Direction)
+
+# 3. Extract relevant gene IDs and GO terms
+gene_list <- unique(unlist(strsplit(filtered_go_ora$geneID, "/")))  # Split gene lists to get unique genes
+go_terms <- filtered_go_ora$Description
+
+# 4. Load DGE (Differential Gene Expression) results to match log fold-change (logFC) data with gene IDs
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+dge <- fread(dge_file)  # Read in DGE results
+
+# Filter DGE data for the specific contrast "AF_vs_sham_RA"
+dge_filtered <- dge %>%
+  filter(Contrast == "AF_vs_sham_RA")
+
+# 5. Extract logFC and match it with gene_list from GO ORA results
+logFC_data <- dge_filtered %>%
+  filter(ENSEMBL %in% gene_list) %>%
+  select(ENSEMBL, GENENAME, logFC) %>%
+  filter(GENENAME != "X" & GENENAME != "X1" & GENENAME != "" & !is.na(GENENAME))  # Remove invalid gene names
+
+# 6. Transform GO ORA data: convert ENSEMBL IDs to gene names in the "Genes" column
+
+# A. Select and rename relevant columns to match the structure of EC$david
+go_ora_transformed <- filtered_go_ora %>%
+  select(Category = Database, ID, Term = Description, Genes = geneID, adj_pval = p.adjust)
+
+# B. Split ENSEMBL IDs in the 'Genes' column into individual IDs
+go_ora_transformed$Genes_split <- strsplit(go_ora_transformed$Genes, "/")
+
+# C. Create a lookup table from logFC_data to map ENSEMBL to GENENAME
+ensembl_to_genename <- setNames(logFC_data$GENENAME, logFC_data$ENSEMBL)
+
+# D. Map ENSEMBL IDs to gene names using the lookup table
+go_ora_transformed$Genes_converted <- lapply(go_ora_transformed$Genes_split, function(ensembl_list) {
+  gene_names <- ensembl_to_genename[ensembl_list]  # Replace ENSEMBL with gene names
+  gene_names[!is.na(gene_names)]  # Return valid gene names, discard NAs
+})
+
+# E. Collapse the list of gene names into a single string for each row
+go_ora_transformed$Genes <- sapply(go_ora_transformed$Genes_converted, paste, collapse = ", ")
+
+# F. Remove intermediate columns (Genes_split and Genes_converted)
+go_ora_transformed <- go_ora_transformed %>%
+  select(-Genes_split, -Genes_converted)
+
+# 7.  Prepare logFC data in the structure matching EC$genes
+logFC_data_transformed <- logFC_data %>%
+  select(ID = GENENAME, logFC)  # Rename columns to match EC$genes format
+
+# 8. Create the circ object using circle_dat() combining GO terms and logFC data
+circ <- circle_dat(go_ora_transformed, logFC_data_transformed)
+
+# 9. Prepare the chord plot data using chord_dat()
+chord_data <- chord_dat(data = circ, genes = logFC_data_transformed$ID, process = go_ora_transformed$Term)
+
+# A. Include logFC in the chord data
+chord_data <- cbind(chord_data, logFC = logFC_data_transformed$logFC[match(rownames(chord_data), logFC_data_transformed$ID)])
+
+# 10. Generate and plot the chord diagram
+GOChord(chord_data, space = 0.02, gene.order = 'logFC', gene.size = 5)
+
+# Generate heatmap for chord data
+GOHeat(chord_data)
+
+# Custom color palette for processes (ribbons)
+custom_colors <- c("mitochondrial inner membrane" = "#62b3e5",  # blue
+                   "calcium ion binding" = "#0db14a",          # green
+                   "angiogenesis" = "#8b2289",                 # purple
+                   "adherens junction" = "#b0373d",            # red
+                   "protein phosphorylation" = "#fcb985")      # orange
+
+# Generate and plot the chord diagram with custom ribbon colors
+GOChord(chord_data, 
+        space = 0.02, 
+        gene.order = 'logFC', 
+        gene.size = 5, 
+        ribbon.col = custom_colors)
+
+# Define relevant genes for the Chord-Diagram
+# 1. Manually define your custom gene list based on biological knowledge or example
+custom_gene_list <- c("COX7B", "COX4I1", "NDUFA12", "NDUFS2", "NDUFS3", "NDUFA12", 
+                      "CYC1", "LDHB", "SDHD", "NDUFA6", "NRP1", "NRP2", "AMOT", 
+                      "FGF1", "AMOTL2", "CCN2", "AK1", "PKP2", "TJP1", "JUP", 
+                      "VCL", "CTNND1", "ITPR3", "ITPR1", "PLCB2", "PLCB3", 
+                      "MYLK", "MYLK3", "CAMK1D", "SGK1", "PRKG1")
+                      
+# 2. Filter logFC_data to match only the genes in the custom gene list
+logFC_data_custom <- logFC_data %>%
+  filter(GENENAME %in% custom_gene_list) %>%
+  select(ID = GENENAME, logFC)
+
+# 3. Update the GO ORA data to keep terms containing the custom genes
+go_ora_custom <- go_ora_transformed %>%
+  filter(grepl(paste(custom_gene_list, collapse = "|"), Genes))
+
+# 4. Prepare the circular data object using circle_dat with the custom gene list
+circ_custom <- circle_dat(go_ora_custom, logFC_data_custom)
+
+# 5. Prepare the chord plot data using chord_dat
+chord_data_custom <- chord_dat(data = circ_custom, genes = logFC_data_custom$ID, process = go_ora_custom$Term)
+
+# 6. Add the logFC column to the chord data for custom plotting
+chord_data_custom <- cbind(chord_data_custom, logFC = logFC_data_custom$logFC[match(rownames(chord_data_custom), logFC_data_custom$ID)])
+
+# 7. Define a simple but elegant color palette for the ribbons (adjust as desired)
+custom_colors <- c("#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51")
+
+# 8. Generate the chord diagram for custom genes
+GOChord(chord_data_custom, 
+        space = 0.04,           
+        gene.order = 'logFC',   
+        gene.size = 10,
+        gene.space = 0.5,
+        ribbon.col = custom_colors,  
+        nlfc = 1)
+
+# Adjust color palette for visual appeal
+custom_colors <- c("#d73027", "#fc8d59", "#fee090", "#91bfdb", "#4575b4")
+custom_colors <- c("#4575b4", "#91bfdb", "#fee090", "#fc8d59", "#d73027")
+
+# Generate the final chord diagram with adjusted settings
+GOChord(chord_data_custom, 
+        space = 0.04,           
+        gene.order = 'logFC',   
+        gene.size = 4,
+        gene.space = 0.3,
+        ribbon.col = custom_colors,  
+        nlfc = 1,
+        lfc.col = c("#67000d", "#f7f7f7", "#08306b"),  # Dark blue to white to dark red
+        lfc.min = -2,  # Minimum value on the logFC scale
+        lfc.max = 2)    # Maximum value on the logFC scale
+
+```
+
+
+
+# Chord Diagram on ORA (Over Representation Analysis) for Metformin vs Control in the Right Atrium
+```{r ORA Treatment Effect RA, fig.height=10, fig.width=10}
+# 1. Load GO ORA results
+go_file <- "../../02_gene-enrichment/output/GO_ora.tsv.gz"
+go_ora <- fread(go_file)  # Read in the GO ORA results
+
+# 2. Define selected GO terms and their expected regulation direction
+selected_go_terms <- c("oxidative phosphorylation", "glycolytic process", 
+                       "chromatin remodeling", "adherens junction", "protein kinase activity")
+
+go_term_direction <- list(
+  "oxidative phosphorylation" = "down",
+  "glycolytic process" = "down",
+  "chromatin remodeling" = "up",
+  "adherens junction" = "up",
+  "protein kinase activity" = "up"
+)
+
+# 3. Filter GO ORA data based on selected terms and their expected direction for "met_vs_placebo_RA"
+filtered_go_ora <- go_ora %>%
+  filter(Contrast == "met_vs_placebo_RA" & Description %in% selected_go_terms) %>%
+  rowwise() %>%
+  filter(Direction == go_term_direction[[Description]])
+
+# 4. Extract relevant gene IDs and GO terms
+gene_list <- unique(unlist(strsplit(filtered_go_ora$geneID, "/")))  # Split gene lists to get unique genes
+go_terms <- filtered_go_ora$Description
+
+# 5. Load DGE (Differential Gene Expression) results to match log fold-change (logFC) data with gene IDs
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+dge <- fread(dge_file)  # Read in DGE results
+
+# 6. Filter DGE data for the specific contrast "met_vs_placebo_RA"
+dge_filtered <- dge %>%
+  filter(Contrast == "met_vs_placebo_RA")
+
+# 7. Extract logFC and match it with gene_list from GO ORA results
+logFC_data <- dge_filtered %>%
+  filter(ENSEMBL %in% gene_list) %>%
+  select(ENSEMBL, GENENAME, logFC) %>%
+  filter(GENENAME != "X" & GENENAME != "X1" & GENENAME != "" & !is.na(GENENAME))  # Remove invalid gene names
+
+# 8. Transform GO ORA data: convert ENSEMBL IDs to gene names in the "Genes" column
+
+# A. Select and rename relevant columns to match the structure of EC$david
+go_ora_transformed <- filtered_go_ora %>%
+  select(Category = Database, ID, Term = Description, Genes = geneID, adj_pval = p.adjust)
+
+# B. Split ENSEMBL IDs in the 'Genes' column into individual IDs
+go_ora_transformed$Genes_split <- strsplit(go_ora_transformed$Genes, "/")
+
+# C. Create a lookup table from logFC_data to map ENSEMBL to GENENAME
+ensembl_to_genename <- setNames(logFC_data$GENENAME, logFC_data$ENSEMBL)
+
+# D. Map ENSEMBL IDs to gene names using the lookup table
+go_ora_transformed$Genes_converted <- lapply(go_ora_transformed$Genes_split, function(ensembl_list) {
+  gene_names <- ensembl_to_genename[ensembl_list]  # Replace ENSEMBL with gene names
+  gene_names[!is.na(gene_names)]  # Return valid gene names, discard NAs
+})
+
+# E. Collapse the list of gene names into a single string for each row
+go_ora_transformed$Genes <- sapply(go_ora_transformed$Genes_converted, paste, collapse = ", ")
+
+# F. Remove intermediate columns (Genes_split and Genes_converted)
+go_ora_transformed <- go_ora_transformed %>%
+  select(-Genes_split, -Genes_converted)
+
+# 9. Prepare logFC data in the structure matching EC$genes
+logFC_data_transformed <- logFC_data %>%
+  select(ID = GENENAME, logFC)  # Rename columns to match EC$genes format
+
+# 10. Create the circ object using circle_dat() combining GO terms and logFC data
+circ <- circle_dat(go_ora_transformed, logFC_data_transformed)
+
+# 11. Prepare the chord plot data using chord_dat()
+chord_data <- chord_dat(data = circ, genes = logFC_data_transformed$ID, process = go_ora_transformed$Term)
+
+# A. Include logFC in the chord data
+chord_data <- cbind(chord_data, logFC = logFC_data_transformed$logFC[match(rownames(chord_data), logFC_data_transformed$ID)])
+
+# 12. Generate and plot the chord diagram
+GOChord(chord_data, space = 0.02, gene.order = 'logFC', gene.size = 5)
+
+# Custom color palette for processes (ribbons)
+custom_colors <- c("oxidative phosphorylation" = "#62b3e5",  # blue
+                   "glycolytic process" = "#0db14a",         # green
+                   "chromatin remodeling" = "#8b2289",       # purple
+                   "adherens junction" = "#b0373d",          # red
+                   "protein kinase activity" = "#fcb985")    # orange
+
+# Generate and plot the chord diagram with custom ribbon colors
+GOChord(chord_data, 
+        space = 0.02, 
+        gene.order = 'logFC', 
+        gene.size = 5, 
+        ribbon.col = custom_colors)
+
+# Define relevant genes for a Chord-Diagram
+# 1. Manually define your custom gene list based on biological knowledge or examples
+custom_gene_list <- c("CHCHD10", "COX7B", "COX4I1", "COX6A1", "PFKL", "ALDOA", "PFKL", "GAPDH", 
+                      "SETD7", "SETBP1", "SETD5", "NSD1", "PRKAA2", "PRKAA1", 
+                      "BMPR2", "CAMKK2", "MTOR", "PRKACB", "CTNNA3", "TJP1", 
+                      "PKP2", "JCAD", "DSP", "CDH2", "DSC2", "JCAD", "GCK", 
+                      "TAF1", "RPS6KA5", "PRKCA")
+
+# 2. Filter logFC_data to match only the genes in the custom gene list
+logFC_data_custom <- logFC_data %>%
+  filter(GENENAME %in% custom_gene_list) %>%
+  select(ID = GENENAME, logFC)
+
+# 3. Update the GO ORA data to keep terms containing the custom genes
+go_ora_custom <- go_ora_transformed %>%
+  filter(grepl(paste(custom_gene_list, collapse = "|"), Genes))
+
+# 4. Prepare the circular data object using circle_dat with the custom gene list
+circ_custom <- circle_dat(go_ora_custom, logFC_data_custom)
+
+# 5. Prepare the chord plot data using chord_dat
+chord_data_custom <- chord_dat(data = circ_custom, genes = logFC_data_custom$ID, process = go_ora_custom$Term)
+
+# 6. Add the logFC column to the chord data for custom plotting
+chord_data_custom <- cbind(chord_data_custom, logFC = logFC_data_custom$logFC[match(rownames(chord_data_custom), logFC_data_custom$ID)])
+
+# 7. Define a simple but elegant color palette for the ribbons
+custom_colors <- c("#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51")
+custom_colors <- c("#4575b4", "#91bfdb", "#fee090", "#fc8d59", "#d73027")
+
+# 8. Generate the chord diagram for custom genes
+GOChord(chord_data_custom, 
+        space = 0.04,           
+        gene.order = 'logFC',   
+        gene.size = 10,
+        gene.space = 0.5,
+        ribbon.col = custom_colors,  
+        nlfc = 1)  # Adjust nlfc for the number of logFC categories
+```

@@ -1,5 +1,5 @@
 ---
-title: "Gene enrichment analysis"
+title: "Protein enrichment analysis"
 author: "Simon Haugaard"
 date: "`r Sys.Date()`"
 output: 
@@ -66,7 +66,7 @@ enrich_cut <- 0.05
 
 The analysis will be performed according to following statistical cutoffs.
 
-- *Differential gene expression:* adjusted p-value (FDR) < `r dge_cut`
+- *Differential gene expression:* p-value < `r dge_cut`
 - *Enrichment analysis:* adjusted p-value (Q-value) < `r enrich_cut`
 
 # GO
@@ -134,9 +134,9 @@ head(go_ora_res)
 go_ora_res[qvalue < enrich_cut,]
 
 #Create output data
-fwrite(x = go_ora_res, file = "../output/GO_ora.tsv.gz", sep = "\t")
+# fwrite(x = go_ora_res, file = "../output/GO_ora.tsv.gz", sep = "\t")
 go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
-openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora.xlsx", asTable = TRUE)
+# openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora.xlsx", asTable = TRUE)
 
 aamisc::dotplotEnrich(dt = go_ora_res, 
                       topn = 10, 
@@ -243,8 +243,8 @@ go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
 #Output data
 go_gsea_res_split <- split(go_gsea_res, f = go_gsea_res$Contrast)
 
-#openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea.xlsx", asTable = TRUE)
-fwrite(x = go_gsea_res_split, file = "../output/go_gsea.tsv.gz", sep = "\t")
+# openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea.xlsx", asTable = TRUE)
+# fwrite(x = go_gsea_res_split, file = "../output/go_gsea.tsv.gz", sep = "\t")
 
 # Function to plot dot plots for each contrast
 plot_dotplot_for_contrast <- function(data_split, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
@@ -294,10 +294,10 @@ KEGG_ora_upDown <- compareCluster(ENTREZID ~ Contrast + Direction,
                              qvalueCutoff  = enrich_cut)@compareClusterResult %>% setDT
 
 KEGG_ora <- rbindlist(list(KEGG_ora_upDown))
-fwrite(x = KEGG_ora, file = "../output/kegg_ora.tsv.gz", sep = "\t")
+# fwrite(x = KEGG_ora, file = "../output/kegg_ora.tsv.gz", sep = "\t")
 
 KEGG_ora_split <- split(KEGG_ora, f = KEGG_ora$Contrast)
-openxlsx::write.xlsx(x = KEGG_ora_split, file = "../output/kegg_ora.xlsx", asTable = TRUE)
+# openxlsx::write.xlsx(x = KEGG_ora_split, file = "../output/kegg_ora.xlsx", asTable = TRUE)
 
 
 # Function to plot dot plots for each contrast for KEGG enrichment results
