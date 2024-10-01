@@ -13,7 +13,7 @@ The project is divided into the following main analysis workflows:
 
 ### Proteomics
 1. **Terminal Samples**: Analyzes terminal samples for differential protein abundance, enrichment, and pathway interactions.
-2. **Timecourse Samples**: Evaluates dynamic changes in protein abundance across different time points in horses treated with metformin compared to controls.
+2. **Timecourse Samples**: Evaluates dynamic changes in protein abundance across different time points in horses treated with metformin compared to controls. Only available for the right atrium (RA).
 
 ### RNA-seq
 Performs transcriptome-wide differential expression analysis and gene enrichment using RNA-seq data.
