@@ -22,25 +22,24 @@ Performs transcriptome-wide differential expression analysis and gene enrichment
 Combines multi-omics data (proteomics and transcriptomics) for joint dimensionality reduction analysis (MCIA) and functional enrichment of high-loading features.
 
 ## Directory Structure
-├── Horse_Metformin_project.Rproj
-├── README.md
-├── Integration of Omics
-│   ├── analysis
-│   │   ├── 01_Venn_Diagrams
-│   │   └── 02_Enrichment_MCIA_Loadings
-│   └── data
-├── Proteomics
-│   ├── Terminal
-│   │   ├── analysis
-│   │   └── data
-│   └── Timecourse
-│       ├── analysis
-│       └── data
-└── RNA-seq
-    ├── analysis
-    └── data
-    └── preprocessing
-
+- Horse_Metformin_project.Rproj
+- README.md
+- Integration of Omics
+  - analysis
+    - 01_Venn_Diagrams
+    - 02_Enrichment_MCIA_Loadings
+  - data
+- Proteomics
+  - Terminal
+    - analysis
+    - data
+  - Timecourse
+    - analysis
+    - data
+- RNA-seq
+  - analysis
+  - data
+  - preprocessing
 ## Directory Descriptions
 
 ### RNA-seq
