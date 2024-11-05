@@ -43,7 +43,7 @@ library(STRINGdb)
 #string_db <- "../../../data/gene_annotation/9796.protein.links.full.v12.0.txt.gz"
 filtered_string_db <- "../../../data/gene_annotation/filtered_9796.protein.links.full.v12.0.txt.gz"
 geneinfo_file <- "../../../data/gene_annotation/horse_gene_annotation.tsv.gz"
-dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results_sva.tsv.gz"
 string_alias_file <- "../../../data/gene_annotation/9796.protein.aliases.v12.0.txt.gz"
 
 # Read and filter STRING database for high-confidence P-P interactions
@@ -75,7 +75,7 @@ dge[, ENTREZID := as.character(ENTREZID)]
 
 # Subset relevant contrasts and filter by P-value
 relevant_contrasts <- c("Diff_Treatment", "Diff_Disease")
-dge <- dge[Contrast %in% relevant_contrasts & P.Value < 0.05]
+dge <- dge[Contrast %in% relevant_contrasts & adj.P.Val < 0.05]
 
 # Map GeneIDs to proteinIDs using STRING protein aliases
 string_alias <- fread(string_alias_file)
@@ -114,16 +114,19 @@ for (contrast in names(dge_list)) {
   # Extract P-P pairs where both proteins are in the DGE list for the current contrast
   pp_pairs <- filtered_string[protein1 %in% dge_protein_ids & protein2 %in% dge_protein_ids]
   
-  # Merge with dge_contrast to include additional information
-  pp_pairs <- merge(pp_pairs, dge_contrast[, .(ProteinID, GENENAME, logFC, P.Value, adj.P.Val, Direction)], 
-                    by.x = "protein1", by.y = "ProteinID", all.x = TRUE)
-  setnames(pp_pairs, old = c("GENENAME", "logFC", "P.Value", "adj.P.Val", "Direction"), 
-                     new = c("GENENAME1", "logFC1", "P.Value1", "adj.P.Val1", "Direction1"))
+  # Remove duplicate column names in dge_contrast
+  dge_contrast <- dge_contrast[, !duplicated(names(dge_contrast)), with = FALSE]
   
-  pp_pairs <- merge(pp_pairs, dge_contrast[, .(ProteinID, GENENAME, logFC, P.Value, adj.P.Val, Direction)], 
+  # Merge with dge_contrast to include additional information
+  pp_pairs <- merge(pp_pairs, dge_contrast[, .(ProteinID, GENENAME, logFC, adj.P.Val, Direction)], 
+                    by.x = "protein1", by.y = "ProteinID", all.x = TRUE)
+  setnames(pp_pairs, old = c("GENENAME", "logFC", "adj.P.Val", "Direction"), 
+                     new = c("GENENAME1", "logFC1", "adj.P.Val1", "Direction1"))
+  
+  pp_pairs <- merge(pp_pairs, dge_contrast[, .(ProteinID, GENENAME, logFC, adj.P.Val, Direction)], 
                     by.x = "protein2", by.y = "ProteinID", all.x = TRUE)
-  setnames(pp_pairs, old = c("GENENAME", "logFC", "P.Value", "adj.P.Val", "Direction"), 
-                     new = c("GENENAME2", "logFC2", "P.Value2", "adj.P.Val2", "Direction2"))
+  setnames(pp_pairs, old = c("GENENAME", "logFC", "adj.P.Val", "Direction"), 
+                     new = c("GENENAME2", "logFC2", "adj.P.Val2", "Direction2"))
   
   # Store the result in the list
   pp_pairs_list[[contrast]] <- pp_pairs
@@ -132,11 +135,201 @@ for (contrast in names(dge_list)) {
   pp_pairs_file <- paste0("../../03_string/output/dge_pp_pairs_", contrast, ".tsv")
   fwrite(pp_pairs, pp_pairs_file, sep = "\t")
 }
+```
+# Visualize network Diff_Disease
+```{r}
+library(visNetwork)
+library(igraph)
+library(scales)
+library(htmlwidgets)  # Load the htmlwidgets package for saving as HTML
 
-# Print the structure of the P-P pairs for each contrast to verify
-for (contrast in names(pp_pairs_list)) {
-  cat("Contrast:", contrast, "\n")
-  str(pp_pairs_list[[contrast]])
-}
+# Load your data and remove duplicate edges, disregarding direction
+df <- pp_pairs_list$Diff_Disease
+df$pair <- apply(df[, c("protein1", "protein2")], 1, function(x) paste(sort(x), collapse = "_"))
+df <- df[!duplicated(df$pair), ]
+
+# Create a graph object
+graph <- graph_from_data_frame(d = df[, c("GENENAME1", "GENENAME2")], directed = FALSE)
+
+# Remove networks with only 2 nodes
+components <- clusters(graph)
+graph <- delete.vertices(graph, which(components$csize[components$membership] <= 2))
+
+# Prepare nodes and edges for visNetwork
+node_names <- V(graph)$name
+nodes <- data.frame(
+  id = node_names,
+  label = node_names,
+  value = -log10(ifelse(node_names %in% df$GENENAME1, 
+                        df$adj.P.Val1[match(node_names, df$GENENAME1)], 1)),  # Node size based on significance
+  color = ifelse(
+    df$logFC1[match(node_names, df$GENENAME1)] > 0, 
+    "#7C1516", "#285291"  # Node color: red for upregulated, blue for downregulated
+  ),
+  title = paste("logFC:", 
+                round(df$logFC1[match(node_names, df$GENENAME1)], 2), 
+                "<br>adj.P.Val:", 
+                round(df$adj.P.Val1[match(node_names, df$GENENAME1)], 5))  # Tooltip info
+)
+
+edges <- data.frame(
+  from = df$GENENAME1,
+  to = df$GENENAME2,
+  width = 0.5  # Uniform thin edges
+)
+
+# Create the interactive network
+network <- visNetwork(nodes, edges) %>%
+  visNodes(scaling = list(min = 20, max = 50)) %>%
+  visEdges(color = "grey") %>%
+  visPhysics(stabilization = TRUE,  # Enable stabilization
+             solver = "forceAtlas2Based",  # Use a different physics solver for tighter clustering
+             forceAtlas2Based = list(gravitationalConstant = -50, centralGravity = 0.01, springLength = 100, springConstant = 0.1)) %>%
+  visLayout(randomSeed = 123) %>%
+  visLegend(
+    useGroups = FALSE,
+    addNodes = list(
+      list(label = "Upregulated", shape = "dot", color = "#7C1516", size = 10),
+      list(label = "Downregulated", shape = "dot", color = "#285291", size = 10),
+      list(label = "Neutral", shape = "dot", color = "white", size = 10)
+    ),
+    addEdges = list(
+      list(label = "Connection", color = "grey", width = 1)
+    )
+  ) %>%
+  visExport(
+    type = "png",  # Export type (e.g., "png")
+    name = "network",  # Name of the exported file
+    label = "Download as PNG",  # Label for the download button
+    background = "#fff",  # Background color of the exported image
+    float = "right"  # Position of the download button
+  )
+
+# Save the network as an HTML file
+htmlwidgets::saveWidget(visNetwork(nodes, edges), "../output/Diff_Disease.html")
+
+```
+
+# Diff-Disease
+```{r}
+# Load your data and remove duplicate edges, disregarding direction
+df <- pp_pairs_list$Diff_Disease
+df$pair <- apply(df[, c("protein1", "protein2")], 1, function(x) paste(sort(x), collapse = "_"))
+df <- df[!duplicated(df$pair), ]
+
+# Create the graph object
+graph <- graph_from_data_frame(d = df[, c("GENENAME1", "GENENAME2")], directed = FALSE)
+
+
+# Prepare nodes and edges for visNetwork
+node_names <- V(graph)$name
+
+# Match node_names to df$GENENAME1 and handle potential NA values
+# Match node_names to both df$GENENAME1 and df$GENENAME2
+matched_indices1 <- match(node_names, df$GENENAME1)
+matched_indices2 <- match(node_names, df$GENENAME2)
+
+# Combine the matching logic: prefer GENENAME1, but use GENENAME2 if GENENAME1 is not available
+logFC_values <- ifelse(
+  !is.na(matched_indices1), 
+  df$logFC1[matched_indices1], 
+  ifelse(!is.na(matched_indices2), df$logFC2[matched_indices2], NA)
+)
+
+adj_P_Val_values <- ifelse(
+  !is.na(matched_indices1), 
+  df$adj.P.Val1[matched_indices1], 
+  ifelse(!is.na(matched_indices2), df$adj.P.Val2[matched_indices2], NA)
+)
+
+# Update the nodes data frame
+nodes <- data.frame(
+  id = node_names,
+  label = node_names,
+  value = -log10(ifelse(!is.na(adj_P_Val_values), adj_P_Val_values, 1)),  # Use 1 if no match found
+  color = ifelse(
+    !is.na(logFC_values) & logFC_values > 0, 
+    "#7C1516", "#285291"  # Node color: red for upregulated, blue for downregulated
+  ),
+  title = ifelse(
+    !is.na(logFC_values),
+    paste("logFC:", round(logFC_values, 2), 
+          "<br>adj.P.Val:", round(adj_P_Val_values, 5)),
+    "No data available"  # Fallback title if no match found
+  )
+)
+
+# Prepare the edges data frame
+edges <- data.frame(
+  from = df$GENENAME1,
+  to = df$GENENAME2,
+  width = 0.5  # Uniform thin edges
+)
+
+# Create the interactive network
+network <- visNetwork(nodes, edges) %>%
+  visNodes(scaling = list(min = 20, max = 50)) %>%
+  visEdges(color = "grey") %>%
+  visPhysics(stabilization = TRUE,  # Enable stabilization
+             solver = "forceAtlas2Based",  # Use a different physics solver for tighter clustering
+             forceAtlas2Based = list(gravitationalConstant = -50, centralGravity = 0.01, springLength = 100, springConstant = 0.1)) %>%
+  visLayout(randomSeed = 123) %>%
+  visLegend(
+    useGroups = FALSE,
+    addNodes = list(
+      list(label = "Upregulated", shape = "dot", color = "#7C1516", size = 10),
+      list(label = "Downregulated", shape = "dot", color = "#285291", size = 10),
+      list(label = "Neutral", shape = "dot", color = "white", size = 10)
+    ),
+    addEdges = list(
+      list(label = "Connection", color = "grey", width = 1)
+    )
+  ) %>%
+  visExport(
+    type = "png",  # Export type (e.g., "png")
+    name = "network",  # Name of the exported file
+    label = "Download as PNG",  # Label for the download button
+    background = "#fff",  # Background color of the exported image
+    float = "right"  # Position of the download button
+  )
+
+# Save the network as an HTML file
+htmlwidgets::saveWidget(visNetwork(nodes, edges), "../output/Diff_Disease.html")
+
+## No label
+# Create a copy of the nodes data frame and remove labels
+nodes_no_labels <- nodes
+nodes_no_labels$label <- ""  # Set labels to an empty string
+
+# Create the network without labels
+network_no_labels <- visNetwork(nodes_no_labels, edges) %>%
+  visNodes(scaling = list(min = 20, max = 50)) %>%
+  visEdges(color = "grey") %>%
+  visPhysics(stabilization = TRUE,  # Enable stabilization
+             solver = "forceAtlas2Based",  # Use a different physics solver for tighter clustering
+             forceAtlas2Based = list(gravitationalConstant = -50, centralGravity = 0.01, springLength = 100, springConstant = 0.1)) %>%
+  visLayout(randomSeed = 123) %>%
+  visLegend(
+    useGroups = FALSE,
+    addNodes = list(
+      list(label = "Upregulated", shape = "dot", color = "#7C1516", size = 10),
+      list(label = "Downregulated", shape = "dot", color = "#285291", size = 10),
+      list(label = "Neutral", shape = "dot", color = "white", size = 10)
+    ),
+    addEdges = list(
+      list(label = "Connection", color = "grey", width = 1)
+    )
+  ) %>%
+  visExport(
+    type = "png",  # Export type (e.g., "png")
+    name = "network_no_labels",  # Name of the exported file
+    label = "Download as PNG",  # Label for the download button
+    background = "#fff",  # Background color of the exported image
+    float = "right"  # Position of the download button
+  )
+
+# Save the network without labels as an HTML file
+htmlwidgets::saveWidget(network_no_labels, "../output/AF_vs_Sham_LA_no_labels.html")
+
 ```
 

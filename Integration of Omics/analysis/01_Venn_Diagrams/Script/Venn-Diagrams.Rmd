@@ -39,49 +39,30 @@ library(ggvenn)
 #Read files
 ```{r}
 #Metformin_vs_placebo
-RNA <- fread("C:/Users/nks882/OneDrive - University of Copenhagen/Documents/GitHub/Horse_AF_project/RNA-seq/analysis/01_dge/output/dge_results.tsv.gz")
-Protein <- fread("C:/Users/nks882/OneDrive - University of Copenhagen/Documents/GitHub/Horse_AF_project/Proteomics/Terminal/analysis/01_dge/output/dge_results.tsv.gz")
+RNA <- fread("C:/Users/nks882/OneDrive - University of Copenhagen/Documents/GitHub/Horse_Metformin_project/RNA-seq/analysis/01_dge/output/dge_results.tsv.gz")
+Protein <- fread("C:/Users/nks882/OneDrive - University of Copenhagen/Documents/GitHub/Horse_Metformin_Project/Proteomics/Terminal/analysis/01_dge/output/dge_results_sva.tsv.gz")
 ```
 
 #Seperate into contrasts
 ```{r}
 # Separate into contrasts and select the appropriate columns
-# RNA filtering based on adj. P values (or raw p.values for LA)
-metformin_vs_placebo_RNA_sig_up_LA <- RNA[Contrast == "met_vs_placebo_LA" & logFC > 0 & P.Value < 0.05, .(GENENAME)]
+# RNA filtering based on adj. P values 
+metformin_vs_placebo_RNA_sig_up_LA <- RNA[Contrast == "met_vs_placebo_LA" & logFC > 0 & adj.P.Val < 0.05, .(GENENAME)]
 metformin_vs_placebo_RNA_sig_up_RA <- RNA[Contrast == "met_vs_placebo_RA" & logFC > 0 & adj.P.Val < 0.05, .(GENENAME)]
-metformin_vs_placebo_RNA_sig_down_LA <- RNA[Contrast == "met_vs_placebo_LA" & logFC < 0 & P.Value < 0.05, .(GENENAME)]
+metformin_vs_placebo_RNA_sig_down_LA <- RNA[Contrast == "met_vs_placebo_LA" & logFC < 0 & adj.P.Val < 0.05, .(GENENAME)]
 metformin_vs_placebo_RNA_sig_down_RA <- RNA[Contrast == "met_vs_placebo_RA" & logFC < 0 & adj.P.Val < 0.05, .(GENENAME)]
 
-# Protein filtering with ranking and top 100 selection based on p.value first and logFC second
-metformin_vs_placebo_protein_sig_up_LA <- Protein[Contrast == "Metformin_vs_AF_LA" & logFC > 0, .(GeneName, P.Value, logFC)]
-metformin_vs_placebo_protein_sig_up_LA <- metformin_vs_placebo_protein_sig_up_LA[order(P.Value, -logFC)][1:100, .(GeneName)]
-
-metformin_vs_placebo_protein_sig_up_RA <- Protein[Contrast == "Metformin_vs_AF_RA" & logFC > 0, .(GeneName, P.Value, logFC)]
-metformin_vs_placebo_protein_sig_up_RA <- metformin_vs_placebo_protein_sig_up_RA[order(P.Value, -logFC)][1:100, .(GeneName)]
-
-metformin_vs_placebo_protein_sig_down_LA <- Protein[Contrast == "Metformin_vs_AF_LA" & logFC < 0, .(GeneName, P.Value, logFC)]
-metformin_vs_placebo_protein_sig_down_LA <- metformin_vs_placebo_protein_sig_down_LA[order(P.Value, logFC)][1:100, .(GeneName)]
-
-metformin_vs_placebo_protein_sig_down_RA <- Protein[Contrast == "Metformin_vs_AF_RA" & logFC < 0, .(GeneName, P.Value, logFC)]
-metformin_vs_placebo_protein_sig_down_RA <- metformin_vs_placebo_protein_sig_down_RA[order(P.Value, logFC)][1:100, .(GeneName)]
+# Protein filtering based on adj. P. values
+metformin_vs_placebo_protein_sig_up_LA <- Protein[Contrast == "Metformin_vs_AF_LA" & logFC > 0 & adj.P.Val < 0.05, .(GeneName)]
+metformin_vs_placebo_protein_sig_up_RA <- Protein[Contrast == "Metformin_vs_AF_RA" & logFC > 0 & adj.P.Val < 0.05, .(GeneName)]
+metformin_vs_placebo_protein_sig_down_LA <- Protein[Contrast == "Metformin_vs_AF_LA" & logFC < 0 & adj.P.Val < 0.05, .(GeneName)]
+metformin_vs_placebo_protein_sig_down_RA <- Protein[Contrast == "Metformin_vs_AF_RA" & logFC < 0 & adj.P.Val < 0.05, .(GeneName)]
 
 placebo_vs_sham_RNA_sig_up_LA <- RNA[Contrast == "AF_vs_sham_LA" & logFC > 0 & adj.P.Val < 0.05, .(GENENAME)]
 placebo_vs_sham_RNA_sig_up_RA <- RNA[Contrast == "AF_vs_sham_RA" & logFC > 0 & adj.P.Val < 0.05, .(GENENAME)]
 placebo_vs_sham_RNA_sig_down_LA <- RNA[Contrast == "AF_vs_sham_LA" & logFC < 0 & adj.P.Val < 0.05, .(GENENAME)]
 placebo_vs_sham_RNA_sig_down_RA <- RNA[Contrast == "AF_vs_sham_RA" & logFC < 0 & adj.P.Val < 0.05, .(GENENAME)]
 
-# Protein filtering with ranking and top 100 selection
-placebo_vs_sham_protein_sig_up_LA <- Protein[Contrast == "AF_vs_Sham_LA" & logFC > 0, .(GeneName, P.Value, logFC)]
-placebo_vs_sham_protein_sig_up_LA <- placebo_vs_sham_protein_sig_up_LA[order(P.Value, -logFC)][1:100, .(GeneName)]
-
-placebo_vs_sham_protein_sig_up_RA <- Protein[Contrast == "AF_vs_Sham_RA" & logFC > 0, .(GeneName, P.Value, logFC)]
-placebo_vs_sham_protein_sig_up_RA <- placebo_vs_sham_protein_sig_up_RA[order(P.Value, -logFC)][1:100, .(GeneName)]
-
-placebo_vs_sham_protein_sig_down_LA <- Protein[Contrast == "AF_vs_Sham_LA" & logFC < 0, .(GeneName, P.Value, logFC)]
-placebo_vs_sham_protein_sig_down_LA <- placebo_vs_sham_protein_sig_down_LA[order(P.Value, logFC)][1:100, .(GeneName)]
-
-placebo_vs_sham_protein_sig_down_RA <- Protein[Contrast == "AF_vs_Sham_RA" & logFC < 0, .(GeneName, P.Value, logFC)]
-placebo_vs_sham_protein_sig_down_RA <- placebo_vs_sham_protein_sig_down_RA[order(P.Value, logFC)][1:100, .(GeneName)]
 
 # Disease effect
 disease_effect_protein_down <- Protein[Contrast == "AverageDiseaseEffect" & logFC < 0, .(GeneName, P.Value, logFC)]
@@ -323,11 +304,11 @@ cat("Overlap_Sig_Down:", paste(overlap_list$Overlap_Sig_Down, collapse = ", "), 
 
 #Supplementary Figure - Biatrial Effect of AF - what is upregulated?
 ```{r}
-placebo_vs_sham_protein_sig_up_LA <- Protein[Contrast == "AF_vs_Sham_LA" & logFC > 0 & P.Value < 0.05, .(GeneName)]$GeneName
-placebo_vs_sham_protein_sig_down_LA <- Protein[Contrast == "AF_vs_Sham_LA" & logFC < 0 & P.Value < 0.05, .(GeneName)]$GeneName
+placebo_vs_sham_protein_sig_up_LA <- Protein[Contrast == "AF_vs_Sham_LA" & logFC > 0 & adj.P.Val < 0.05, .(GeneName)]$GeneName
+placebo_vs_sham_protein_sig_down_LA <- Protein[Contrast == "AF_vs_Sham_LA" & logFC < 0 & adj.P.Val < 0.05, .(GeneName)]$GeneName
 
-placebo_vs_sham_protein_sig_up_RA <- Protein[Contrast == "AF_vs_Sham_RA" & logFC > 0 & P.Value < 0.05, .(GeneName)]$GeneName
-placebo_vs_sham_protein_sig_down_RA <- Protein[Contrast == "AF_vs_Sham_RA" & logFC < 0 & P.Value < 0.05, .(GeneName)]$GeneName
+placebo_vs_sham_protein_sig_up_RA <- Protein[Contrast == "AF_vs_Sham_RA" & logFC > 0 & adj.P.Val < 0.05, .(GeneName)]$GeneName
+placebo_vs_sham_protein_sig_down_RA <- Protein[Contrast == "AF_vs_Sham_RA" & logFC < 0 & adj.P.Val < 0.05, .(GeneName)]$GeneName
 
 
 
@@ -352,14 +333,13 @@ overlap_all <- Reduce(intersect, list(
 cat("Overlap between all circles (RA RNA Up, RA Protein Up, LA RNA Up, LA Protein Up):", 
     paste(overlap_all, collapse = ", "), "\n")
 
-
 ```
 
 #Biatrial Effect of AF - what is downregulated?
 ```{r}
 # For Downregulated Genes/Proteins
-placebo_vs_sham_protein_sig_down_LA <- Protein[Contrast == "AF_vs_Sham_LA" & logFC < 0 & P.Value < 0.05, .(GeneName)]$GeneName
-placebo_vs_sham_protein_sig_down_RA <- Protein[Contrast == "AF_vs_Sham_RA" & logFC < 0 & P.Value < 0.05, .(GeneName)]$GeneName
+placebo_vs_sham_protein_sig_down_LA <- Protein[Contrast == "AF_vs_Sham_LA" & logFC < 0 & adj.P.Val < 0.05, .(GeneName)]$GeneName
+placebo_vs_sham_protein_sig_down_RA <- Protein[Contrast == "AF_vs_Sham_RA" & logFC < 0 & adj.P.Val < 0.05, .(GeneName)]$GeneName
 
 gene_lists_down <- list(
   "RNA_Down_RA" = placebo_vs_sham_RNA_sig_down_RA,
@@ -382,6 +362,15 @@ overlap_all_down <- Reduce(intersect, list(
 # Print the names of the genes in the overlap for downregulated genes/proteins
 cat("Overlap between all circles (Downregulated in RA RNA, RA Protein, LA RNA, LA Protein):", 
     paste(overlap_all_down, collapse = ", "), "\n")
+
+overlap_down_in_protein <- Reduce(intersect, list(
+  placebo_vs_sham_protein_sig_down_RA,
+  placebo_vs_sham_protein_sig_down_LA
+))
+
+# Print the names of the genes in the overlap for downregulated genes/proteins
+cat("Overlap between three circles (Downregulated in protein both atria):", 
+    paste(overlap_down_in_protein, collapse = ", "), "\n")
 ```
 
 

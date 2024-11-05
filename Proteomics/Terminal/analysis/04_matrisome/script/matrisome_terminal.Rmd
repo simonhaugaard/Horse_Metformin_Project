@@ -46,7 +46,7 @@ library(pheatmap)
 ```{r}
 # Define file paths
 matrisome <- "../../../data/gene_annotation/Hs_Matrisome_Masterlist_downloaded_08_09_2024.csv"
-dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results_sva.tsv.gz"
 matrisome <- fread(matrisome)
 dge <- fread(dge_file)
 dge[, Direction := ifelse(logFC > 0, "up", "down")]
@@ -133,8 +133,8 @@ generate_pheatmap_for_matrisome(
 # Categorize proteins by significance
 ecm_dge <- ecm_dge %>%
   mutate(Significance = case_when(
-    P.Value < 0.05 & logFC > 0 ~ "Upregulated",
-    P.Value < 0.05 & logFC < 0 ~ "Downregulated",
+    adj.P.Val  < 0.05 & logFC > 0 ~ "Upregulated",
+    adj.P.Val  < 0.05 & logFC < 0 ~ "Downregulated",
     TRUE ~ "Non-significant"
   ))
 # Summarize the data by counting the number of proteins in each category and significance level
@@ -169,8 +169,8 @@ ggplot(ecm_summary, aes(x = `Matrisome Category`, y = Significance, size = Count
 # Ensure the summarise warning doesn't affect your plot
 ecm_summary <- ecm_dge %>%
   mutate(Significance = case_when(
-    P.Value < 0.05 & logFC > 0 ~ "Upregulated",
-    P.Value < 0.05 & logFC < 0 ~ "Downregulated",
+    adj.P.Val  < 0.05 & logFC > 0 ~ "Upregulated",
+    adj.P.Val  < 0.05 & logFC < 0 ~ "Downregulated",
     TRUE ~ "Non-significant"
   )) %>%
   group_by(`Matrisome Category`, Significance, Contrast) %>%
@@ -202,8 +202,8 @@ ggplot(ecm_summary, aes(x = `Matrisome Category`, y = Significance, size = Count
 # Extract significant upregulated and downregulated proteins for each contrast
 ecm_dge <- ecm_dge %>%
   mutate(Significance = case_when(
-    P.Value < 0.05 & logFC > 0 ~ "Upregulated",
-    P.Value < 0.05 & logFC < 0 ~ "Downregulated",
+    adj.P.Val  < 0.05 & logFC > 0 ~ "Upregulated",
+    adj.P.Val  < 0.05 & logFC < 0 ~ "Downregulated",
     TRUE ~ "Non-significant"
   ))
 
@@ -292,7 +292,7 @@ ggplot(ecm_summary_RA, aes(x = `Matrisome Category`, y = Significance, size = Co
 
 #Heatmap
 ```{r}
-data_imp_qrilc <- readRDS("../../../../../Proteomics/Terminal/analysis/01_dge/output/data_imp_qrilc.rds")
+data_imp_qrilc <- readRDS("../../../../../Proteomics/Terminal/analysis/01_dge/output/data_imp_MinProb.rds")
 # Extract the expression matrix from the SummarizedExperiment object
 expression_data <- assay(data_imp_qrilc)
 

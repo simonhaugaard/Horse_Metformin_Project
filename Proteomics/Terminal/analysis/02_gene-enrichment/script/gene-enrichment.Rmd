@@ -33,7 +33,7 @@ pacman::p_load("magrittr",
 ## Read data
 ```{r read_data}
 # Read differential gene expression (DGE) results from a specified file path
-dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results_sva.tsv.gz"
 dge <- fread(dge_file)  # Read in the DGE results file using fread
 
 # Add a new column to categorize upregulated and downregulated genes based on log fold-change (logFC)
@@ -103,7 +103,7 @@ term2gene <- split(go[,c("GOID", "ENSEMBL")], f = go$GOdomain)
 term2name <- split(go[,c("GOID", "Description")], f = go$GOdomain)
 ```
 
-## ORA on non-adjusted Pvalues
+## ORA on adjusted Pvalues
 ```{r go_ora}
 # Split differential gene expression (DGE) data into separate lists by contrast
 dge_split <- split(dge, f = dge$Contrast)
@@ -119,11 +119,11 @@ for(k in c("all", "up", "down")){
 
       # Select genes based on direction ("all", "up", "down") and significance cutoff
       if(k == "all"){
-        gene <- dge_split[[i]][P.Value < dge_cut, ENSEMBL]
+        gene <- dge_split[[i]][adj.P.Val < dge_cut, ENSEMBL]
       } else if(k == "up"){
-        gene <- dge_split[[i]][P.Value < dge_cut & Direction == "up", ENSEMBL]
+        gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "up", ENSEMBL]
       } else if(k == "down"){
-        gene <- dge_split[[i]][P.Value < dge_cut & Direction == "down", ENSEMBL]
+        gene <- dge_split[[i]][adj.P.Val< dge_cut & Direction == "down", ENSEMBL]
       }
 
       # Skip if no differentially expressed genes (DEGs) found
@@ -165,15 +165,15 @@ head(go_ora_res)
 go_ora_res_significant <- go_ora_res[qvalue < enrich_cut, ]
 
 # Save results to disk (commented out to avoid overwriting during testing)
-# fwrite(x = go_ora_res, file = "../output/GO_ora.tsv.gz", sep = "\t")
-# go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
-# openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora.xlsx", asTable = TRUE)
+fwrite(x = go_ora_res, file = "../output/GO_ora_sva.tsv.gz", sep = "\t")
+go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
+openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora_sva.xlsx", asTable = TRUE)
 
 # Remove the "all" category for plotting purposes
 filtered_go_ora_res <- go_ora_res %>% filter(Direction != "all")
 
 # Function to generate dot plots for enrichment results for specific contrasts
-plot_dotplot_for_contrast <- function(data, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
+plot_dotplot_for_contrast <- function(data, contrasts, topn = 10, topn.pref = "qval", qcut = 0.05, nchar = 60, 
                                       direction = "Direction", group = "Contrast", dot = "GeneRatio", qval = "qvalue", 
                                       term.id = "ID", term.name = "Description") {
   for (contrast in contrasts) {
@@ -185,11 +185,11 @@ plot_dotplot_for_contrast <- function(data, contrasts, topn = 10, topn.pref = "q
       print(aamisc::dotplotEnrich(dt = filtered_data, 
                                   topn = topn, 
                                   topn.pref = topn.pref, 
-                                  qcut = 0.05, 
+                                  qcut = qcut, 
                                   nchar = nchar, 
                                   direction = direction, 
                                   group = group, 
-                                  dot = dot, 
+                                  dot = dot,  # Ensure this matches the column name
                                   qval = qval, 
                                   term.id = term.id, 
                                   term.name = term.name))
@@ -201,10 +201,66 @@ plot_dotplot_for_contrast <- function(data, contrasts, topn = 10, topn.pref = "q
 }
 
 # Define a list of contrasts to plot
-contrasts <- c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_LA", "AverageDiseaseEffect", "AverageTreatmentEffect")
+contrasts <- c("AF_vs_Sham_LA", "AF_vs_Sham_RA", "Metformin_vs_AF_LA",  "Metformin_vs_AF_RA","AverageDiseaseEffect")
 
 # Generate dot plots for the defined contrasts
 plot_dotplot_for_contrast(data = filtered_go_ora_res, contrasts = contrasts)
+
+## Combined AF effects plot
+# Function to generate a combined dot plot for specified contrasts with enhanced text
+plot_combined_dotplot <- function(data, contrasts, topn = 10, topn.pref = "qval", qcut = 0.05, nchar = 60, 
+                                  direction = "Direction", group = "Contrast", dot = "GeneRatio", qval = "qvalue", 
+                                  term.id = "ID", term.name = "Description") {
+  
+  # Filter the data for the specified contrasts
+  filtered_data <- data %>% filter(Contrast %in% contrasts)
+  
+  # Check if data is available for the contrasts
+  if (nrow(filtered_data) > 0) {
+    # Create the dot plot using aamisc::dotplotEnrich
+    dot_plot <- aamisc::dotplotEnrich(dt = filtered_data, 
+                                      topn = topn, 
+                                      topn.pref = topn.pref, 
+                                      qcut = qcut, 
+                                      nchar = nchar, 
+                                      direction = direction, 
+                                      group = group, 
+                                      dot = dot, 
+                                      qval = qval, 
+                                      term.id = term.id, 
+                                      term.name = term.name) +
+      # Enhance text elements for publication
+      theme(
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12, color = "black"),  # Rotate and adjust x-axis labels
+        axis.text.y = element_text(size = 12, color = "black"),  # Increase y-axis label size
+        axis.title = element_text(size = 14, face = "bold"),  # Bold and increase axis title size
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),  # Center and style the plot title
+        legend.title = element_text(size = 13, face = "bold"),  # Bold legend title
+        legend.text = element_text(size = 11)  # Adjust legend text size
+      ) +
+      labs(
+        title = "GO ORA Dot Plot for AF vs Sham (LA & RA)",  # Add a descriptive title
+        x = "GO Terms",  # Label x-axis
+        y = "-log10(q-value)"  # Label y-axis
+      )
+    
+    # Print the dot plot to the R plotting window
+    print(dot_plot)
+  } else {
+    # Display a message if no data is available for the contrasts
+    message("No data available for the specified contrasts.")
+  }
+}
+
+# Define the contrasts you want to combine
+contrasts_to_plot <- c("AF_vs_Sham_LA", "AF_vs_Sham_RA")
+
+# Generate and preview the dot plot in your R plotting window
+plot_combined_dotplot(data = filtered_go_ora_res, contrasts = contrasts_to_plot)
+
+# Save the plot using `ggsave` with matched dimensions
+ggsave(filename = "../output/combined_dotplot.png", plot = last_plot(), 
+       width = 2, height = 2, dpi = 300)
 
 ```
 
@@ -255,8 +311,8 @@ go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
 #Output data
 go_gsea_res_split <- split(go_gsea_res, f = go_gsea_res$Contrast)
 
-# openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea.xlsx", asTable = TRUE)
-# fwrite(x = go_gsea_res_split, file = "../output/go_gsea.tsv.gz", sep = "\t")
+openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea_sva.xlsx", asTable = TRUE)
+fwrite(x = go_gsea_res_split, file = "../output/go_gsea_sva.tsv.gz", sep = "\t")
 
 # Function to plot dot plots for each contrast
 plot_dotplot_for_contrast <- function(data_split, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
@@ -291,13 +347,65 @@ contrasts <- c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_RA", "Metformi
 plot_dotplot_for_contrast(data_split = go_gsea_res_split, contrasts = contrasts)
 
 ```
+### Output
+```{r}
+# Function to plot and save dot plots for a specific contrast
+plot_and_save_dotplot <- function(data_split, contrast, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
+                                  direction = "direction", group = "Contrast", dot = "NES", qval = "qvalue", 
+                                  term.id = "ID", term.name = "Description", output_path) {
+  if (contrast %in% names(data_split)) {
+    filtered_data <- data_split[[contrast]]
+    if (nrow(filtered_data) > 0) {
+      # Create the dot plot
+      dot_plot <- aamisc::dotplotEnrich(dt = filtered_data, 
+                                        topn = topn, 
+                                        topn.pref = topn.pref, 
+                                        qcut = qcut, 
+                                        nchar = nchar, 
+                                        direction = direction, 
+                                        group = group, 
+                                        dot = dot, 
+                                        qval = qval, 
+                                        term.id = term.id, 
+                                        term.name = term.name) +
+        # Enhance the theme for better export
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1, size = 12, color = "black"),
+          axis.text.y = element_text(size = 12, color = "black"),
+          axis.title = element_text(size = 14, face = "bold"),
+          plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+          legend.title = element_text(size = 13, face = "bold"),
+          legend.text = element_text(size = 11)
+        )
+      
+      # Print the dot plot to the R plotting window
+      print(dot_plot)
+      
+      # Save the plot as a high-quality image
+      ggsave(filename = output_path, plot = dot_plot, width = 10, height = 6, dpi = 300)
+    } else {
+      message(paste("No data for contrast:", contrast))
+    }
+  } else {
+    message(paste("Contrast not found:", contrast))
+  }
+}
+
+# Specify the contrast and output path
+contrast_to_plot <- "Metformin_vs_AF_RA"
+output_path <- "../output/Metformin_vs_AF_RA_dotplot.png"
+
+# Generate and save the dot plot for "Metformin_vs_AF_RA"
+plot_and_save_dotplot(data_split = go_gsea_res_split, contrast = contrast_to_plot, output_path = output_path)
+```
+
 
 # KEGG
 ## ORA
 ```{r kegg_ora}
 # This section performs KEGG pathway enrichment analysis using overrepresentation analysis (ORA).
 KEGG_ora_upDown <- compareCluster(ENTREZID ~ Contrast + Direction, 
-                             data          = dge_entrez[P.Value < dge_cut,],
+                             data          = dge_entrez[adj.P.Val < dge_cut,],
                              fun           = "enrichKEGG",
                              universe      = dge_entrez[, ENTREZID],
                              organism      = "ecb",
@@ -309,7 +417,7 @@ KEGG_ora <- rbindlist(list(KEGG_ora_upDown))
 fwrite(x = KEGG_ora, file = "../output/kegg_ora.tsv.gz", sep = "\t")
 
 KEGG_ora_split <- split(KEGG_ora, f = KEGG_ora$Contrast)
-openxlsx::write.xlsx(x = KEGG_ora_split, file = "../output/kegg_ora.xlsx", asTable = TRUE)
+openxlsx::write.xlsx(x = KEGG_ora_split, file = "../output/kegg_ora_sva.xlsx", asTable = TRUE)
 
 # Plot results
 aamisc::dotplotEnrich(dt = KEGG_ora, 

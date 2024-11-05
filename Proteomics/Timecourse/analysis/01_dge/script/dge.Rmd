@@ -24,6 +24,7 @@ pacman::p_load("edgeR", "readr", "readxl", "biomaRt", "magrittr", "tibble", "str
                "ggplot2", "data.table", "patchwork", "openxlsx", "dplyr", "missForest", 
                "RColorBrewer", "limma", "DEqMS", "preprocessCore", "DEP", 
                "SummarizedExperiment", "Metrics", "fdrtool", "aamisc")
+library(sva)
 
 # install aamisc package for MDS and Volcano plots
 # Commented out for future use:
@@ -265,7 +266,7 @@ data_imp_qrilc <- impute( data_se_norm, fun = "QRILC")
 # Plot intensity distributions before and after imputation
 plot_imputation( data_se_norm, data_imp_MinProb, data_imp_man, data_imp_qrilc)
 
-###Verdict: data_imp_qrilC seems to be  addressing MNAR the best, and will be used downstream. 
+###Verdict: data_imp_Minprob seems to be  addressing MNAR the best, and will be used downstream. 
 ```
 
 ## Differential abundance analysis using DEP
@@ -364,7 +365,7 @@ print(plot1)
 print(plot2)
 ```
 
-#Checking histograms of normalized-unimputed (data_se_norm), imputed (data_imp_MinProb) and raw log-counts (filtred_counts) before limma
+#Checking histograms and save/load imputations
 ```{r Intensity-Histograms, fig.height=5, fig.width=10}
 # Histograms will be generated for four datasets:
 # 1. `normalized_unimputed`: Normalized but not imputed data.
@@ -387,6 +388,11 @@ imputed_data_qrilc <- as.data.frame(assay(data_imp_qrilc))
 colnames(imputed_data_qrilc) <- colnames(filtered_count)
 rownames(imputed_data_qrilc) <- rownames(data_se_norm)
 
+# Extract the assay data from data_imp_man
+imputed_data_man <- as.data.frame(assay(data_imp_man))
+colnames(imputed_data_man) <- colnames(filtered_count)
+rownames(imputed_data_man) <- rownames(data_se_norm)
+
 # Plot histogram for normalized data
 par(mfrow = c(1, 4))
 hist(as.vector(as.matrix(normalized_unimputed)), breaks = 50, main = "Normalized Data", xlab = "Intensity")
@@ -394,81 +400,144 @@ hist(as.vector(as.matrix(imputed_data_MinProb)), breaks = 50, main = "MinProb Im
 hist(as.vector(as.matrix(imputed_data_qrilc)), breaks = 50, main = "QRILC Imputed Data", xlab = "Intensity")
 hist(as.vector(as.matrix(filtered_count)), breaks = 50, main = "Unfiltered Data", xlab = "Intensity")
 
-#Moving on with QRILC imputed data!
-```
+# Define the output folder path
+output_folder <- "../../../../Timecourse/analysis/01_dge/output/"
 
-# Limma on Normalized data
-```{r Limma with FDR-tools on normalized data}
-# This script performs limma differential analysis combined with FDRtool-based multiple testing correction. 
-# It uses a blocking factor (Horse) and a pre-defined contrast matrix to extract meaningful differential protein abundance.
-
-# Create the design matrix based on experimental conditions
-design <- model.matrix(~0 + Condition, d$samples)
-colnames(design) <- gsub("Condition", "", colnames(design))
-
-# Set the design
-design <- model.matrix(~0 + Condition, d$samples)
-colnames(design) <- gsub("Condition", "", colnames(design))
-
-con <- makeContrasts(
-  Metformin_vs_AF_RA = RA_Metformin_4months - RA_Control_4months,
-  AF_vs_Sham_RA = RA_Control_4months - RA_Sham_4months,
-  Terminal_vs_Baseline_Control = RA_Control_4months - RA_Control_Baseline,
-  Terminal_vs_Baseline_Metformin = RA_Metformin_4months - RA_Metformin_Baseline,
-  Diff_Treatment = (RA_Metformin_4months - RA_Metformin_Baseline) - (RA_Control_4months - RA_Control_Baseline),
-  Diff_Disease = (RA_Control_4months - RA_Control_Baseline) - (RA_Sham_4months - RA_Sham_Baseline),
-  Baseline_Difference_Metf_vs_AF = RA_Metformin_Baseline - RA_Control_Baseline,
-  Baseline_Difference_AF_vs_Sham = RA_Control_Baseline - RA_Sham_Baseline,
-  levels = design
-)
-con
-
-# Run limma with blocking for Horse to account for repeated measures within subjects.
-corfit <- duplicateCorrelation(imputed_data_qrilc, design, block = as.factor(d$samples$Horse))
-fit <- lmFit(imputed_data_qrilc, design, block = as.factor(d$samples$Horse), correlation = corfit$consensus.correlation)
-rownames(fit$coefficients) <- rownames(imputed_data_qrilc)
-
-# Fit the Linear Model for Each Contrast and Apply FDRtool 
-res <- list() # list for DGE results
-for (i in colnames(con)) {        # Loop through each contrast and perform eBayes fitting and FDR correction
-  fit.contrast <- contrasts.fit(fit, contrasts = con)
-  fit.contrast <- eBayes(fit.contrast, robust = TRUE, trend = TRUE)
-  res_tmp <- topTable(fit.contrast, coef = i, number = Inf)
-  res_tmp <- res_tmp[!is.na(res_tmp$t), ]
-  
-  # Apply FDR correction using fdrtool to align with DEP package approach
-  fdr_res <- fdrtool(res_tmp$t, plot = FALSE, verbose = FALSE)
-  res_tmp$qval <- fdr_res$qval
-  res_tmp$lfdr <- fdr_res$lfdr
-  res_tmp$Contrast <- rep(i, nrow(res_tmp))
-  res[[i]] <- data.frame(res_tmp)
-  
-  # Print the number of differentially abundant genes
-  n_qval <- res_tmp %>% filter(qval < 0.05) %>% nrow()
-  n_adj_pval <- res_tmp %>% filter(adj.P.Val < 0.05) %>% nrow()
-  print(paste('Number of differentially abundant genes for', i, 'based on q-value (FDR) =', n_qval))
-  print(paste('Number of differentially abundant genes for', i, 'based on adjusted p-value =', n_adj_pval))
+# Function to save a matrix with row names as a separate column
+save_matrix <- function(matrix, file_path) {
+  # Create a data frame from the matrix, including row names as a column
+  matrix_df <- as.data.frame(matrix)
+  matrix_df$GeneName <- rownames(matrix)
+  fwrite(matrix_df, file = file_path, sep = "\t", row.names = FALSE)
 }
 
-# Combine results into a single data frame
+# Function to load a matrix and restore row names
+load_matrix <- function(file_path) {
+  matrix_df <- fread(file_path, data.table = FALSE)
+  rownames(matrix_df) <- matrix_df$GeneName
+  matrix_df$GeneName <- NULL
+  return(as.matrix(matrix_df))  # Convert back to a matrix
+}
+
+# Save the matrices
+ # save_matrix(normalized_unimputed, paste0(output_folder, "normalized_unimputed.tsv"))
+ # save_matrix(imputed_data_MinProb, paste0(output_folder, "imputed_data_MinProb.tsv"))
+ # save_matrix(imputed_data_qrilc, paste0(output_folder, "imputed_data_qrilc.tsv"))
+
+# Load the matrices in the future
+normalized_unimputed <- load_matrix(paste0(output_folder, "normalized_unimputed.tsv"))
+imputed_data_MinProb <- load_matrix(paste0(output_folder, "imputed_data_MinProb.tsv"))
+imputed_data_qrilc <- load_matrix(paste0(output_folder, "imputed_data_qrilc.tsv"))
+
+
+```
+
+# Limma on SVA Data
+# SVA Limma
+```{r SVA Limma}
+# Extract batch and biological condition information
+batch <- d$samples$Batch  # Specify the batch variable
+condition <- d$samples$Condition  # Specify the biological condition
+
+# Run ComBat to correct for batch effects
+combat_data <- ComBat(dat = imputed_data_MinProb, batch = batch, mod = model.matrix(~ condition))
+
+# Check if the batch effect is removed using PCA or similar methods
+# PCA to visualize the data before and after batch correction (optional)
+# You can run a PCA analysis here to check the effectiveness of ComBat
+
+# Proceed with SVA to adjust for hidden confounders
+mod <- model.matrix(~ 0 + condition, data = d$samples)  # Full model
+mod0 <- model.matrix(~ 1, data = d$samples)  # Null model
+
+n.sv <- num.sv(combat_data, mod, method = "be")  # Estimate number of surrogate variables
+svobj <- sva(combat_data, mod, mod0, n.sv = n.sv)
+
+# Adjust the design matrix to include surrogate variables
+modSv <- cbind(mod, svobj$sv)
+
+# Run duplicateCorrelation to account for repeated measures (e.g., "Horse" as a blocking factor)
+corfit <- duplicateCorrelation(combat_data, modSv, block = as.factor(d$samples$Horse))
+
+# Fit the linear model using limma, accounting for repeated measures
+fit <- lmFit(combat_data, modSv, block = as.factor(d$samples$Horse), correlation = corfit$consensus.correlation)
+
+design <- model.matrix(~0 + Condition + Batch, d$samples)
+# Ensure all column names in modSv are syntactically valid
+colnames(modSv) <- make.names(colnames(modSv))
+
+# Check the updated column names to use in the makeContrasts function
+print(colnames(modSv))
+
+# Define contrasts with the updated column names
+con <- makeContrasts(
+  Metformin_vs_AF_RA = conditionRA_Metformin_4months - conditionRA_Control_4months,
+  AF_vs_Sham_RA = conditionRA_Control_4months - conditionRA_Sham_4months,
+  Terminal_vs_Baseline_Control = conditionRA_Control_4months - conditionRA_Control_Baseline,
+  Terminal_vs_Baseline_Metformin = conditionRA_Metformin_4months - conditionRA_Metformin_Baseline,
+  Diff_Treatment = (conditionRA_Metformin_4months - conditionRA_Metformin_Baseline) - (conditionRA_Control_4months - conditionRA_Control_Baseline),
+  Diff_Disease = (conditionRA_Control_4months - conditionRA_Control_Baseline) - (conditionRA_Sham_4months - conditionRA_Sham_Baseline),
+  Baseline_Difference_Metf_vs_AF = conditionRA_Metformin_Baseline - conditionRA_Control_Baseline,
+  Baseline_Difference_AF_vs_Sham = conditionRA_Control_Baseline - conditionRA_Sham_Baseline,
+  levels = modSv)
+con
+
+# Apply contrasts and run eBayes
+fit <- contrasts.fit(fit, con)
+fit <- eBayes(fit, robust = TRUE, trend = TRUE)
+
+# Extract DGE results using the BH method for FDR correction
+res <- list()  # List to store DGE results
+for (i in colnames(con)) {
+  res_tmp <- topTable(fit, coef = i, adjust.method = "BH", number = Inf)  # Get top table results
+  res_tmp <- res_tmp[!is.na(res_tmp$t), ]  # Remove rows with NA values
+  res_tmp$Contrast <- rep(i, nrow(res_tmp))  # Store the contrast name
+  res[[i]] <- res_tmp  # Add to the results list
+  
+  # Print the number of differentially expressed genes based on adjusted p-values
+  n_adj_pval <- nrow(res_tmp[res_tmp$adj.P.Val < 0.05, ])
+  print(paste('Number of differentially expressed genes for', i, 'based on adjusted p-value (BH) =', n_adj_pval))
+}
+
+# Combine all results into a single data frame
 res_all <- do.call(rbind, res)
 
-# Add gene names manually
+# Map Gene Names Manually
 res_all$GeneName <- sapply(seq_len(nrow(res_all)), function(i) {
   gsub(paste0("^", res_all$Contrast[i], "\\."), "", rownames(res_all)[i])
 })
 
-# Split results by contrast
+# Split results by contrast for easier output
 res_split <- split(res_all, res_all$Contrast)
 
-# Comment out the write commands if saving is not needed
-# Save results as Excel file for manual inspection
-#openxlsx::write.xlsx(x = res_split, file = "../../../../Timecourse/analysis/01_dge/output/dge_results.xlsx", asTable = TRUE)
+# Optionally, save the results to files
+# openxlsx::write.xlsx(x = res_split, file = "../../../../Timecourse/analysis/01_dge/output/dge_results_sva_combat.xlsx", asTable = TRUE)
+# data.table::fwrite(x = res_all, file = "../../../../Timecourse/analysis/01_dge/output/dge_results_sva.tsv.gz", sep = "\t")
 
-# Save results as TSV file for data sharing and publication
-#data.table::fwrite(x = res_all, file = "../../../../Timecourse/analysis/01_dge/output/dge_results.tsv.gz", sep = "\t")
+# Loop through each data frame in res_split to create p-value histograms
+for (contrast in names(res_split)) {
+  # Extract the P.Values for the current contrast
+  p_values <- res_split[[contrast]]$P.Value
+  
+  # Create a histogram using ggplot2
+  ggplot(data = data.frame(P.Value = p_values), aes(x = P.Value)) +
+    geom_histogram(bins = 50, color = "black", fill = "lightblue") +
+    theme_minimal() +
+    labs(
+      title = paste("P-value Histogram for", contrast),
+      x = "P-value",
+      y = "Frequency"
+    ) +
+    xlim(0, 1) # Set x-axis limits to be between 0 and 1
+  
+  # Print each histogram
+  print(last_plot())
+}
+ 
 
 ```
+
+
 
 ### Volcano plots
 ```{r volcano_plots, fig.height=10, fig.width=10}
@@ -476,7 +545,7 @@ volcano_plots <- list()
 for (i in names(res)){
   volcano_plots[[i]] <- ggVolcano(x = res[[i]], 
                                   fdr = 0.05,
-                                  fdr.column = "P.Value", 
+                                  fdr.column = "adj.P.Val", 
                                   pvalue.column = "P.Value", 
                                   logFC = 0, 
                                   logFC.column = "logFC", 
@@ -487,6 +556,81 @@ for (i in names(res)){
 
 patchwork::wrap_plots(volcano_plots, ncol = 3)
 ```
+
+## Better visualization of Volcano plots
+```{r}
+library(ggrepel)
+
+# Create a named vector for ENSEMBL to Genes mapping
+ensembl_to_Genes <- setNames(annot_reordered$Genes, annot_reordered$ENSEMBL)
+
+# Map ENSEMBL IDs to Gene Names in the `res` list
+for (contrast_name in names(res)) {
+  # Ensure the dataframe has ENSEMBL IDs as rownames
+  if (!"ENSEMBL" %in% colnames(res[[contrast_name]])) {
+    res[[contrast_name]]$ENSEMBL <- rownames(res[[contrast_name]])
+  }
+  
+  # Map Gene Names using the annotation
+  res[[contrast_name]]$Genes <- ensembl_to_Genes[res[[contrast_name]]$ENSEMBL]
+  
+  # Replace NA values in Genes with ENSEMBL IDs (to ensure plotting works even if some gene names are missing)
+  res[[contrast_name]]$Genes[is.na(res[[contrast_name]]$Genes)] <- res[[contrast_name]]$ENSEMBL[is.na(res[[contrast_name]]$Genes)]
+}
+
+# Load the volcano plot helper function
+source("volcano_helpers.R")
+
+# Create lists for volcano plots with and without labels
+volcano_plots_no_labels <- list()
+volcano_plots_with_labels <- list()
+
+# Iterate over each contrast and create volcano plots
+for (contrast_name in names(res)) {
+  # Ensure the Genes column is present for labeling
+  if (!"Genes" %in% colnames(res[[contrast_name]])) {
+    res[[contrast_name]]$Genes <- sapply(rownames(res[[contrast_name]]), function(x) gsub(".*_", "", x))
+  }
+  
+  # Generate volcano plots using the helper function
+  volcano_plots <- create_custom_volcano_plot(
+    df = res[[contrast_name]],
+    logFC_col = "logFC",
+    pvalue_col = "P.Value",
+    adj_pvalue_col = "adj.P.Val",
+    contrast_name = contrast_name,
+    fc_cutoff = 0,  # Set fold-change cutoff for significance
+    pvalue_cutoff = 0.05,  # Set p-value cutoff
+    save_plot = TRUE, 
+    output_path = "../output/",  # Adjust output path if needed
+    show_labels = TRUE  # Generate both labeled and unlabeled plots
+  )
+  
+  # Store the plots
+  volcano_plots_no_labels[[contrast_name]] <- volcano_plots$No_Labels
+  volcano_plots_with_labels[[contrast_name]] <- volcano_plots$With_Labels
+}
+
+# Combine and display volcano plots without labels
+combined_volcano_no_labels <- patchwork::wrap_plots(volcano_plots_no_labels, ncol = 3)
+
+# Combine and display volcano plots with labels
+combined_volcano_with_labels <- patchwork::wrap_plots(volcano_plots_with_labels, ncol = 3)
+
+# Display the combined volcano plots
+print(combined_volcano_no_labels)
+print(combined_volcano_with_labels)
+
+# Print individual volcano plots with labels for key contrasts
+print(volcano_plots_with_labels[["Diff_Treatment"]])
+print(volcano_plots_with_labels[["Diff_Disease"]])
+
+ggsave("../output/volcano_Diff_Treatment_for_figure.png", (volcano_plots_with_labels[["Diff_Treatment"]]), 
+       dpi = 600, width = 4, height = 3, units = "in")
+
+
+```
+# Plotting One 
 
 # Understanding Treatment Direction and Plotting Protein Abundance
 ```{r}
@@ -570,10 +714,119 @@ plot_protein_counts("RICTOR")   # Component of mTOR complex
 plot_protein_counts("YWHAE")    # 14-3-3 protein epsilon, signaling protein
 plot_protein_counts("TXNDC5")   # Protein disulfide isomerase, ROS response
 
+plot_protein_counts("GNAI2")
+
+
+```
+
+### Focus on GNAI2
+```{r}
+# Define the function to create a violin plot with individual points and mean line
+plot_protein_counts <- function(protein_of_interest) {
+  # Check if the protein is present in the dataset
+  if (protein_of_interest %in% rownames(data_se_norm)) {
+    # Extract the normalized counts for the protein
+    protein_counts <- assay(data_se_norm)[protein_of_interest,]
+    
+    # Create a data frame for plotting
+    protein_df <- data.frame(
+      SampleID = colnames(data_se_norm), # Extract sample IDs
+      Count = protein_counts,            # Protein counts
+      Condition = meta$Condition         # Experimental conditions
+    )
+    
+    # Generate violin plot with jitter points and mean line
+    p <- ggplot(protein_df, aes(x = Condition, y = Count, fill = Condition)) +
+      geom_violin(trim = FALSE, alpha = 0.7, color = "black") +       # Violin plot with border
+      geom_jitter(width = 0.15, size = 1.5, alpha = 0.6, color = "black") +  # Individual points
+      stat_summary(fun = mean, geom = "crossbar", width = 0.5, fatten = 2, color = "darkred") +  # Mean line
+      labs(
+        title = paste("Normalized Protein Counts for", protein_of_interest),  # Plot title
+        x = "Condition", y = "Normalized Abundance"                           # Axis labels
+      ) +
+      theme_pubr() +                                                          # Apply a clean, publication-ready theme
+      scale_fill_brewer(palette = "Set3") +                                   # Use a color palette with enough colors
+      theme(
+        plot.title = element_text(size = 14, face = "bold", hjust = 0.5),     # Centered and bold title
+        axis.title = element_text(size = 12, face = "bold"),                  # Bold axis titles
+        axis.text = element_text(size = 10, color = "black"),                 # Custom axis text
+        legend.position = "none"                                              # Remove legend
+      )
+    
+    # Print the plot
+    print(p)
+  } else {
+    # Output message if the protein is not found
+    cat("The protein", protein_of_interest, "is not present in the dataset.\n")
+  }
+}
+
+# Plot the protein counts for "GNAI2"
+plot_protein_counts("GNAI2")
 ```
 
 
+# MDS plots and SVA
+```{r}
+# Transform raw count data and remove NA values
+logCounts_noNA <- na.omit(logCounts)
 
+# Create DGEList object and define the design matrix
+annot_reordered <- annot[match(rownames(logCounts_noNA), annot$Genes), ]
+d <- DGEList(counts = logCounts_noNA, genes = annot_reordered, samples = meta)
+design <- model.matrix(~0 + Condition, data = d$samples)
 
+# 1. MDS Plot for Raw Data
+mds_raw <- plotMDS(logCounts_noNA, plot = FALSE)
+mds_plot_raw <- aamisc::ggMDS(mds = mds_raw, meta = d$samples, color.by = "Group", shape.by = "Timepoint", legend.position = "right") +
+  scale_color_manual(values = publication_colors) +
+  labs(title = "MDS: Raw Data", x = "MDS Dimension 1", y = "MDS Dimension 2") +
+  theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
+
+# 2. MDS Plot for Data Adjusted by Blocking for Horse
+logCounts_blocked <- removeBatchEffect(logCounts_noNA, batch = as.factor(d$samples$Horse), design = design)
+mds_blocked <- plotMDS(logCounts_blocked, plot = FALSE)
+mds_plot_blocked <- aamisc::ggMDS(mds = mds_blocked, meta = d$samples, color.by = "Group", shape.by = "Timepoint", legend.position = "right") +
+  scale_color_manual(values = publication_colors) +
+  labs(title = "MDS: Blocked for Horse", x = "MDS Dimension 1", y = "MDS Dimension 2") +
+  theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
+
+# 3. MDS Plot for Data Adjusted Using ComBat
+combat_data <- ComBat(dat = logCounts_noNA, batch = as.factor(d$samples$Batch), mod = model.matrix(~Condition, data = d$samples))
+mds_combat <- plotMDS(combat_data, plot = FALSE)
+mds_plot_combat <- aamisc::ggMDS(mds = mds_combat, meta = d$samples, color.by = "Group", shape.by = "Timepoint", legend.position = "right") +
+  scale_color_manual(values = publication_colors) +
+  labs(title = "MDS: ComBat Adjusted", x = "MDS Dimension 1", y = "MDS Dimension 2") +
+  theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
+
+# 4. MDS Plot for Data Adjusted Using SVA
+mod <- model.matrix(~0 + Condition, data = d$samples)
+mod0 <- model.matrix(~1, data = d$samples)
+n.sv <- num.sv(logCounts_noNA, mod, method = "be")
+logCounts_noNA <- as.matrix(logCounts_noNA)
+storage.mode(logCounts_noNA) <- "numeric"
+svobj <- sva(logCounts_noNA, mod, mod0, n.sv = n.sv)
+modSv <- cbind(mod, svobj$sv)
+logCounts_sva <- removeBatchEffect(logCounts_noNA, batch = d$samples$Horse, design = modSv)
+mds_sva <- plotMDS(logCounts_sva, plot = FALSE)
+mds_plot_sva <- aamisc::ggMDS(mds = mds_sva, meta = d$samples, color.by = "Group", shape.by = "Timepoint", legend.position = "right") +
+  scale_color_manual(values = publication_colors) +
+  labs(title = "MDS: SVA Adjusted", x = "MDS Dimension 1", y = "MDS Dimension 2") +
+  theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
+
+# 5. MDS Plot for Data Adjusted Using SVA (with Labels)
+mds_plot_sva_labelled <- aamisc::ggMDS(mds = mds_sva, meta = d$samples, color.by = "Group", shape.by = "Timepoint", legend.position = "right", text.by = "Horse", text.size = 1.5) +
+  scale_color_manual(values = publication_colors) +
+  labs(title = "MDS: SVA Adjusted (Labelled)", x = "MDS Dimension 1", y = "MDS Dimension 2") +
+  theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
+
+# Display the plots
+print(mds_plot_raw)
+print(mds_plot_combat)
+print(mds_plot_blocked)
+print(mds_plot_sva)
+print(mds_plot_sva_labelled)
+
+```
 
 

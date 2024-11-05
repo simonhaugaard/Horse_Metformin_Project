@@ -30,7 +30,7 @@ pacman::p_load("clusterProfiler")
 ## Read data
 ```{r read_data}
 # read data
-dge_file <- "../../01_dge/output/dge_results.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results_sva.tsv.gz"
 dge <- fread(dge_file)
 dge[, Direction := ifelse(logFC > 0, "up", "down")]
 
@@ -85,7 +85,7 @@ term2gene <- split(go[,c("GOID", "ENSEMBL")], f = go$GOdomain)
 term2name <- split(go[,c("GOID", "Description")], f = go$GOdomain)
 ```
 
-## ORA on non-adjusted Pvalues
+## ORA 
 ```{r go_ora}
 dge_split <- split(dge, f = dge$Contrast)
 
@@ -97,11 +97,11 @@ for(k in c("all", "up", "down")){
       message(paste0("Running GO ORA for '", i, "'", " within ", j, " ('", k, "' genes)"))
 
       if(k == "all"){
-        gene <- dge_split[[i]][P.Value < dge_cut,ENSEMBL]
+        gene <- dge_split[[i]][adj.P.Val < dge_cut,ENSEMBL]
       }else if(k == "up"){
-        gene <- dge_split[[i]][P.Value < dge_cut & Direction == "up",ENSEMBL]
+        gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "up",ENSEMBL]
       }else if(k == "down"){
-        gene <- dge_split[[i]][P.Value < dge_cut & Direction == "down",ENSEMBL]
+        gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "down",ENSEMBL]
       }
       
       if(length(gene) == 0){
@@ -134,9 +134,9 @@ head(go_ora_res)
 go_ora_res[qvalue < enrich_cut,]
 
 #Create output data
-# fwrite(x = go_ora_res, file = "../output/GO_ora.tsv.gz", sep = "\t")
+fwrite(x = go_ora_res, file = "../output/GO_ora_sva.tsv.gz", sep = "\t")
 go_ora_split <- split(go_ora_res, f = go_ora_res$Contrast)
-# openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora.xlsx", asTable = TRUE)
+openxlsx::write.xlsx(x = go_ora_split, file = "../output/GO_ora_sva.xlsx", asTable = TRUE)
 
 aamisc::dotplotEnrich(dt = go_ora_res, 
                       topn = 10, 
@@ -191,7 +191,7 @@ plot_dotplot_for_contrast <- function(data, contrasts, topn = 10, topn.pref = "q
 
 # Example usage
 # Assuming filtered_go_ora_res is your GO enrichment result data frame
-contrasts <- c("Diff_Treatment", "Terminal_vs_Baseline_Control", "Terminal_vs_Baseline_Metformin")
+contrasts <- c("Diff_Treatment", "Terminal_vs_Baseline_Control", "Terminal_vs_Baseline_Metformin", "Diff_Disease")
 plot_dotplot_for_contrast(data = go_ora_res, contrasts = contrasts)
 
 ```
@@ -241,10 +241,15 @@ go_gsea_res[qvalue < enrich_cut,]
 go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
 
 #Output data
-go_gsea_res_split <- split(go_gsea_res, f = go_gsea_res$Contrast)
+# go_gsea_res_split <- split(go_gsea_res, f = go_gsea_res$Contrast)
+ # openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea_sva.xlsx", asTable = TRUE)
+ # fwrite(x = go_gsea_res_split, file = "../output/go_gsea_sva.tsv.gz", sep = "\t")
 
-# openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea.xlsx", asTable = TRUE)
-# fwrite(x = go_gsea_res_split, file = "../output/go_gsea.tsv.gz", sep = "\t")
+# # Saving the R object (05/11/2024)
+# saveRDS(go_gsea_res_split, file = "../output/go_gsea_res_split.rds")
+
+# Reloading the R object
+go_gsea_res_split_test <- readRDS(file = "../output/go_gsea_res_split.rds")
 
 # Function to plot dot plots for each contrast
 plot_dotplot_for_contrast <- function(data_split, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
@@ -275,17 +280,18 @@ plot_dotplot_for_contrast <- function(data_split, contrasts, topn = 10, topn.pre
 }
 
 #Plotting
-contrasts <- c("Diff_Treatment", "Terminal_vs_Baseline_Control", "Terminal_vs_Baseline_Metformin")
-plot_dotplot_for_contrast(data_split = go_gsea_res_split, contrasts = contrasts)
+contrasts <- c("Diff_Treatment", "Terminal_vs_Baseline_Control", "Terminal_vs_Baseline_Metformin", "Diff_Disease")
+plot_dotplot_for_contrast(data_split = go_gsea_res_split_test, contrasts = contrasts)
 
 ```
+
 
 
 # KEGG
 ## ORA
 ```{r kegg_ora}
 KEGG_ora_upDown <- compareCluster(ENTREZID ~ Contrast + Direction, 
-                             data          = dge_entrez[P.Value < dge_cut,],
+                             data          = dge_entrez[adj.P.Val < dge_cut,],
                              fun           = "enrichKEGG",
                              universe      = dge_entrez[, ENTREZID],
                              organism      = "ecb",
