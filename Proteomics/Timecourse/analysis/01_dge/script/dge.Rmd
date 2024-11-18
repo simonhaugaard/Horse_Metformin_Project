@@ -11,7 +11,7 @@ output:output:
     number_sections: true
 ---
 
-#This script uses a combination of the DEP-package and a limma-script that can handle paired samples (LA and RA from same horse). The DEP-package uses FDR-tools to generate q-values, which I have included in my own limma-script. 
+This script uses a combination of the DEP-package and a limma-script that can handle paired samples (LA and RA from same horse). The DEP-package uses FDR-tools to generate q-values, which I have included in my own limma-script. 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -23,8 +23,7 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load("edgeR", "readr", "readxl", "biomaRt", "magrittr", "tibble", "stringr", 
                "ggplot2", "data.table", "patchwork", "openxlsx", "dplyr", "missForest", 
                "RColorBrewer", "limma", "DEqMS", "preprocessCore", "DEP", 
-               "SummarizedExperiment", "Metrics", "fdrtool", "aamisc")
-library(sva)
+               "SummarizedExperiment", "Metrics", "fdrtool", "aamisc", "sva")
 
 # install aamisc package for MDS and Volcano plots
 # Commented out for future use:
@@ -245,6 +244,8 @@ plot_normalization(data_se_norm)
 ```
 ### Impute data for missing values
 ```{r Imputation for Missing Values}
+#TODO: Data imputation may not be necessary for your case. limma can handle missing values.
+
 # Plot a heatmap of proteins with missing values
 plot_missval(data_se_norm)
 
@@ -308,6 +309,8 @@ data_results %>% filter(significant) %>% nrow()
 ```
 # MDS-plots on non-imputed data
 ```{r MDS plots}
+#TODO: I would investigate the MDS plots without batch removal as well. 
+
 #Log-transformation
 logCounts <- filtered_count
 #For PCA plot, we will remove the NAs - 
@@ -365,7 +368,7 @@ print(plot1)
 print(plot2)
 ```
 
-#Checking histograms and save/load imputations
+# Checking histograms and save/load imputations
 ```{r Intensity-Histograms, fig.height=5, fig.width=10}
 # Histograms will be generated for four datasets:
 # 1. `normalized_unimputed`: Normalized but not imputed data.
@@ -435,10 +438,16 @@ imputed_data_qrilc <- load_matrix(paste0(output_folder, "imputed_data_qrilc.tsv"
 # Limma on SVA Data
 # SVA Limma
 ```{r SVA Limma}
+#TODO: General comment: you may want to organize your sections in a better way. For example,
+#      how about just naming this section "SVA Limma" and remove the section "Limma on SVA"
+#TODO: Always "knit" your document to see how it looks like ;) 
+
 # Extract batch and biological condition information
 batch <- d$samples$Batch  # Specify the batch variable
 condition <- d$samples$Condition  # Specify the biological condition
 
+#TODO: ComBat may not be appropriate here as it totally removes the "known" batch effect from your data
+#TODO: Instead we want to model the "unknown" batch effect with SVA
 # Run ComBat to correct for batch effects
 combat_data <- ComBat(dat = imputed_data_MinProb, batch = batch, mod = model.matrix(~ condition))
 
@@ -459,15 +468,30 @@ modSv <- cbind(mod, svobj$sv)
 # Run duplicateCorrelation to account for repeated measures (e.g., "Horse" as a blocking factor)
 corfit <- duplicateCorrelation(combat_data, modSv, block = as.factor(d$samples$Horse))
 
+#TODO: Have a look at your consensus correlation, it is ~0, which means that there are no random
+#TODO: effects in your data. This is because you removed the "batch" effect by ComBat. 
+corfit$consensus.correlation
+
 # Fit the linear model using limma, accounting for repeated measures
 fit <- lmFit(combat_data, modSv, block = as.factor(d$samples$Horse), correlation = corfit$consensus.correlation)
 
+#TODO: your data does not have the "batch" anymore as you removed it by combat. So, you
+#TODO: should not model "Batch" again...
+#TODO: On the other hand, you are not using this "design" anywhere. 
 design <- model.matrix(~0 + Condition + Batch, d$samples)
+
 # Ensure all column names in modSv are syntactically valid
 colnames(modSv) <- make.names(colnames(modSv))
 
 # Check the updated column names to use in the makeContrasts function
 print(colnames(modSv))
+
+#TODO: fix the column names. They look like this at the moment: 
+#  [1] "conditionRA_Control_4months"    "conditionRA_Control_Baseline"   "conditionRA_Metformin_4months" 
+#  [4] "conditionRA_Metformin_Baseline" "conditionRA_Sham_4months"       "conditionRA_Sham_Baseline"     
+#  [7] "X"                              "X"                              "X"                             
+# [10] "X"                              "X"                              "X"                             
+# [13] "X"                              "X"       
 
 # Define contrasts with the updated column names
 con <- makeContrasts(
@@ -491,7 +515,7 @@ res <- list()  # List to store DGE results
 for (i in colnames(con)) {
   res_tmp <- topTable(fit, coef = i, adjust.method = "BH", number = Inf)  # Get top table results
   res_tmp <- res_tmp[!is.na(res_tmp$t), ]  # Remove rows with NA values
-  res_tmp$Contrast <- rep(i, nrow(res_tmp))  # Store the contrast name
+  res_tmp$Contrast <- i #TODO: replaced this part >>> rep(i, nrow(res_tmp))  # Store the contrast name
   res[[i]] <- res_tmp  # Add to the results list
   
   # Print the number of differentially expressed genes based on adjusted p-values
@@ -521,7 +545,8 @@ for (contrast in names(res_split)) {
   
   # Create a histogram using ggplot2
   ggplot(data = data.frame(P.Value = p_values), aes(x = P.Value)) +
-    geom_histogram(bins = 50, color = "black", fill = "lightblue") +
+    geom_histogram(breaks = seq(0, 1, by = 0.05), closed = "right", #TODO: FYI, better histogram view
+                   color = "black", fill = "lightblue") +
     theme_minimal() +
     labs(
       title = paste("P-value Histogram for", contrast),
@@ -829,4 +854,8 @@ print(mds_plot_sva_labelled)
 
 ```
 
-
+# Session Info
+```{r session_info}
+#TODO: FYI: It is important to have this section for reproducibility
+sessionInfo()
+```
