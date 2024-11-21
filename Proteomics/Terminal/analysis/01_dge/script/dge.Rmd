@@ -2,7 +2,7 @@
 title: "Differential Abundance Analysis"
 author: "Simon Haugaard"
 date: "`r Sys.Date()`"
-output:output: 
+output:
   html_document:
     toc: true
     toc_float: true
@@ -1040,4 +1040,9 @@ print(volcano_plots_with_labels[["Metformin_vs_AF_RA"]])
 print(volcano_plots_with_labels[["Metformin_vs_AF_LA"]])
 
 
+```
+
+# Session Info
+```{r session_info}
+sessionInfo()
 ```
