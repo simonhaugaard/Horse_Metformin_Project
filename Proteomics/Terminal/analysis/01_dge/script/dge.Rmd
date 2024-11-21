@@ -831,6 +831,9 @@ cat("Number of surrogate variables estimated:", n.sv, "\n")
 # Run SVA to estimate surrogate variables
 svobj <- sva(imputed_data_MinProb, mod, mod0, n.sv = n.sv)
 
+#TODO: in case that you may wanna try WSVA
+wsva(y = imputed_data_MinProb, design = design, plot = TRUE, n.sv = 3) #TODO: seems like you have 3 SVs here as well
+
 # Visualize Surrogate Variables to Ensure No Biological Information is Captured
 # Prepare SV data for plotting
 sv_data <- as.data.frame(svobj$sv)
