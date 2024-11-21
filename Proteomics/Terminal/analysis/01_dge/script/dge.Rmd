@@ -656,6 +656,11 @@ imputed_data_qrilc <- load_matrix(paste0(output_folder, "imputed_data_qrilc.tsv"
 # Differential Abundance Analysis with SVA and ComBat (Old)
 ```{r}
 # TODO: Ali when I use Combat and SVA my pvalue histograms gets much nicer, despite the fact that the batch-effect ("season") and horseIDs are nested, and the corfit is almost 0. 
+# TODO: Ali's response >>> 
+#       1) You might be over-sanding your data with all batch adjustment procedures. ComBat correct for HorseIDs, SVA corrects for unknown systematic variations. 
+#       2) Modelling the batch effect is always a way better option than removing it. I avoid using ComBat in majority of the analysis I perform. 
+#.      Regarding the points above, please read: # https://academic.oup.com/biostatistics/article/17/1/29/1744261
+#       VERDICT: don't use ComBat
 
 # Extract batch and biological condition information
 batch <- d$samples$Batch  # Specify the batch variable
@@ -797,15 +802,30 @@ for (contrast in names(res_split)) {
 condition <- d$samples$Condition  # Specify the biological condition
 
 # Apply SVA to Adjust for Hidden Confounders
-# Full model including condition
-mod <- model.matrix(~ 0 + condition + batch, data = d$samples)
+
+# TODO: commenting out line below, because it is wrong. See better "mod" below
+#mod <- model.matrix(~ condition + batch, data = d$samples) 
 # TODO: Ali, if I don't say 0+ i get an intercept... 
+# TODO: Ali's response >>>
+#       "0 +" literally tells the model to exclude the intercept. It is easier to write contrasts if there is no intercept in the model. 
+#        Otherwise, everything will be relative to intercept and you need to be more careful with contrasts
+#        For SVA analysis, always use the model with intercept (no "~ 0 + condition") as SVA was made to work with designs including intercept (e.g.: ~ condition). However, you are welcome to use designs with/out in your lmFit.
+# TODO: Things to avoid:
+#       1) don't provide integer values as your "batch". It should be "factor"
+#.      2) remember, your "horseID" is nested under "batch". If you use both in your analysis, you are over-correcting your data.
+# 
+
+# Full model including condition
+mod <- model.matrix(~ condition, data = d$samples) 
 
 # Null model excluding biological information
 mod0 <- model.matrix(~ 1, data = d$samples)
 
+# TODO: Model for your analysis
+design <-  model.matrix(~ 0 + condition, data = d$samples) 
+
 # Estimate the number of surrogate variables
-n.sv <- num.sv(imputed_data_MinProb, mod, method = "be")  
+n.sv <- num.sv(imputed_data_MinProb, mod, method = "leek")  #TODO: changed to "leek"
 cat("Number of surrogate variables estimated:", n.sv, "\n")
 
 # Run SVA to estimate surrogate variables
@@ -821,8 +841,9 @@ sv_data <- cbind(d$samples, sv_data)
 sv_plots <- list()  # Store plots
 sv_cols <- colnames(sv_data)[grep("^SV", colnames(sv_data))]
 
-# Convert Batch to a factor
-sv_data$Batch <- as.factor(sv_data$Batch)
+#TODO: you are doing this too late, why don't you modify it as soon as you read the metadata? 
+# Convert Batch to a factor 
+sv_data$Batch <- as.factor(sv_data$Batch) 
 
 # Loop to generate pairwise scatter plots for surrogate variables
 for (i in seq_along(sv_cols)) {
@@ -844,8 +865,11 @@ for (plot_name in names(sv_plots)) {
   print(sv_plots[[plot_name]])
 }
 cat("None of the surrogate variables captured variability related to disease group.\n")
+
+#TODO: Note the new modSV
 # Incorporate Surrogate Variables into the Design Matrix
-modSv <- cbind(mod, svobj$sv)
+#modSv <- cbind(mod, svobj$sv)
+modSv <- cbind(design, svobj$sv)
 
 # Run duplicateCorrelation to estimate correlation between repeated samples (blocking by horse)
 corfit <- duplicateCorrelation(imputed_data_MinProb, modSv, block = as.factor(d$samples$Horse))
