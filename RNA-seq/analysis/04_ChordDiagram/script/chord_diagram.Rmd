@@ -183,8 +183,39 @@ GOChord(chord_data_custom,
         ribbon.col = custom_colors,  
         nlfc = 1,
         lfc.col = c("#67000d", "#f7f7f7", "#08306b"),  # Dark blue to white to dark red
-        lfc.min = -2,  # Minimum value on the logFC scale
-        lfc.max = 2)    # Maximum value on the logFC scale
+        lfc.min = -1.5,  # Minimum value on the logFC scale
+        lfc.max = 1.5)    # Maximum value on the logFC scale
+
+GOChord(chord_data_custom, 
+        space = 0.04,           
+        gene.order = 'logFC',   
+        gene.size = 10,
+        gene.space = 0.5,
+        ribbon.col = custom_colors,  
+        nlfc = 1,
+        lfc.min = -1,
+        lfc.max = 1)  # Adjust nlfc for the number of logFC categories
+
+# Define output directory and file name
+output_dir <- "../output/GOChord_plots_hq"
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+# Optionally save as high-resolution PNG
+png_file <- file.path(output_dir, "GOChord_plot_AFvsShamRA.png")
+png(filename = png_file, width = 8000, height = 8000, res = 800)  # High DPI for HQ
+GOChord(
+    chord_data_custom, 
+    space = 0.04,           
+    gene.order = 'logFC',   
+    gene.size = 10,
+    gene.space = 0.5,
+    ribbon.col = custom_colors,  
+    nlfc = 1,
+    lfc.min = -1,
+    lfc.max = 1
+)
+dev.off()
 
 ```
 

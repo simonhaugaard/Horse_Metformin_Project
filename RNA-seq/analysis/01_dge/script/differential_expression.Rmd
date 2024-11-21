@@ -34,6 +34,7 @@ pacman::p_load("data.table")
 pacman::p_load("ggvenn")
 pacman::p_load("pheatmap")
 pacman::p_load_gh("altintasali/aamisc")
+library(ggrepel)
 
 #Optional: Install archived R packages if necessary.
 # This section is commented out, as these dependencies might not be needed in the final analysis.
@@ -59,10 +60,13 @@ count <- readr::read_delim(count_file)
 
 # Remove specific horses from the analysis (natural AF cases).
 # only horses relevant to the experimental design are included.
+count <- as_tibble(count) 
 count <- count %>%
-  select(-c(Dorado_LA, Dorado_RA, Im_A_Mets_Fan_LA, Im_A_Mets_Fan_RA, 
+  dplyr::select(-c(Dorado_LA, Dorado_RA, Im_A_Mets_Fan_LA, Im_A_Mets_Fan_RA, 
             Jytte_LA, Jytte_RA, Kevin_Cook_LA, Kevin_Cook_RA, 
             San_Diego_LA, San_Diego_RA, Styles_LA, Styles_RA))
+
+
 
 # Load metadata associated with the samples from an Excel file.
 meta_file <- "../../../../RNA-seq/data/metadata/meta.xlsx" 
@@ -444,7 +448,106 @@ print(volcano_plots[["met_vs_placebo_LA"]])
 combined_plot <- ((volcano_plots[["AF_vs_sham_RA"]]) | (volcano_plots[["AF_vs_sham_LA"]])) / ((volcano_plots[["met_vs_placebo_RA"]]) | (volcano_plots[["met_vs_placebo_LA"]]))
 print(combined_plot)
 ```
+### Volcano Plot Custom
+```{r volcano_plots_custom, fig.height=10, fig.width=10}
+regions <- unique(meta$Region)
 
+# Gene Name Mapping for Volcano Plots in RNA-seq Analysis
+# Check if the annotation dataframe has the necessary columns
+if (!"ENSEMBL" %in% colnames(annot_reordered) || !"GENENAME" %in% colnames(annot_reordered)) {
+  stop("Error: The annotation dataframe must contain both 'ENSEMBL' and 'GENENAME' columns.")
+}
+# Create a named vector for ENSEMBL to GENENAME mapping
+ensembl_to_genename <- setNames(annot_reordered$GENENAME, annot_reordered$ENSEMBL)
+# Map ENSEMBL IDs to GeneNames in the res list
+for (contrast_name in names(res)) {
+  # Ensure the dataframe has ENSEMBL IDs as rownames
+  if (!"ENSEMBL" %in% colnames(res[[contrast_name]])) {
+    res[[contrast_name]]$ENSEMBL <- rownames(res[[contrast_name]])
+  }
+  
+  # Map GENENAMEs to the dataframe using ENSEMBL IDs
+  res[[contrast_name]]$GENENAME <- ensembl_to_genename[res[[contrast_name]]$ENSEMBL]
+  
+  # Replace NA values in GENENAME with ENSEMBL IDs (to ensure plotting works even if some gene names are missing)
+  res[[contrast_name]]$GENENAME[is.na(res[[contrast_name]]$GENENAME)] <- res[[contrast_name]]$ENSEMBL[is.na(res[[contrast_name]]$GENENAME)]
+}
+
+
+# Source the helper function
+source("volcano_helpers.R")
+
+# Create lists to store both versions of volcano plots
+volcano_plots_no_labels <- list()
+volcano_plots_with_labels <- list()
+
+# Iterate over each contrast in `res` and create custom volcano plots with/without labels
+for (contrast_name in names(res)) {
+  # Ensure the GeneName column is present in the dataframe for labeling
+  if (!"GeneName" %in% colnames(res[[contrast_name]])) {
+    # Map ENSEMBL to GeneName using the preprocessed mapping vector
+    res[[contrast_name]]$GeneName <- sapply(rownames(res[[contrast_name]]), function(x) gsub(".*_", "", x))
+  }
+  
+  # Generate volcano plots with and without labels using the helper function
+  volcano_plots <- create_custom_volcano_plot(
+    df = res[[contrast_name]],
+    logFC_col = "logFC",
+    pvalue_col = "P.Value",
+    adj_pvalue_col = "adj.P.Val",
+    contrast_name = contrast_name,
+    fc_cutoff = 0,
+    pvalue_cutoff = 0.05,
+    save_plot = TRUE, 
+    output_path = "../output/",
+    show_labels = TRUE  # Always generate both labeled and unlabeled versions
+  )
+  
+  # Store the plots in separate lists
+  volcano_plots_no_labels[[contrast_name]] <- volcano_plots$No_Labels
+  volcano_plots_with_labels[[contrast_name]] <- volcano_plots$With_Labels
+}
+
+# Combine and display the volcano plots without labels
+patchwork::wrap_plots(volcano_plots_no_labels, ncol = 3)
+
+# Specify the output directory
+output_dir <- "../output/volcano_plots"
+
+# Ensure the directory exists
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir, recursive = TRUE)
+}
+
+# List of contrasts to save
+contrasts_to_save <- c("AF_vs_sham_RA", "AF_vs_sham_LA", "met_vs_placebo_RA", "met_vs_placebo_LA")
+
+# Loop over each specified contrast and save both labeled and unlabeled plots
+for (contrast_name in contrasts_to_save) {
+  # Print the plots to console (optional, useful for debugging)
+  print(volcano_plots_with_labels[[contrast_name]])
+  print(volcano_plots_no_labels[[contrast_name]])
+  
+  # Save the plot with labels
+  ggsave(
+    filename = file.path(output_dir, paste0("volcano_plot_", contrast_name, "_With_Labels.png")),
+    plot = volcano_plots_with_labels[[contrast_name]],
+    width = 6,
+    height = 6,
+    dpi = 600
+  )
+  
+  # Save the plot without labels
+  ggsave(
+    filename = file.path(output_dir, paste0("volcano_plot_", contrast_name, "_No_Labels.png")),
+    plot = volcano_plots_no_labels[[contrast_name]],
+    width = 6,
+    height = 6,
+    dpi = 600
+  )
+}
+
+```
 # Explorative Data Analysis
 ## Heatmap Generator
 ```{r Heatmaps, fig.height=10, fig.width=10}
@@ -481,7 +584,8 @@ generate_pheatmap_for_goid_non_batch <- function(go_file, annot, logCPM, res_all
                fontsize = 10,
                fontsize_row = 8,
                fontsize_col = 8,
-               color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+               color = colorRampPalette(viridisLite::magma(50))(50),
+               breaks = seq(-2, 2, length.out = 51),
                main = paste("Non-Batch Corrected Heatmap for", goid, "in", region1))
     } else {
       print(paste("No significant genes to display for contrast:", contrast1, "in region:", region1))
@@ -504,7 +608,7 @@ generate_pheatmap_for_goid_non_batch <- function(go_file, annot, logCPM, res_all
                fontsize = 10,
                fontsize_row = 8,
                fontsize_col = 8,
-               color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+               color = colorRampPalette(viridisLite::viridis(50))(50),
                main = paste("Non-Batch Corrected Heatmap for", goid, "in", region2))
     } else {
       print(paste("No significant genes to display for contrast:", contrast2, "in region:", region2))
@@ -562,6 +666,22 @@ generate_pheatmap_for_goid_non_batch(
 )
 
 ## Mitochondrial Matrix Heatmap used in Supplemnetary Figure
+
+# Generate the heatmap and capture it as a grob
+heatmap_RA <- generate_pheatmap_for_goid_non_batch(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM = logCPM,                 
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0034702",             
+  contrast1 = "met_vs_placebo_RA",     
+  contrast2 = "met_vs_placebo_LA",     
+  region1 = "RA",                  
+  region2 = "LA"                   
+)
+
 
 ```
 

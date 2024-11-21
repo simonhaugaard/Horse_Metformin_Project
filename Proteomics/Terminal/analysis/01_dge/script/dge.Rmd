@@ -18,49 +18,26 @@ knitr::opts_chunk$set(echo = TRUE)
 # Required R libraries
 ```{r library}
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load("edgeR")
-pacman::p_load("readr")
-pacman::p_load("readxl")
-pacman::p_load("biomaRt")
-pacman::p_load("magrittr")
-pacman::p_load("tibble")
-pacman::p_load("stringr")
-pacman::p_load("ggplot2")
-pacman::p_load("data.table")
-pacman::p_load("ggplot2", "patchwork")
-pacman::p_load("openxlsx")
-pacman::p_load("pheatmap")
-library(dplyr)
-library(missForest)
-library(RColorBrewer)
-library(limma)
-library(DEqMS)
-library(preprocessCore)
-library(DEP)
-library(SummarizedExperiment)
-library(Metrics)
-library(fdrtool)
-library(aamisc)
-library(sva)
-library(ggrepel)
-library(data.table)
+pacman::p_load("edgeR", "readr", "readxl", "biomaRt", "magrittr", "tibble", "stringr", 
+               "ggplot2", "data.table", "patchwork", "openxlsx", "dplyr", "missForest", 
+               "RColorBrewer", "limma", "DEqMS", "preprocessCore", "DEP", 
+               "SummarizedExperiment", "Metrics", "fdrtool", "aamisc", "sva")
 
-# Install and load custom libraries if not already present
-# Uncomment the following lines if installing from archived packages or GitHub
+# install aamisc package for MDS and Volcano plots
+# Commented out for future use:
 # pacman::p_load("qvalue", "rain", "limma", "devtools")
 # url <- "https://cran.r-project.org/src/contrib/Archive/HarmonicRegression/HarmonicRegression_1.0.tar.gz"
 # pkgFile <- "HarmonicRegression_1.0.tar.gz"
 # download.file(url = url, destfile = pkgFile)
 # install.packages(pkgs=pkgFile, type="source", repos=NULL)
 # file.remove(pkgFile)
-# pacman::p_load_gh("altintasali/aamisc")  # Load `aamisc` package from GitHub repository
+# pacman::p_load_gh("altintasali/aamisc")
 
-# Set color palette for publication visuals
-publication_colors <- c("Control" = "#285291",    # Blue color for Control group
-                        "Metformin" = "#7C1516",  # Red color for Metformin group
-                        "Sham" = "#9B9B9B")       # Grey color for Sham group
+# Colours for publication
+publication_colors <- c("Control" = "#285291", "Metformin" = "#7C1516", "Sham" = "#9B9B9B")
 
 ```
+
 # Load and Filter Proteomics Data
 ```{r read_data}
 # Define file paths for proteomics data, metadata, and gene annotations
@@ -376,7 +353,7 @@ data_imp_qrilc <- impute( data_filt_norm, fun = "QRILC")
 # This plot helps assess the effectiveness of each imputation method by visualizing the changes in intensity distributions.
 plot_imputation( data_filt_norm, data_imp_MinProb, data_imp_man, data_imp_qrilc)
 
-### Verdict: After visual inspection, it appears that the QRILC method (`data_imp_qrilc`) handles the MNAR nature of the data best. and will be used downstream. 
+### Verdict: After visual inspection, it appears that the MinProb handles the MNAR nature of the data best. and will be used downstream. 
 ```
 
 # MDS plots and SVA
@@ -392,25 +369,26 @@ design <- model.matrix(~0 + Condition, data = d$samples)
 
 # 1. MDS Plot for Raw Data
 mds_raw <- plotMDS(logCounts_noNA, plot = FALSE)
-mds_plot_raw <- aamisc::ggMDS(mds = mds_raw, meta = d$samples, color.by = "Group", shape.by = "Region", legend.position = "right") +
+mds_plot_raw <- aamisc::ggMDS(mds = mds_raw, meta = d$samples, color.by = "Group", shape.by = "Region", legend.position = "right", text.by = "Horse", text.size = 1.5) +
   scale_color_manual(values = publication_colors) +
   labs(title = "MDS: Raw Data", x = "MDS Dimension 1", y = "MDS Dimension 2") +
-  theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
-
-# 2. MDS Plot for Data Adjusted by Blocking for Horse
-logCounts_blocked <- removeBatchEffect(logCounts_noNA, batch = as.factor(d$samples$Horse), design = design)
-mds_blocked <- plotMDS(logCounts_blocked, plot = FALSE)
-mds_plot_blocked <- aamisc::ggMDS(mds = mds_blocked, meta = d$samples, color.by = "Group", shape.by = "Region", legend.position = "right") +
-  scale_color_manual(values = publication_colors) +
-  labs(title = "MDS: Blocked for Horse", x = "MDS Dimension 1", y = "MDS Dimension 2") +
   theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
 
 # 3. MDS Plot for Data Adjusted Using ComBat
 combat_data <- ComBat(dat = logCounts_noNA, batch = as.factor(d$samples$Batch), mod = model.matrix(~Condition, data = d$samples))
 mds_combat <- plotMDS(combat_data, plot = FALSE)
-mds_plot_combat <- aamisc::ggMDS(mds = mds_combat, meta = d$samples, color.by = "Group", shape.by = "Region", legend.position = "right") +
+mds_plot_combat <- aamisc::ggMDS(mds = mds_combat, meta = d$samples, color.by = "Group", shape.by = "Region", legend.position = "right", text.by = "Horse", text.size = 1.5) +
   scale_color_manual(values = publication_colors) +
   labs(title = "MDS: ComBat Adjusted", x = "MDS Dimension 1", y = "MDS Dimension 2") +
+  theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
+
+
+# 2. MDS Plot for Data Adjusted by Blocking for Horse
+logCounts_blocked <- removeBatchEffect(logCounts_noNA, batch = as.factor(d$samples$Horse), design = design)
+mds_blocked <- plotMDS(logCounts_blocked, plot = FALSE)
+mds_plot_blocked <- aamisc::ggMDS(mds = mds_blocked, meta = d$samples, color.by = "Group", shape.by = "Region", legend.position = "right", text.by = "Horse", text.size = 1.5) +
+  scale_color_manual(values = publication_colors) +
+  labs(title = "MDS: Blocked for Horse", x = "MDS Dimension 1", y = "MDS Dimension 2") +
   theme(legend.title = element_text(face = "bold"), plot.title = element_text(face = "bold", hjust = 0.5))
 
 # 4. MDS Plot for Data Adjusted Using SVA
@@ -559,7 +537,7 @@ imputed_data_qrilc <- load_matrix(paste0(output_folder, "imputed_data_qrilc.tsv"
 
 
 ```
-#Export normalized, filtrered and imputed data for multiomics data integration
+# Export normalized, filtrered and imputed data for multiomics data integration
 ```{r Export Data}
 # Define the mapping from old names to new names
 # rename_mapping <- c(
@@ -675,8 +653,10 @@ imputed_data_qrilc <- load_matrix(paste0(output_folder, "imputed_data_qrilc.tsv"
 ```
 
 
-# Differential Abundance Analysis with SVA and ComBat 
+# Differential Abundance Analysis with SVA and ComBat (Old)
 ```{r}
+# TODO: Ali when I use Combat and SVA my pvalue histograms gets much nicer, despite the fact that the batch-effect ("season") and horseIDs are nested, and the corfit is almost 0. 
+
 # Extract batch and biological condition information
 batch <- d$samples$Batch  # Specify the batch variable
 condition <- d$samples$Condition  # Specify the biological condition
@@ -695,6 +675,31 @@ mod0 <- model.matrix(~ 1, data = d$samples)  # Null model
 n.sv <- num.sv(combat_data, mod, method = "be")  # Estimate number of surrogate variables
 svobj <- sva(combat_data, mod, mod0, n.sv = n.sv)
 
+# Generate pairwise scatter plots of surrogate variables
+sv_plots <- list()  # Store plots
+sv_data <- as.data.frame(svobj$sv)
+colnames(sv_data) <- paste0("SV", seq_len(ncol(svobj$sv)))
+sv_data <- cbind(d$samples, sv_data)
+sv_cols <- colnames(sv_data)[grep("^SV", colnames(sv_data))]
+
+for (i in seq_along(sv_cols)) {
+  for (j in seq_along(sv_cols)) {
+    if (i < j) {  # Plot each pair only once
+      sv_plots[[paste0("SV", i, "_SV", j)]] <- ggplot(sv_data, aes_string(x = sv_cols[i], y = sv_cols[j], 
+                                                                          color = "Group")) +
+        geom_point(size = 3, alpha = 0.8) +
+        theme_minimal() +
+        labs(title = paste("Surrogate Variables:", sv_cols[i], "vs", sv_cols[j]),
+             x = paste("Surrogate Variable", i),
+             y = paste("Surrogate Variable", j))
+    }
+  }
+}
+for (plot_name in names(sv_plots)) {
+  print(sv_plots[[plot_name]])
+}
+cat("None of the surrogate variables captured variability related to disease group.\n")
+
 # Adjust the design matrix to include surrogate variables
 modSv <- cbind(mod, svobj$sv)
 
@@ -703,8 +708,8 @@ corfit <- duplicateCorrelation(combat_data, modSv, block = as.factor(d$samples$H
 
 # Fit the linear model using limma, accounting for repeated measures
 fit <- lmFit(combat_data, modSv, block = as.factor(d$samples$Horse), correlation = corfit$consensus.correlation)
+cat("Consensus correlation for repeated measures:", corfit$consensus.correlation, "\n") # 0.0025
 
-design <- model.matrix(~0 + Condition + Batch, d$samples)
 # Ensure all column names in modSv are syntactically valid
 colnames(modSv) <- make.names(colnames(modSv))
 
@@ -738,7 +743,7 @@ for (i in colnames(con)) {
   res_tmp <- res_tmp[!is.na(res_tmp$t), ]  # Remove rows with NA values
   res_tmp$Contrast <- rep(i, nrow(res_tmp))  # Store the contrast name
   res[[i]] <- res_tmp  # Add to the results list
-  
+
   # Print the number of differentially expressed genes based on adjusted p-values
   n_adj_pval <- nrow(res_tmp[res_tmp$adj.P.Val < 0.05, ])
   print(paste('Number of differentially expressed genes for', i, 'based on adjusted p-value (BH) =', n_adj_pval))
@@ -763,7 +768,7 @@ res_split <- split(res_all, res_all$Contrast)
 for (contrast in names(res_split)) {
   # Extract the P.Values for the current contrast
   p_values <- res_split[[contrast]]$P.Value
-  
+
   # Create a histogram using ggplot2
   ggplot(data = data.frame(P.Value = p_values), aes(x = P.Value)) +
     geom_histogram(bins = 50, color = "black", fill = "lightblue") +
@@ -774,14 +779,149 @@ for (contrast in names(res_split)) {
       y = "Frequency"
     ) +
     xlim(0, 1) # Set x-axis limits to be between 0 and 1
-  
+
   # Print each histogram
   print(last_plot())
 }
- 
+
+# Verdict: Nice p-value histograms
+
+```
+
+# Limma with SVA without Combat (as agreed upon)
+```{r}
+# In this workflow, SVA is used to remove hidden variance, and a blocking factor 
+# accounts for variance introduced by repeated measures (e.g., two samples from the same horse).
+
+# Extract biological condition information
+condition <- d$samples$Condition  # Specify the biological condition
+
+# Apply SVA to Adjust for Hidden Confounders
+# Full model including condition
+mod <- model.matrix(~ 0 + condition + batch, data = d$samples)
+# TODO: Ali, if I don't say 0+ i get an intercept... 
+
+# Null model excluding biological information
+mod0 <- model.matrix(~ 1, data = d$samples)
+
+# Estimate the number of surrogate variables
+n.sv <- num.sv(imputed_data_MinProb, mod, method = "be")  
+cat("Number of surrogate variables estimated:", n.sv, "\n")
+
+# Run SVA to estimate surrogate variables
+svobj <- sva(imputed_data_MinProb, mod, mod0, n.sv = n.sv)
+
+# Visualize Surrogate Variables to Ensure No Biological Information is Captured
+# Prepare SV data for plotting
+sv_data <- as.data.frame(svobj$sv)
+colnames(sv_data) <- paste0("SV", seq_len(ncol(svobj$sv)))
+sv_data <- cbind(d$samples, sv_data)
+
+# Generate pairwise scatter plots of surrogate variables
+sv_plots <- list()  # Store plots
+sv_cols <- colnames(sv_data)[grep("^SV", colnames(sv_data))]
+
+# Convert Batch to a factor
+sv_data$Batch <- as.factor(sv_data$Batch)
+
+# Loop to generate pairwise scatter plots for surrogate variables
+for (i in seq_along(sv_cols)) {
+  for (j in seq_along(sv_cols)) {
+    if (i < j) {  # Plot each pair only once
+      sv_plots[[paste0("SV", i, "_SV", j)]] <- ggplot(sv_data, aes_string(x = sv_cols[i], y = sv_cols[j], 
+                                                                          color = "Group", shape = "Batch")) +
+        geom_point(size = 3, alpha = 0.8) +
+        theme_minimal() +
+        labs(title = paste("Surrogate Variables:", sv_cols[i], "vs", sv_cols[j]),
+             x = paste("Surrogate Variable", i),
+             y = paste("Surrogate Variable", j))
+    }
+  }
+}
+
+# Print all scatter plots for manual inspection
+for (plot_name in names(sv_plots)) {
+  print(sv_plots[[plot_name]])
+}
+cat("None of the surrogate variables captured variability related to disease group.\n")
+# Incorporate Surrogate Variables into the Design Matrix
+modSv <- cbind(mod, svobj$sv)
+
+# Run duplicateCorrelation to estimate correlation between repeated samples (blocking by horse)
+corfit <- duplicateCorrelation(imputed_data_MinProb, modSv, block = as.factor(d$samples$Horse))
+cat("Consensus correlation for repeated measures:", corfit$consensus.correlation, "\n")
+
+# Fit the linear model with limma, accounting for repeated measures
+fit <- lmFit(imputed_data_MinProb, modSv, block = as.factor(d$samples$Horse), correlation = corfit$consensus.correlation)
+cat("Consensus correlation for repeated measures:", corfit$consensus.correlation, "\n") # 0.09
+
+# Ensure column names in design matrix are syntactically valid
+colnames(modSv) <- make.names(colnames(modSv))
+
+# Define contrasts with the updated column names
+con <- makeContrasts(
+  AF_vs_Sham_RA = conditionRA_Control_4months - conditionRA_Sham_4months,
+  AF_vs_Sham_LA = conditionLA_Control_4months - conditionLA_Sham_4months,
+  Metformin_vs_AF_RA = conditionRA_Metformin_4months - conditionRA_Control_4months,
+  Metformin_vs_AF_LA = conditionLA_Metformin_4months - conditionLA_Control_4months,
+  RA_vs_LA_Sham = conditionRA_Sham_4months - conditionLA_Sham_4months,
+  RA_vs_LA_AF = conditionRA_Control_4months - conditionLA_Control_4months,
+  RA_vs_LA_Metformin = conditionRA_Metformin_4months - conditionLA_Metformin_4months,
+  InteractionEffect = (conditionRA_Sham_4months - conditionRA_Control_4months) - (conditionLA_Sham_4months - conditionLA_Control_4months),
+  AverageDiseaseEffect = (conditionRA_Control_4months + conditionLA_Control_4months)/2 - (conditionRA_Sham_4months + conditionLA_Sham_4months)/2,
+  AverageTreatmentEffect = (conditionRA_Metformin_4months + conditionLA_Metformin_4months)/2 - (conditionRA_Control_4months + conditionLA_Control_4months)/2,
+  AverageRegionEffect = (conditionRA_Sham_4months + conditionRA_Control_4months)/2 - (conditionLA_Sham_4months + conditionLA_Control_4months)/2,
+  levels = modSv
+)
+
+# Apply contrasts and run eBayes
+fit <- contrasts.fit(fit, con)
+fit <- eBayes(fit, robust = TRUE, trend = TRUE)
+
+# Extract DGE results using the BH method for FDR correction
+res <- list()  # List to store DGE results
+for (i in colnames(con)) {
+  res_tmp <- topTable(fit, coef = i, adjust.method = "BH", number = Inf)  # Get top table results
+  res_tmp <- res_tmp[!is.na(res_tmp$t), ]  # Remove rows with NA values
+  res_tmp$Contrast <- i #TODO: replaced this part >>> rep(i, nrow(res_tmp))  # Store the contrast name
+  res[[i]] <- res_tmp  # Add to the results list
+  
+  # Print the number of differentially expressed genes based on adjusted p-values
+  n_adj_pval <- nrow(res_tmp[res_tmp$adj.P.Val < 0.05, ])
+  print(paste('Number of differentially expressed genes for', i, 'based on adjusted p-value (BH) =', n_adj_pval))
+}
+
+# Combine all results into a single data frame
+res_all <- do.call(rbind, res)
+
+# Map Gene Names Manually
+res_all$GeneName <- sapply(seq_len(nrow(res_all)), function(i) {
+  gsub(paste0("^", res_all$Contrast[i], "\\."), "", rownames(res_all)[i])
+})
+
+# Split results by contrast for easier output
+res_split <- split(res_all, res_all$Contrast)
+
+# Optionally, save the results to files
+# openxlsx::write.xlsx(x = res_split, file = "../../../../Timecourse/analysis/01_dge/output/dge_results_sva_combat.xlsx", asTable = TRUE)
+# data.table::fwrite(x = res_all, file = "../../../../Timecourse/analysis/01_dge/output/dge_results_sva.tsv.gz", sep = "\t")
+
+# Visualize Results with P-value Histograms
+for (contrast in names(res_split)) {
+  p_values <- res_split[[contrast]]$P.Value
+  ggplot(data = data.frame(P.Value = p_values), aes(x = P.Value)) +
+    geom_histogram(breaks = seq(0, 1, by = 0.05), color = "black", fill = "lightblue") +
+    theme_minimal() +
+    labs(title = paste("P-value Histogram for", contrast),
+         x = "P-value",
+         y = "Frequency") +
+    xlim(0, 1)  # Set x-axis limits
+  print(last_plot())
+}
 
 
 ```
+
 
 ### Volcano plots with P values
 ```{r volcano_plots, fig.height=10, fig.width=10}
@@ -874,7 +1014,3 @@ print(volcano_plots_with_labels[["Metformin_vs_AF_LA"]])
 
 
 ```
-
-
-
-

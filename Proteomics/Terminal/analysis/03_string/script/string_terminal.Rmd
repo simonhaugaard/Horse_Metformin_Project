@@ -255,6 +255,7 @@ network <- visNetwork(nodes, edges) %>%
     background = "#fff",  # Background color of the exported image
     float = "right"  # Position of the download button
   )
+  
 # Save the network as an HTML file
 htmlwidgets::saveWidget(network, "../output/AF_vs_Sham_LA_No_label.html")
 
@@ -271,9 +272,7 @@ df <- df[!duplicated(df$pair), ]
 # Create a graph object
 graph <- graph_from_data_frame(d = df[, c("GENENAME1", "GENENAME2")], directed = FALSE)
 
-# Remove networks with only 2 nodes
 components <- clusters(graph)
-graph <- delete.vertices(graph, which(components$csize[components$membership] <= 2))
 
 # Prepare nodes and edges for visNetwork
 node_names <- V(graph)$name

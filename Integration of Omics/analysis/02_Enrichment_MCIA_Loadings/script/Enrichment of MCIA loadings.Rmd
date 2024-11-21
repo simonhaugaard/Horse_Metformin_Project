@@ -29,7 +29,7 @@ library(stringi)
 # Load MCIA results
 # We perform GSEA on the maximum loadings (either gene or protein) contributing the most to the joint dimension reduction (jDR).
 # The positive loadings correspond to control horses, while the negative loadings correspond to metformin-treated horses.
-loadings_MCIA <- fread("../../../data/loading_result_mcia_condition_RA")
+loadings_MCIA <- fread("../../../data/MCIA_nov.csv")
 
 # Convert Loading1 to numeric
 loadings_MCIA[, Loading1 := as.numeric(gsub(",", ".", Loading1))]
@@ -38,7 +38,7 @@ loadings_MCIA[, Loading1 := as.numeric(gsub(",", ".", Loading1))]
 max_loadings <- loadings_MCIA[, .SD[which.max(abs(Loading1))], by = label]
 
 # View the resulting table with 'label' and maximum 'Loading1'
-result <- max_loadings[, .(Gene, Loading1, label)]
+result <- max_loadings[, .(V1, Loading1, label)]
 print(result)
 
 # Create the gene list for GSEA, containing the loadings from component 1 for each gene/protein
@@ -108,7 +108,7 @@ go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
 
 # Save the GSEA results to Excel for downstream analysis and visualization
 
-openxlsx::write.xlsx(x = go_gsea_res, file = "../output/GO_gsea_loadings_MCIA.xlsx", asTable = TRUE)
+openxlsx::write.xlsx(x = go_gsea_res, file = "../output/GO_gsea_loadings_MCIA_Nov.xlsx", asTable = TRUE)
 
 # Output summary of GSEA results for quick inspection
 print(head(go_gsea_res))
@@ -116,6 +116,70 @@ print(go_gsea_res[qvalue < 0.05, ])
 
 # Note: In the context of these GSEA results, "up" refers to positive loadings, indicating a stronger association with control horses, 
 # while "down" refers to negative loadings, indicating a stronger association with metformin-treated horses.
+
+
+
+
+```
+# Plot
+```{r}
+library(ggplot2)
+library(dplyr)
+library(aamisc) # Assuming `dotplotEnrich` is from this package
+
+# Filter top 10 terms by q-value for each direction
+top_down <- go_gsea_res %>%
+  filter(direction == "down") %>%
+  arrange(qvalue) %>%
+  head(10)
+
+top_up <- go_gsea_res %>%
+  filter(direction == "up") %>%
+  arrange(qvalue) %>%
+  head(10)
+
+# Combine the filtered data
+top_data <- bind_rows(top_down, top_up)
+
+# Plot and save dot plot for top up and down GO terms
+plot_and_save_dotplot <- function(data, topn = 5, topn.pref = "qval", qcut = 0.05, nchar = 60, 
+                                  direction_col = "direction", nes_col = "NES", qval_col = "qvalue", 
+                                  term_id_col = "ID", term_name_col = "Description", 
+                                  output_path = "Top_GO_Terms_Dotplot.png") {
+
+  # Create the dot plot using `dotplotEnrich`
+  dot_plot <- aamisc::dotplotEnrich(
+    dt = data, 
+    topn = topn, 
+    topn.pref = topn.pref, 
+    qcut = qcut,  # Set qcut to a numeric value, e.g., 0.05
+    nchar = nchar, 
+    direction = direction_col, 
+    group = direction_col,  # Set group to direction_col
+    dot = nes_col, 
+    qval = qval_col, 
+    term.id = term_id_col, 
+    term.name = term_name_col
+  ) +
+    # Enhance plot aesthetics
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 12, color = "black"),
+      axis.text.y = element_text(size = 12, color = "black"),
+      axis.title = element_text(size = 14, face = "bold"),
+      plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+      legend.title = element_text(size = 13, face = "bold"),
+      legend.text = element_text(size = 11)
+    )
+
+  # Print the dot plot
+  print(dot_plot)
+  
+  # Save the plot
+  ggsave(filename = output_path, plot = dot_plot, width = 10, height = 6, dpi = 300)
+}
+
+# Run the function on combined data
+plot_and_save_dotplot(top_data, output_path = "Top_GO_Terms_Dotplot.png")
 
 
 ```
