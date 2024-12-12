@@ -1,6 +1,6 @@
 ---
 title: "Gene enrichment analysis"
-author: "Simon Haugaard"
+author: "Simon Haugaard & Ali Altıntaş"
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -10,6 +10,7 @@ output:
     toc_depth: 3
     number_sections: true
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -26,14 +27,14 @@ pacman::p_load("magrittr",
                "clusterProfiler",                   
                "jsonlite",                          
                "httr",                             
-               "stringi")    
+               "stringi", "ggplot2")    
 ```
 
 
 ## Read data
 ```{r read_data}
 # Read differential gene expression (DGE) results from a specified file path
-dge_file <- "../../01_dge/output/dge_results_sva.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
 dge <- fread(dge_file)  # Read in the DGE results file using fread
 
 # Add a new column to categorize upregulated and downregulated genes based on log fold-change (logFC)
@@ -57,6 +58,7 @@ dge[, GENENAME := sub(".*_", "", GeneName)]
 # Merge DGE data with gene annotation data based on GENENAME
 # The merge is performed to align DGE results with additional annotation information
 dge <- merge(dge, geneinfo[, .(ENSEMBL, GENENAME, ENTREZID)], by = "GENENAME", all.x = TRUE)
+dge <- dge[!is.na(ENSEMBL), ]
 
 # Reorder columns to prioritize key identifiers (ENSEMBL, GENENAME, ENTREZID)
 setcolorder(dge, c("ENSEMBL", "GENENAME", "ENTREZID", setdiff(names(dge), c("ENSEMBL", "GENENAME", "ENTREZID"))))
@@ -103,7 +105,7 @@ term2gene <- split(go[,c("GOID", "ENSEMBL")], f = go$GOdomain)
 term2name <- split(go[,c("GOID", "Description")], f = go$GOdomain)
 ```
 
-## ORA on adjusted Pvalues
+## ORA 
 ```{r go_ora}
 # Split differential gene expression (DGE) data into separate lists by contrast
 dge_split <- split(dge, f = dge$Contrast)
@@ -112,48 +114,58 @@ dge_split <- split(dge, f = dge$Contrast)
 go_ora <- list()
 
 # Loop over gene sets ("all", "up", and "down"), GO domains, and contrasts to perform enrichment analysis
-for(k in c("all", "up", "down")){
-  for (j in names(term2gene)){
-    for (i in names(dge_split)){
+# Loop over gene sets ("all", "up", "down"), GO domains, and contrasts to perform enrichment analysis
+for (k in c("all", "up", "down")) {
+  for (j in names(term2gene)) {
+    for (i in names(dge_split)) {
       message(paste0("Running GO ORA for '", i, "'", " within ", j, " ('", k, "' genes)"))
-
+      
       # Select genes based on direction ("all", "up", "down") and significance cutoff
-      if(k == "all"){
+      if (k == "all") {
         gene <- dge_split[[i]][adj.P.Val < dge_cut, ENSEMBL]
-      } else if(k == "up"){
+      } else if (k == "up") {
         gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "up", ENSEMBL]
-      } else if(k == "down"){
-        gene <- dge_split[[i]][adj.P.Val< dge_cut & Direction == "down", ENSEMBL]
+      } else if (k == "down") {
+        gene <- dge_split[[i]][adj.P.Val < dge_cut & Direction == "down", ENSEMBL]
       }
-
+      
       # Skip if no differentially expressed genes (DEGs) found
-      if(length(gene) == 0){
+      if (length(gene) == 0) {
         warning("No DEG found, skipping...\n")
         next
       }
-
+      
       # Define the universe of genes to use as background in enrichment analysis
       universe <- dge_split[[i]][, ENSEMBL]
-
-      # Perform GO enrichment analysis using the `enricher` function from clusterProfiler
-      go_ora[[i]][[j]][[k]] <- enricher(gene = gene, 
-                                     TERM2GENE = term2gene[[j]],
-                                     TERM2NAME = term2name[[j]],
-                                     pAdjustMethod = "BH",
-                                     pvalueCutoff = 0.05, 
-                                     qvalueCutoff = 0.05,
-                                     minGSSize = 10, 
-                                     maxGSSize = 500, 
-                                     universe = universe
-      )@result
-
-      # Annotate the resulting data with contrast, database, and direction
+      
+      # Perform GO enrichment analysis using the `enricher` function
+      enrichment_result <- enricher(
+        gene = gene,
+        TERM2GENE = term2gene[[j]],
+        TERM2NAME = term2name[[j]],
+        pAdjustMethod = "BH",
+        pvalueCutoff = 0.05,
+        qvalueCutoff = 0.05,
+        minGSSize = 10,
+        maxGSSize = 500,
+        universe = universe
+      )
+      
+      # Check if the enrichment_result is NULL and skip if so
+      if (is.null(enrichment_result)) {
+        warning(paste0("No gene sets have size between 10 and 500 for '", i, "' in '", j, "' (", k, " genes). Skipping...\n"))
+        next
+      }
+      
+      # Store results and annotate them
+      go_ora[[i]][[j]][[k]] <- enrichment_result@result
       go_ora[[i]][[j]][[k]]$Contrast <- i
       go_ora[[i]][[j]][[k]]$Database <- j
       go_ora[[i]][[j]][[k]]$Direction <- k
     }
   }
 }
+
 
 # Combine and convert the list of results into a single data table
 go_ora_res <- do.call(rbind, go_ora %>% unlist(recursive=FALSE) %>% unlist(recursive = F)) %>% setDT
@@ -260,15 +272,16 @@ plot_combined_dotplot(data = filtered_go_ora_res, contrasts = contrasts_to_plot)
 
 # Save the plot using `ggsave` with matched dimensions
 ggsave(filename = "../output/combined_dotplot.png", plot = last_plot(), 
-       width = 2, height = 2, dpi = 300)
+       width = 8, height = 5, dpi = 300)
 
 ```
 
 
 ## GSEA
 ```{r go_gsea}
-# Initialize go_gsea list
+# Initialize go_gsea list and remove NAs
 go_gsea <- list()
+
 
 # Loop through each term2gene and dge_split combination
 for (j in names(term2gene)){
@@ -288,7 +301,7 @@ for (j in names(term2gene)){
                             minGSSize = 10, 
                             maxGSSize = 500, 
                             eps = 0, 
-                            nPermSimple = 100)@result #TODO: Set at 1mio
+                            nPermSimple = 10000)@result 
         
         # Check if the result is not empty
         if (nrow(gsea_result) > 0) {
@@ -347,56 +360,72 @@ contrasts <- c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_RA", "Metformi
 plot_dotplot_for_contrast(data_split = go_gsea_res_split, contrasts = contrasts)
 
 ```
+
 ### Output
 ```{r}
-# Function to plot and save dot plots for a specific contrast
-plot_and_save_dotplot <- function(data_split, contrast, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
-                                  direction = "direction", group = "Contrast", dot = "NES", qval = "qvalue", 
-                                  term.id = "ID", term.name = "Description", output_path) {
-  if (contrast %in% names(data_split)) {
-    filtered_data <- data_split[[contrast]]
-    if (nrow(filtered_data) > 0) {
-      # Create the dot plot
-      dot_plot <- aamisc::dotplotEnrich(dt = filtered_data, 
-                                        topn = topn, 
-                                        topn.pref = topn.pref, 
-                                        qcut = qcut, 
-                                        nchar = nchar, 
-                                        direction = direction, 
-                                        group = group, 
-                                        dot = dot, 
-                                        qval = qval, 
-                                        term.id = term.id, 
-                                        term.name = term.name) +
-        # Enhance the theme for better export
-        theme(
-          axis.text.x = element_text(angle = 45, hjust = 1, size = 12, color = "black"),
-          axis.text.y = element_text(size = 12, color = "black"),
-          axis.title = element_text(size = 14, face = "bold"),
-          plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-          legend.title = element_text(size = 13, face = "bold"),
-          legend.text = element_text(size = 11)
-        )
-      
-      # Print the dot plot to the R plotting window
-      print(dot_plot)
-      
-      # Save the plot as a high-quality image
-      ggsave(filename = output_path, plot = dot_plot, width = 10, height = 6, dpi = 300)
-    } else {
-      message(paste("No data for contrast:", contrast))
-    }
+# Combine GSEA results into a single data frame
+go_gsea_res_combined <- do.call(rbind, lapply(go_gsea, function(x) do.call(rbind, x)))
+
+# Convert to a data frame if needed
+go_gsea_res_combined <- as.data.frame(go_gsea_res_combined)
+go_gsea_res_combined$Direction <- ifelse(go_gsea_res_combined$NES > 0, "up", "down")
+
+# Function to generate a combined dot plot for specified contrasts with enhanced text
+plot_combined_dotplot_gsea <- function(data, contrasts, topn = 10, topn.pref = "qval", qcut = 0.05, nchar = 60, 
+                                       direction = "Direction", group = "Contrast", dot = "NES", qval = "qvalue", 
+                                       term.id = "ID", term.name = "Description", title = "Combined GSEA Dot Plot") {
+  
+  # Filter the data for the specified contrasts
+  filtered_data <- data %>% filter(Contrast %in% contrasts)
+  
+  # Check if data is available for the contrasts
+  if (nrow(filtered_data) > 0) {
+    # Create the dot plot using aamisc::dotplotEnrich
+    dot_plot <- aamisc::dotplotEnrich(dt = filtered_data, 
+                                      topn = topn, 
+                                      topn.pref = topn.pref, 
+                                      qcut = qcut, 
+                                      nchar = nchar, 
+                                      direction = direction, 
+                                      group = group, 
+                                      dot = dot, 
+                                      qval = qval, 
+                                      term.id = term.id, 
+                                      term.name = term.name) +
+      # Enhance text elements for publication
+      theme(
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12, color = "black"),  # Rotate and adjust x-axis labels
+        axis.text.y = element_text(size = 12, color = "black"),  # Increase y-axis label size
+        axis.title = element_text(size = 14, face = "bold"),  # Bold and increase axis title size
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),  # Center and style the plot title
+        legend.title = element_text(size = 13, face = "bold"),  # Bold legend title
+        legend.text = element_text(size = 11)  # Adjust legend text size
+      ) +
+      labs(
+        title = title,  # Add a descriptive title
+        x = "GO Terms",  # Label x-axis
+        y = "Normalized Enrichment Score (NES)"  # Label y-axis for GSEA
+      )
+    
+    # Print the dot plot to the R plotting window
+    print(dot_plot)
   } else {
-    message(paste("Contrast not found:", contrast))
+    # Display a message if no data is available for the contrasts
+    message("No data available for the specified contrasts.")
   }
 }
 
-# Specify the contrast and output path
-contrast_to_plot <- "Metformin_vs_AF_RA"
-output_path <- "../output/Metformin_vs_AF_RA_dotplot.png"
+# Define the contrasts you want to combine for GSEA
+contrasts_to_plot <- c("Metformin_vs_AF_LA", "Metformin_vs_AF_RA")
 
-# Generate and save the dot plot for "Metformin_vs_AF_RA"
-plot_and_save_dotplot(data_split = go_gsea_res_split, contrast = contrast_to_plot, output_path = output_path)
+# Generate and preview the dot plot in your R plotting window
+plot_combined_dotplot_gsea(data = go_gsea_res_combined, 
+                           contrasts = contrasts_to_plot, 
+                           title = "Combined GSEA Dot Plot for Metformin Effects (LA & RA)")
+
+# Save the plot using `ggsave` with matched dimensions
+ggsave(filename = "../output/combined_gsea_dotplot_metformin.png", plot = last_plot(), 
+       width = 10, height = 6, dpi = 300)
 ```
 
 
@@ -461,7 +490,7 @@ plot_dotplot_for_contrast_kegg <- function(data, contrasts, topn = 10, topn.pref
 filtered_KEGG_ora <- KEGG_ora %>% 
   filter(Direction != "all")
 
-plot_dotplot_for_contrast_kegg(data = filtered_KEGG_ora, contrasts = contrasts)
+plot_dotplot_for_contrast_kegg(data = filtered_KEGG_ora, contrasts = "AF_vs_Sham_LA")
 ```
 
 
@@ -533,3 +562,7 @@ plot_dotplot_for_contrast_kegg_gsea <- function(data_split, contrasts, topn = 10
 plot_dotplot_for_contrast_kegg_gsea(data_split = kegg_gsea, contrasts = contrasts)
 ```
 
+# Session Info
+```{r session_info}
+sessionInfo()
+```

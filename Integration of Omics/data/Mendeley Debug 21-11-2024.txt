@@ -1,0 +1,5 @@
+Mendeley Debug: 
+1. Restart (if necessary) 
+2. Open Word without VPN access to KU 
+3. If not refreshing- go to "recently added" and the little icon should spin 
+4. You should now have access :-) 

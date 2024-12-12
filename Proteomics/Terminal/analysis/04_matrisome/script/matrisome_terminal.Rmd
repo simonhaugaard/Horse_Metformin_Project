@@ -2,7 +2,7 @@
 title: "String Terminal"
 author: "Simon Haugaard"
 date: "`r Sys.Date()`"
-output:output: 
+output: 
   html_document:
     toc: true
     toc_float: true
@@ -29,10 +29,10 @@ pacman::p_load("ggplot2")
 pacman::p_load("data.table")
 pacman::p_load("ggplot2", "patchwork")
 pacman::p_load("openxlsx")
+pacman::p_load("clusterProfiler")
 library(dplyr)
 library(missForest)
 library(RColorBrewer)
-library(STRINGdb)
 library(ggplot2)
 library(ggpubr)
 library(tidyr)
@@ -46,7 +46,7 @@ library(pheatmap)
 ```{r}
 # Define file paths
 matrisome <- "../../../data/gene_annotation/Hs_Matrisome_Masterlist_downloaded_08_09_2024.csv"
-dge_file <- "../../01_dge/output/dge_results_sva.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
 matrisome <- fread(matrisome)
 dge <- fread(dge_file)
 dge[, Direction := ifelse(logFC > 0, "up", "down")]
@@ -69,63 +69,13 @@ ecm_dge <- dge %>%
 write.csv(ecm_dge, file = "ECM_Annotated_DGE.csv", row.names = FALSE)
 openxlsx::write.xlsx(x = ecm_dge, file = "../../../../Terminal/analysis/04_matrisome/output/ECM_Annotated_DGE.xlsx", asTable = TRUE)
 
-#Subset to include only ECM proteins
-ecm_core <- ecm_dge %>%
-  dplyr::filter(`Matrisome Division` == "Core matrisome")
+# Subset to include only ECM core matrisome proteins
+ecm_core <- ecm_dge %>% 
+    dplyr::filter(`Matrisome Division` == "Core matrisome")
 
-# Split the ecm_core data into a list by the 'Contrast' column
-ecm_core_list <- split(ecm_core, ecm_core$Contrast)
+# Define significant matrisome genes
+significant_matrisome_genes <- ecm_core$GeneName
 
-generate_pheatmap_for_matrisome <- function(contrast1, contrast2, region1, region2) {
-  # Subset logCounts data for the first region
-  region1_subset_logCounts <- logCounts_batchRemoved[rownames(logCounts_batchRemoved) %in% significant_matrisome_genes$GeneName, meta$Region == region1]
-  region1_subset_logCounts <- as.matrix(region1_subset_logCounts)
-
-  # Reorder the meta data frame to match the order of columns in region1_subset_logCounts
-  meta_ordered1 <- meta[match(colnames(region1_subset_logCounts), meta$`Sample ID`), ]
-  annotation_col1 <- meta_ordered1[, "Group", drop=FALSE]
-  rownames(annotation_col1) <- meta_ordered1$`Sample ID`
-
-  # Generate heatmap for the first region with annotations and gene names
-  pheatmap(region1_subset_logCounts,
-           annotation_col = annotation_col1,
-           annotation_colors = list(Group = publication_colors),
-           scale = "row",
-           show_rownames = TRUE,
-           fontsize = 10,
-           fontsize_row = 8,
-           fontsize_col = 8,
-           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-           main = paste("Heatmap for Significant Matrisome Proteins", "in", region1))
-
-  # Subset logCounts data for the second region
-  region2_subset_logCounts <- logCounts_batchRemoved[rownames(logCounts_batchRemoved) %in% significant_matrisome_genes$GeneName, meta$Region == region2]
-  region2_subset_logCounts <- as.matrix(region2_subset_logCounts)
-
-  # Reorder the meta data frame to match the order of columns in region2_subset_logCounts
-  meta_ordered2 <- meta[match(colnames(region2_subset_logCounts), meta$`Sample ID`), ]
-  annotation_col2 <- meta_ordered2[, "Group", drop=FALSE]
-  rownames(annotation_col2) <- meta_ordered2$`Sample ID`
-
-  # Generate heatmap for the second region with annotations and gene names
-  pheatmap(region2_subset_logCounts,
-           annotation_col = annotation_col2,
-           annotation_colors = list(Group = publication_colors),
-           scale = "row",
-           show_rownames = TRUE,
-           fontsize = 10,
-           fontsize_row = 8,
-           fontsize_col = 8,
-           color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-           main = paste("Heatmap for Significant Matrisome Proteins", "in", region2))
-}
-
-generate_pheatmap_for_matrisome(
-  contrast1 = "AF_vs_Sham_RA",  # Example Contrast 1
-  contrast2 = "AF_vs_Sham_LA",  # Example Contrast 2
-  region1 = "RA",               # Example Region 1
-  region2 = "LA"                # Example Region 2
-)
 
 ```
 #Overall look at matrisome between groups
@@ -289,74 +239,235 @@ ggplot(ecm_summary_RA, aes(x = `Matrisome Category`, y = Significance, size = Co
 
 ```
 
+# Enrichment analysis 
+```{r read enrichment files}
+# Add a new column to categorize upregulated and downregulated genes based on log fold-change (logFC)
+dge[, Direction := ifelse(logFC > 0, "up", "down")]
 
-#Heatmap
-```{r}
-data_imp_qrilc <- readRDS("../../../../../Proteomics/Terminal/analysis/01_dge/output/data_imp_MinProb.rds")
-# Extract the expression matrix from the SummarizedExperiment object
-expression_data <- assay(data_imp_qrilc)
+# Read gene annotation data from a specified file path
+geneinfo_file <- "../../../data/gene_annotation/horse_gene_annotation.tsv.gz"
+geneinfo <- fread(geneinfo_file)
 
-# Convert expression data to a data frame
-expression_df <- as.data.frame(expression_data)
+# Set new column names for better clarity
+setnames(geneinfo, new = c("ENSEMBL", "ENSEMBLv", "Description_detailed", 
+                           "Chr", "Start", "End", "Strand", "GENENAME", "ENTREZID", "Description"))
 
-# Add the protein/gene names as a column
-expression_df$Gene.names <- rownames(expression_df)
+# Remove unwanted columns and duplicated entries based on ENSEMBL IDs
+geneinfo <- geneinfo[, c("ENSEMBLv", "Description_detailed") := NULL]  # Remove columns not needed
+geneinfo <- geneinfo[!duplicated(ENSEMBL), ]                           # Retain only unique entries
 
-# Filter for ECM-related proteins using the matrisome data
-ecm_expression_df <- expression_df %>%
-  inner_join(matrisome, by = c("Gene.names" = "GeneSymbol"))
+# Extract gene names (GENENAME) from DGE data, assuming "GeneName" column exists in DGE file
+dge[, GENENAME := sub(".*_", "", GeneName)]
 
-# Assign sample groups
-sham_samples <- grep("Sham", colData(data_imp_qrilc)$condition)
-af_samples <- grep("Control", colData(data_imp_qrilc)$condition)
-metformin_samples <- grep("Metformin", colData(data_imp_qrilc)$condition)
+# Merge DGE data with gene annotation data based on GENENAME
+# The merge is performed to align DGE results with additional annotation information
+dge <- merge(dge, geneinfo[, .(ENSEMBL, GENENAME, ENTREZID)], by = "GENENAME", all.x = TRUE)
+dge <- dge[!is.na(ENSEMBL), ]
 
-# Calculate mean expression for each condition group
-expression_df <- assay(data_imp_qrilc)
-expression_df <- as.data.frame(expression_df)
-expression_df$Gene.names <- rownames(expression_df)
+# Reorder columns to prioritize key identifiers (ENSEMBL, GENENAME, ENTREZID)
+setcolorder(dge, c("ENSEMBL", "GENENAME", "ENTREZID", setdiff(names(dge), c("ENSEMBL", "GENENAME", "ENTREZID"))))
 
-# Subset the data for LA (Left Atrium)
-ecm_expression_LA <- ecm_expression_df %>%
-  select(Gene.names, starts_with("LA_"))
+# Convert ENTREZID column to character for downstream compatibility
+dge[, ENTREZID := as.character(ENTREZID)]
 
-# Subset the data for RA (Right Atrium)
-ecm_expression_RA <- ecm_expression_df %>%
-  select(Gene.names, starts_with("RA_"))
+# Filter the DGE results for specific relevant contrasts of interest
+dge <- dge[Contrast %in% c("AF_vs_Sham_RA", "AF_vs_Sham_LA", 
+                           "Metformin_vs_AF_RA", "Metformin_vs_AF_LA", 
+                           "AverageTreatmentEffect", "AverageDiseaseEffect")]
 
-# Convert to matrices for heatmap plotting
-ecm_expression_matrix_LA <- as.matrix(ecm_expression_LA[,-1])
-rownames(ecm_expression_matrix_LA) <- ecm_expression_LA$Gene.names
+# Keep only entries with valid Entrez IDs for enrichment analysis
+dge_entrez <- dge[!is.na(ENTREZID),]
 
-ecm_expression_matrix_RA <- as.matrix(ecm_expression_RA[,-1])
-rownames(ecm_expression_matrix_RA) <- ecm_expression_RA$Gene.names
+# Define statistical cutoffs for differential gene expression and enrichment analysis
+dge_cut <- 0.05        # Significance cutoff for differential gene expression (p-value)
+enrich_cut <- 0.05     # Significance cutoff for enrichment analysis (q-value)
 
-# Create heatmap for LA using pheatmap
-pheatmap(
-  ecm_expression_matrix_LA,
-  scale = "row",  # Scale each row to have mean=0 and sd=1
-  clustering_distance_rows = "euclidean",
-  clustering_distance_cols = "euclidean",
-  clustering_method = "complete",
-  show_rownames = TRUE,
-  show_colnames = TRUE,
-  color = colorRampPalette(c("blue", "white", "red"))(100),
-  main = "Heatmap of ECM Protein Expression in LA"
-)
-
-# Create heatmap for RA using pheatmap
-pheatmap(
-  ecm_expression_matrix_RA,
-  scale = "row",  # Scale each row to have mean=0 and sd=1
-  clustering_distance_rows = "euclidean",
-  clustering_distance_cols = "euclidean",
-  clustering_method = "complete",
-  show_rownames = TRUE,
-  show_colnames = TRUE,
-  color = colorRampPalette(c("blue", "white", "red"))(100),
-  main = "Heatmap of ECM Protein Expression in RA"
-)
 
 ```
 
+The analysis will be performed according to following statistical cutoffs.
+
+- *Differential gene expression:* p-value < `r dge_cut`
+- *Enrichment analysis:* adjusted p-value (Q-value) < `r enrich_cut`
+
+# Matrisome Enrichment
+```{r matrisome}
+# Read & Clean Matrisome data
+matrisome <- "../../../data/gene_annotation/Hs_Matrisome_Masterlist_downloaded_08_09_2024.csv"
+matrisome <- fread(matrisome)
+matrisome <- matrisome %>%
+  dplyr::rename(GeneSymbol = `Gene Symbol`) %>%  # Rename for consistency
+  dplyr::mutate(GeneSymbol = trimws(GeneSymbol))  # Remove any leading/trailing whitespace
+
+# Map GeneSymbol to ENSEMBL using geneinfo
+matrisome_ensembl <- merge(matrisome, geneinfo, by.x = "GeneSymbol", by.y = "GENENAME", all.x = TRUE)
+matrisome_ensembl <- matrisome_ensembl[!is.na(ENSEMBL)]
+
+# Create TERM2GENE
+term2gene_matrisome <- matrisome_ensembl[, .(`Matrisome Category`, ENSEMBL)]
+
+# Initialize matrisome_gsea list
+matrisome_gsea <- list()
+
+# Split differential gene expression (DGE) data into separate lists by contrast
+dge_split <- split(dge, f = dge$Contrast)
+
+# Loop through DGE contrasts
+for (contrast in names(dge_split)) {
+    message(paste0("Running GSEA for contrast '", contrast, "'"))
+
+    # Prepare geneList
+    geneList <- dge_split[[contrast]]$logFC
+    names(geneList) <- dge_split[[contrast]]$ENSEMBL
+    geneList <- sort(geneList, decreasing = TRUE)
+
+    # Run GSEA
+    gsea_result <- GSEA(
+        geneList = geneList, 
+        TERM2GENE = term2gene_matrisome, 
+        TERM2NAME = NULL,  # Not required since categories are already descriptive
+        pvalueCutoff = 0.05,
+        minGSSize = 10, 
+        maxGSSize = 500, 
+        eps = 0, 
+        nPermSimple = 10000
+    )@result
+
+    # Add metadata and save results
+    if (nrow(gsea_result) > 0) {
+        gsea_result$Contrast <- contrast
+    } else {
+        gsea_result <- data.frame(Contrast = character(), Database = character())
+    }
+    matrisome_gsea[[contrast]] <- gsea_result
+}
+
+# Combine all results
+matrisome_gsea_res <- do.call(rbind, matrisome_gsea) %>% setDT
+matrisome_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
+
+# Split results by contrast
+matrisome_gsea_res_split <- split(matrisome_gsea_res, f = matrisome_gsea_res$Contrast)
+
+# Save results
+openxlsx::write.xlsx(matrisome_gsea_res_split, file = "../output/matrisome_gsea_results.xlsx", asTable = TRUE)
+fwrite(matrisome_gsea_res, file = "../output/matrisome_gsea_results.tsv.gz", sep = "\t")
+
+# Define contrasts for plotting
+# Filter the contrasts for the combined plot
+selected_contrasts <- c("AF_vs_Sham_RA", "AF_vs_Sham_LA", "Metformin_vs_AF_RA", "Metformin_vs_AF_LA")
+
+# Subset results for selected contrasts
+combined_results <- matrisome_gsea_res[Contrast %in% selected_contrasts]
+
+# Plotting function for combined visualization
+# Function to plot all contrasts in a single dot plot
+plot_combined_dotplot <- function(data_split, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60,
+                                  direction = "direction", group = "Contrast", dot = "NES", qval = "qvalue", 
+                                  term.id = "ID", term.name = "Description") {
+  
+  # Combine all selected contrasts into one data.table
+  combined_data <- rbindlist(lapply(contrasts, function(contrast) {
+    if (contrast %in% names(data_split)) {
+      filtered_data <- data_split[[contrast]]
+      if (nrow(filtered_data) > 0) {
+        # Add the contrast name to the data
+        filtered_data[, Contrast := contrast]
+        return(filtered_data)
+      }
+    }
+    NULL
+  }), use.names = TRUE, fill = TRUE)
+  
+  # Check if data is available
+  if (is.null(combined_data) || nrow(combined_data) == 0) {
+    message("No data available for the selected contrasts.")
+    return(NULL)
+  }
+  
+  # Filter for top terms per contrast
+  top_terms <- combined_data[, .SD[order(get(topn.pref))[1:topn]], by = Contrast]
+  
+  # Plot using aamisc::dotplotEnrich
+  return(aamisc::dotplotEnrich(dt = top_terms, 
+                               topn = topn, 
+                               topn.pref = topn.pref, 
+                               qcut = qcut, 
+                               nchar = nchar, 
+                               direction = direction, 
+                               group = group, 
+                               dot = dot, 
+                               qval = qval, 
+                               term.id = term.id, 
+                               term.name = term.name))
+  
+  
+}
+
+# Plot the combined results
+plot_combined_dotplot(data_split = matrisome_gsea_res_split, contrasts = selected_contrasts)
+
+
+# Combine all selected contrasts into one data.table for inspection
+combined_data <- rbindlist(lapply(selected_contrasts, function(contrast) {
+  if (contrast %in% names(matrisome_gsea_res_split)) {
+    filtered_data <- matrisome_gsea_res_split[[contrast]]
+    if (nrow(filtered_data) > 0) {
+      # Add the contrast name to the data
+      filtered_data[, Contrast := contrast]
+      return(filtered_data)
+    }
+  }
+  NULL
+}), use.names = TRUE, fill = TRUE)
+
+
+# Select the top 5 terms per contrast and direction
+topn <- 5
+filtered_data <- combined_data[, .SD[order(qvalue)][1:topn], by = .(Contrast, direction)]
+filtered_data <- filtered_data[!is.na(ID) & !is.na(Description)]
+
+# Check the filtered data
+print(filtered_data)
+
+plot_combined_dotplot <- function(filtered_data, topn = 5, topn.pref = "qvalue", qcut = 0.05, nchar = 60,
+                                  direction = "direction", group = "Contrast", dot = "NES", qval = "qvalue", 
+                                  term.id = "ID", term.name = "Description") {
+  
+  # Check if topn.pref is valid
+  if (!topn.pref %in% names(filtered_data)) {
+    stop(paste("Column", topn.pref, "not found in data. Available columns:", paste(names(filtered_data), collapse = ", ")))
+  }
+  
+  # Plot using aamisc::dotplotEnrich
+  return(aamisc::dotplotEnrich(dt = filtered_data, 
+                               topn = topn,  # Use the topn parameter
+                               topn.pref = topn.pref,  # Explicitly set topn.pref
+                               qcut = qcut, 
+                               nchar = nchar, 
+                               direction = direction, 
+                               group = group, 
+                               dot = dot, 
+                               qval = qval, 
+                               term.id = term.id, 
+                               term.name = term.name))
+}
+
+# Clean filtered data
+filtered_data <- filtered_data[!is.na(ID) & !is.na(Description)]
+filtered_data[, qval := qvalue]
+
+# Generate the plot
+combined_plot <- plot_combined_dotplot(filtered_data, topn = 5, topn.pref = "qval")
+print(combined_plot)
+ggsave("../output/combined_dotplot_hq.png", plot = combined_plot, width = 12, height = 8, dpi = 600)
+
+
+```
+
+
+# Session Info
+```{r session_info}
+sessionInfo()
+```
 

@@ -32,7 +32,6 @@ pacman::p_load("openxlsx")
 library(dplyr)
 library(missForest)
 library(RColorBrewer)
-library(STRINGdb)
 
 
 ```
@@ -43,7 +42,7 @@ library(STRINGdb)
 #string_db <- "../../../../data/gene_annotation/9796.protein.links.full.v12.0.txt.gz"
 filtered_string_db <- "../../../../Timecourse/data/gene_annotation/filtered_9796.protein.links.full.v12.0.txt.gz"
 geneinfo_file <- "../../../data/gene_annotation/horse_gene_annotation.tsv.gz"
-dge_file <- "../../01_dge/output/dge_results_sva.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
 string_alias_file <- "../../../data/gene_annotation/9796.protein.aliases.v12.0.txt.gz"
 
 # Read and filter STRING database for high-confidence P-P interactions
@@ -230,12 +229,20 @@ htmlwidgets::saveWidget(visNetwork(nodes, edges), "../output/AF_vs_Sham_LA.html"
 
 ## No label
 # Create the interactive network with transparent labels
+# Create the interactive network with transparent labels
 network <- visNetwork(nodes, edges) %>%
-  visNodes(scaling = list(min = 20, max = 50),
-  visEdges(color = "grey") %>%
-  visPhysics(stabilization = TRUE,  # Enable stabilization
-             solver = "forceAtlas2Based",  # Use a different physics solver for tighter clustering
-             forceAtlas2Based = list(gravitationalConstant = -50, centralGravity = 0.01, springLength = 100, springConstant = 0.1)) %>%
+  visNodes(scaling = list(min = 20, max = 50)) %>%  # Fix the placement of visNodes
+  visEdges(color = "grey") %>%  # Add edges styling
+  visPhysics(
+    stabilization = TRUE,  # Enable stabilization
+    solver = "forceAtlas2Based",  # Use a different physics solver for tighter clustering
+    forceAtlas2Based = list(
+      gravitationalConstant = -50,
+      centralGravity = 0.01,
+      springLength = 100,
+      springConstant = 0.1
+    )
+  ) %>%
   visLayout(randomSeed = 123) %>%
   visLegend(
     useGroups = FALSE,
@@ -255,6 +262,7 @@ network <- visNetwork(nodes, edges) %>%
     background = "#fff",  # Background color of the exported image
     float = "right"  # Position of the download button
   )
+
   
 # Save the network as an HTML file
 htmlwidgets::saveWidget(network, "../output/AF_vs_Sham_LA_No_label.html")
@@ -262,127 +270,8 @@ htmlwidgets::saveWidget(network, "../output/AF_vs_Sham_LA_No_label.html")
 
 ```
 
-# AF_vs_sham RA
-```{r}
-# Load your data and remove duplicate edges, disregarding direction
-df <- pp_pairs_list$AF_vs_Sham_RA
-df$pair <- apply(df[, c("protein1", "protein2")], 1, function(x) paste(sort(x), collapse = "_"))
-df <- df[!duplicated(df$pair), ]
 
-# Create a graph object
-graph <- graph_from_data_frame(d = df[, c("GENENAME1", "GENENAME2")], directed = FALSE)
-
-components <- clusters(graph)
-
-# Prepare nodes and edges for visNetwork
-node_names <- V(graph)$name
-
-# Match node_names to df$GENENAME1 and handle potential NA values
-# Match node_names to both df$GENENAME1 and df$GENENAME2
-matched_indices1 <- match(node_names, df$GENENAME1)
-matched_indices2 <- match(node_names, df$GENENAME2)
-
-# Combine the matching logic: prefer GENENAME1, but use GENENAME2 if GENENAME1 is not available
-logFC_values <- ifelse(
-  !is.na(matched_indices1), 
-  df$logFC1[matched_indices1], 
-  ifelse(!is.na(matched_indices2), df$logFC2[matched_indices2], NA)
-)
-
-adj_P_Val_values <- ifelse(
-  !is.na(matched_indices1), 
-  df$adj.P.Val1[matched_indices1], 
-  ifelse(!is.na(matched_indices2), df$adj.P.Val2[matched_indices2], NA)
-)
-
-# Update the nodes data frame
-nodes <- data.frame(
-  id = node_names,
-  label = node_names,
-  value = -log10(ifelse(!is.na(adj_P_Val_values), adj_P_Val_values, 1)),  # Use 1 if no match found
-  color = ifelse(
-    !is.na(logFC_values) & logFC_values > 0, 
-    "#7C1516", "#285291"  # Node color: red for upregulated, blue for downregulated
-  ),
-  title = ifelse(
-    !is.na(logFC_values),
-    paste("logFC:", round(logFC_values, 2), 
-          "<br>adj.P.Val:", round(adj_P_Val_values, 5)),
-    "No data available"  # Fallback title if no match found
-  )
-)
-
-# Prepare the edges data frame
-edges <- data.frame(
-  from = df$GENENAME1,
-  to = df$GENENAME2,
-  width = 0.5  # Uniform thin edges
-)
-
-# Create the interactive network
-network <- visNetwork(nodes, edges) %>%
-  visNodes(scaling = list(min = 20, max = 50)) %>%
-  visEdges(color = "grey") %>%
-  visPhysics(stabilization = TRUE,  # Enable stabilization
-             solver = "forceAtlas2Based",  # Use a different physics solver for tighter clustering
-             forceAtlas2Based = list(gravitationalConstant = -50, centralGravity = 0.01, springLength = 100, springConstant = 0.1)) %>%
-  visLayout(randomSeed = 123) %>%
-  visLegend(
-    useGroups = FALSE,
-    addNodes = list(
-      list(label = "Upregulated", shape = "dot", color = "#7C1516", size = 10),
-      list(label = "Downregulated", shape = "dot", color = "#285291", size = 10),
-      list(label = "Neutral", shape = "dot", color = "white", size = 10)
-    ),
-    addEdges = list(
-      list(label = "Connection", color = "grey", width = 1)
-    )
-  ) %>%
-  visExport(
-    type = "png",  # Export type (e.g., "png")
-    name = "network",  # Name of the exported file
-    label = "Download as PNG",  # Label for the download button
-    background = "#fff",  # Background color of the exported image
-    float = "right"  # Position of the download button
-  )
-
-# Save the network as an HTML file
-htmlwidgets::saveWidget(visNetwork(nodes, edges), "../output/AF_vs_Sham_RA.html")
-
-## No label
-# Create a copy of the nodes data frame and remove labels
-nodes_no_labels <- nodes
-nodes_no_labels$label <- ""  # Set labels to an empty string
-
-# Create the network without labels
-network_no_labels <- visNetwork(nodes_no_labels, edges) %>%
-  visNodes(scaling = list(min = 20, max = 50)) %>%
-  visEdges(color = "grey") %>%
-  visPhysics(stabilization = TRUE,  # Enable stabilization
-             solver = "forceAtlas2Based",  # Use a different physics solver for tighter clustering
-             forceAtlas2Based = list(gravitationalConstant = -50, centralGravity = 0.01, springLength = 100, springConstant = 0.1)) %>%
-  visLayout(randomSeed = 123) %>%
-  visLegend(
-    useGroups = FALSE,
-    addNodes = list(
-      list(label = "Upregulated", shape = "dot", color = "#7C1516", size = 10),
-      list(label = "Downregulated", shape = "dot", color = "#285291", size = 10),
-      list(label = "Neutral", shape = "dot", color = "white", size = 10)
-    ),
-    addEdges = list(
-      list(label = "Connection", color = "grey", width = 1)
-    )
-  ) %>%
-  visExport(
-    type = "png",  # Export type (e.g., "png")
-    name = "network_no_labels",  # Name of the exported file
-    label = "Download as PNG",  # Label for the download button
-    background = "#fff",  # Background color of the exported image
-    float = "right"  # Position of the download button
-  )
-
-# Save the network without labels as an HTML file
-htmlwidgets::saveWidget(network_no_labels, "../output/AF_vs_Sham_RA_no_labels.html")
-
+# Session Info
+```{r session_info}
+sessionInfo()
 ```
-

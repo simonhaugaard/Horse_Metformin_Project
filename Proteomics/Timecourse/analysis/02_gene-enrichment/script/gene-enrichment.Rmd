@@ -30,7 +30,7 @@ pacman::p_load("clusterProfiler")
 ## Read data
 ```{r read_data}
 # read data
-dge_file <- "../../01_dge/output/dge_results_sva.tsv.gz"
+dge_file <- "../../01_dge/output/dge_results.tsv.gz"
 dge <- fread(dge_file)
 dge[, Direction := ifelse(logFC > 0, "up", "down")]
 
@@ -49,6 +49,7 @@ dge[, GENENAME := sub(".*_", "", GeneName)]
 
 # Merge DGE data with gene annotation data based on GENENAME
 dge <- merge(dge, geneinfo[, .(ENSEMBL, GENENAME, ENTREZID)], by = "GENENAME", all.x = TRUE)
+dge <- dge[!is.na(ENSEMBL), ]
 setcolorder(dge, c("ENSEMBL", "GENENAME", "ENTREZID", setdiff(names(dge), c("ENSEMBL", "GENENAME", "ENTREZID"))))
 
 dge[, ENTREZID := as.character(ENTREZID)]
@@ -191,7 +192,7 @@ plot_dotplot_for_contrast <- function(data, contrasts, topn = 10, topn.pref = "q
 
 # Example usage
 # Assuming filtered_go_ora_res is your GO enrichment result data frame
-contrasts <- c("Diff_Treatment", "Terminal_vs_Baseline_Control", "Terminal_vs_Baseline_Metformin", "Diff_Disease")
+contrasts <- c("Diff_Treatment", "Terminal_vs_Baseline_Control", "Terminal_vs_Baseline_Metformin")
 plot_dotplot_for_contrast(data = go_ora_res, contrasts = contrasts)
 
 ```
@@ -242,11 +243,8 @@ go_gsea_res[, direction := ifelse(NES < 0, "down", "up")]
 
 #Output data
 # go_gsea_res_split <- split(go_gsea_res, f = go_gsea_res$Contrast)
- # openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea_sva.xlsx", asTable = TRUE)
- # fwrite(x = go_gsea_res_split, file = "../output/go_gsea_sva.tsv.gz", sep = "\t")
-
-# # Saving the R object (05/11/2024)
-# saveRDS(go_gsea_res_split, file = "../output/go_gsea_res_split.rds")
+# openxlsx::write.xlsx(x = go_gsea_res_split, file = "../output/GO_gsea_sva.xlsx", asTable = TRUE)
+# fwrite(x = go_gsea_res_split, file = "../output/go_gsea_sva.tsv.gz", sep = "\t")
 
 # Reloading the R object
 go_gsea_res_split_test <- readRDS(file = "../output/go_gsea_res_split.rds")
@@ -285,112 +283,7 @@ plot_dotplot_for_contrast(data_split = go_gsea_res_split_test, contrasts = contr
 
 ```
 
-
-
-# KEGG
-## ORA
-```{r kegg_ora}
-KEGG_ora_upDown <- compareCluster(ENTREZID ~ Contrast + Direction, 
-                             data          = dge_entrez[adj.P.Val < dge_cut,],
-                             fun           = "enrichKEGG",
-                             universe      = dge_entrez[, ENTREZID],
-                             organism      = "ecb",
-                             pAdjustMethod = "BH",
-                             pvalueCutoff  = enrich_cut,
-                             qvalueCutoff  = enrich_cut)@compareClusterResult %>% setDT
-
-KEGG_ora <- rbindlist(list(KEGG_ora_upDown))
-# fwrite(x = KEGG_ora, file = "../output/kegg_ora.tsv.gz", sep = "\t")
-
-KEGG_ora_split <- split(KEGG_ora, f = KEGG_ora$Contrast)
-# openxlsx::write.xlsx(x = KEGG_ora_split, file = "../output/kegg_ora.xlsx", asTable = TRUE)
-
-
-# Function to plot dot plots for each contrast for KEGG enrichment results
-plot_dotplot_for_contrast_kegg <- function(data, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
-                                           direction = "Direction", group = "Contrast", dot = "GeneRatio", qval = "qvalue", 
-                                           term.id = "ID", term.name = "Description") {
-  for (contrast in contrasts) {
-    filtered_data <- data %>% filter(Contrast == contrast)
-    if (nrow(filtered_data) > 0) {
-      print(aamisc::dotplotEnrich(dt = filtered_data, 
-                                  topn = topn, 
-                                  topn.pref = topn.pref, 
-                                  qcut = qcut, 
-                                  nchar = nchar, 
-                                  direction = direction, 
-                                  group = group, 
-                                  dot = dot, 
-                                  qval = qval, 
-                                  term.id = term.id, 
-                                  term.name = term.name))
-    } else {
-      message(paste("No data for contrast:", contrast))
-    }
-  }
-}
-
-# Example usage
-# Plot
-plot_dotplot_for_contrast_kegg(data = KEGG_ora, contrasts = contrasts)
+# Session Info
+```{r session_info}
+sessionInfo()
 ```
-
-
-## GSEA 
-```{r kegg_gsea}
-dge_split <- split(dge_entrez, f = dge_entrez$Contrast)
-kegg_gsea <- list()
-
-for (i in names(dge_split)){
-  geneList <- dge_split[[i]]$logFC
-  names(geneList) <- dge_split[[i]]$ENTREZID
-  geneList <- sort(geneList, decreasing = TRUE)
-  
-  kegg_gsea[[i]] <-  gseKEGG(geneList     = geneList,
-                        organism     = 'ecb',
-                        pvalueCutoff = enrich_cut,
-                        minGSSize = 10, 
-                        maxGSSize = 500, 
-                        eps = 0, 
-                        nPermSimple = 10000, # TODO: set it to 1 million for robust results
-                        verbose      = TRUE
-                        )@result %>% setDT
-  kegg_gsea[[i]][, Direction := ifelse(test = NES > 0, yes = "up", no = "down"), ]
-  kegg_gsea[[i]]$Contrast <- i
-}
-
-
-# Function to plot dot plots for each contrast for KEGG GSEA results
-plot_dotplot_for_contrast_kegg_gsea <- function(data_split, contrasts, topn = 10, topn.pref = "qval", qcut = enrich_cut, nchar = 60, 
-                                                direction = "Direction", group = "Contrast", dot = "NES", qval = "qvalue", 
-                                                term.id = "ID", term.name = "Description") {
-  for (contrast in contrasts) {
-    if (contrast %in% names(data_split)) {
-      filtered_data <- data_split[[contrast]]
-      if (nrow(filtered_data) > 0) {
-        print(aamisc::dotplotEnrich(dt = filtered_data, 
-                                    topn = topn, 
-                                    topn.pref = topn.pref, 
-                                    qcut = qcut, 
-                                    nchar = nchar, 
-                                    direction = direction, 
-                                    group = group, 
-                                    qval = qval, 
-                                    dot = dot, 
-                                    term.id = term.id, 
-                                    term.name = term.name))
-      } else {
-        message(paste("No data for contrast:", contrast))
-      }
-    } else {
-      message(paste("Contrast not found:", contrast))
-    }
-  }
-}
-
-
-# Plot
-plot_dotplot_for_contrast_kegg_gsea(data_split = kegg_gsea, contrasts = contrasts)
-```
-
-
