@@ -796,7 +796,69 @@ print(volcano_plots_with_labels[["Metformin_vs_AF_LA"]])
 
 
 ```
+<<<<<<< HEAD
 # Session Info
 ```{r session_info}
 sessionInfo()
 ```
+=======
+## TO:DO 
+```{r Question for Thilde, fig.height=10, fig.width=10}
+#Thilde, hvordan kan det være, at kollagen-6 proteinerne ser ud til at være mindre abundant på mit sanity check, men ikke på mine heatmaps? 
+
+```
+
+#Sanity check - simplify design matrix
+```{r sanity check, fig.height=10, fig.width=10}
+#Set the design
+design <- model.matrix(~0 + Group , d$samples)
+colnames(design) <- gsub("Group", "", colnames(design))
+
+con <- makeContrasts(DiseaseEffect = (Control) - (Sham),
+  TreatmentEffect = (Metformin) - (Control),
+  levels = design)
+con
+
+#Run limma whilst blocking for "horse" 
+corfit <- duplicateCorrelation(imputed_data_qrilc, design, block=as.factor(d$samples$Horse))
+fit <- lmFit(imputed_data_qrilc, design, block=as.factor(d$samples$Horse), correlation=corfit$consensus.correlation)
+rownames(fit$coefficients) <- rownames(imputed_data_qrilc)
+
+# Obtain DGE results with FDR correction using fdrtool
+res <- list() # list for DGE results
+for (i in colnames(con)) {
+  fit.contrast <- contrasts.fit(fit, contrasts = con)
+  fit.contrast <- eBayes(fit.contrast, robust = TRUE, trend = TRUE)
+  res_tmp <- topTable(fit.contrast, coef = i, number = Inf) #FDR-adjust (adjust.method = fdr)
+  res_tmp <- res_tmp[!is.na(res_tmp$t), ]
+  
+  # Apply FDR correction using fdrtool
+  fdr_res <- fdrtool(res_tmp$t, plot = FALSE, verbose = FALSE)
+  res_tmp$qval <- fdr_res$qval
+  res_tmp$lfdr <- fdr_res$lfdr
+  res_tmp$Contrast <- rep(i, nrow(res_tmp))
+  res[[i]] <- data.frame(res_tmp)
+  
+  # Print the number of differentially abundant genes
+  n_qval <- res_tmp %>% filter(qval < 0.05) %>% nrow()
+  n_adj_pval <- res_tmp %>% filter(adj.P.Val < 0.05) %>% nrow()
+  print(paste('Number of differentially abundant genes for', i, 'based on q-value (FDR) =', n_qval))
+  print(paste('Number of differentially abundant genes for', i, 'based on adjusted p-value =', n_adj_pval))
+}
+res_all <- do.call(rbind, res)
+
+#Add genename manually
+res_all$GeneName <- sapply(seq_len(nrow(res_all)), function(i) {
+  gsub(paste0("^", res_all$Contrast[i], "\\."), "", rownames(res_all)[i])
+})
+res_split <- split(res_all, res_all$Contrast)
+
+# Create output Excel file
+openxlsx::write.xlsx(x = res_split, file = "../../../../Terminal/analysis/01_dge/output/dge_results_sanity.xlsx", asTable = TRUE)
+
+# Create output TSV file
+data.table::fwrite(x = res_all, file = "../../../../Terminal/analysis/01_dge/output/dge_results_sanity.tsv.gz", sep = "\t")
+
+#Verdict: AverageTreatment and AverageDisease performs correctly!
+```
+>>>>>>> 975e086 (Update with TODO for Thilde)
