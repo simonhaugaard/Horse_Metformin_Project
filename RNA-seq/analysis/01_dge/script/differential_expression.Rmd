@@ -548,6 +548,7 @@ for (contrast_name in contrasts_to_save) {
 }
 
 ```
+
 # Explorative Data Analysis
 ## Heatmap Generator
 ```{r Heatmaps, fig.height=10, fig.width=10}
@@ -585,7 +586,7 @@ generate_pheatmap_for_goid_non_batch <- function(go_file, annot, logCPM, res_all
                fontsize_row = 8,
                fontsize_col = 8,
                color = colorRampPalette(viridisLite::magma(50))(50),
-               breaks = seq(-2, 2, length.out = 51),
+               breaks = seq(-3, 3, length.out = 51),
                main = paste("Non-Batch Corrected Heatmap for", goid, "in", region1))
     } else {
       print(paste("No significant genes to display for contrast:", contrast1, "in region:", region1))
@@ -648,7 +649,6 @@ generate_pheatmap_for_goid_non_batch(
   region2 = "LA"                   
 )
 
-## Ionchannel Heatmap used in Main Figure
 
 #Example for mitochondrial matrix GO:0005759
 generate_pheatmap_for_goid_non_batch(
@@ -681,8 +681,121 @@ heatmap_RA <- generate_pheatmap_for_goid_non_batch(
   region1 = "RA",                  
   region2 = "LA"                   
 )
+```
+
+## Heatmaps without Column Clustering
+```{r Heatmaps_no_Cluster, fig.height=10, fig.width=10}
+## Heatmap Generator using Non-Batch Corrected Values
+generate_pheatmap_for_goid_non_batch <- function(go_file, annot, logCPM, res_all, meta, meta_reordered, goid, contrast1, contrast2, region1, region2) {
+  # Load GO annotation
+  go <- fread(go_file)
+  go <- go[, c("Gene stable ID", "GO term accession", "GO term name", "GO domain")]
+  setnames(go, new = c("ENSEMBL", "GOID", "Description", "GOdomain"))
+  go <- go[GOdomain != "", ]
+  
+  # Filter for specified GO term
+  go_activity <- go[GOID == goid, "ENSEMBL"]
+  go_ensembl <- annot[annot$ENSEMBL %in% go_activity$ENSEMBL, c("GENENAME", "ENSEMBL")]
+  subset_logCPM <- logCPM[rownames(logCPM) %in% go_ensembl$ENSEMBL, ]
+  rownames(subset_logCPM) <- go_ensembl$GENENAME[match(rownames(subset_logCPM), go_ensembl$ENSEMBL)]
+  
+  # Define the desired group order
+  group_order <- c("AF", "Metformin", "Sham")
+  meta$Group <- factor(meta$Group, levels = group_order)
+  meta <- meta[order(meta$Group), ]  # Reorder meta by Group
+  subset_logCPM <- subset_logCPM[, rownames(meta), drop = FALSE]  # Reorder columns
+  
+  # Significant genes
+  sig_genes <- res_all[res_all$ENSEMBL %in% go_ensembl$ENSEMBL & res_all$adj.P.Val < 0.05, ]
+  sig_contrast1_genes <- sig_genes[sig_genes$Contrast == contrast1, "GENENAME"]
+  sig_contrast2_genes <- sig_genes[sig_genes$Contrast == contrast2, "GENENAME"]
+  
+  # Generate heatmap for region1
+  if (length(sig_contrast1_genes) > 0) {
+    region1_subset_logCPM <- subset_logCPM[, rownames(meta)[meta$Region == region1], drop = FALSE]
+    region1_subset_logCPM <- region1_subset_logCPM[row.names(region1_subset_logCPM) %in% sig_contrast1_genes, ]
+    if (nrow(region1_subset_logCPM) > 0) {
+      pheatmap(region1_subset_logCPM,
+               annotation_col = meta[, "Group", drop = FALSE],
+               annotation_colors = list(Group = publication_colors),
+               cluster_cols = FALSE,  # Disable column clustering
+               scale = "row",
+               show_rownames = TRUE,
+               fontsize = 10,
+               fontsize_row = 8,
+               fontsize_col = 8,
+               color = colorRampPalette(viridisLite::magma(50))(50),
+               breaks = seq(-3, 3, length.out = 51),
+               main = paste("Non-Batch Corrected Heatmap for", goid, "in", region1))
+    } else {
+      print(paste("No significant genes to display for contrast:", contrast1, "in region:", region1))
+    }
+  } else {
+    print(paste("No significant genes found for contrast:", contrast1, "in region:", region1))
+  }
+  
+  # Generate heatmap for region2
+  if (length(sig_contrast2_genes) > 0) {
+    region2_subset_logCPM <- subset_logCPM[, rownames(meta)[meta$Region == region2], drop = FALSE]
+    region2_subset_logCPM <- region2_subset_logCPM[row.names(region2_subset_logCPM) %in% sig_contrast2_genes, ]
+    if (nrow(region2_subset_logCPM) > 0) {
+      pheatmap(region2_subset_logCPM,
+               annotation_col = meta[, "Group", drop = FALSE],
+               annotation_colors = list(Group = publication_colors),
+               cluster_cols = FALSE,  # Disable column clustering
+               scale = "row",
+               show_rownames = TRUE,
+               fontsize = 10,
+               fontsize_row = 8,
+               fontsize_col = 8,
+               color = colorRampPalette(viridisLite::viridis(50))(50),
+               main = paste("Non-Batch Corrected Heatmap for", goid, "in", region2))
+    } else {
+      print(paste("No significant genes to display for contrast:", contrast2, "in region:", region2))
+    }
+  } else {
+    print(paste("No significant genes found for contrast:", contrast2, "in region:", region2))
+  }
+}
+
+# Ion-Channel Compex: GO:0034702 with non-batch corrected values
+generate_pheatmap_for_goid_non_batch(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM = logCPM,                 # Using non-batch corrected logCPM
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0034702",             # Ion-channel Complex
+  contrast1 = "met_vs_placebo_RA",     
+  contrast2 = "met_vs_placebo_LA",     
+  region1 = "RA",                  
+  region2 = "LA"                   
+)
+
+## Ionchannel Heatmap used in Main Figure
+
+#Example for mitochondrial matrix GO:0005759
+generate_pheatmap_for_goid_non_batch(
+  go_file = "../../../data/gene_annotation/horse_GO.tsv.gz",
+  annot = annot,
+  logCPM = logCPM,                 # Using non-batch corrected logCPM
+  res_all = res_all,
+  meta = meta,
+  meta_reordered = meta_reordered,
+  goid = "GO:0005759",          # Mitochondrial Matrix
+  contrast1 = "AF_vs_sham_RA",  
+  contrast2 = "AF_vs_sham_LA",  
+  region1 = "RA",               
+  region2 = "LA"                
+)
+
+## Mitochondrial Matrix Heatmap used in Supplemnetary Figure
+
+#  These heatmaps highlight the region-specific expression patterns of significant genes associated with a specific biological process (GO term), with hierarchical clustering applied to genes but not to sample columns. 
 
 
+```
 ```
 
 
