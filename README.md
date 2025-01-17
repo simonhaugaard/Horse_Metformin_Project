@@ -7,21 +7,17 @@ This study investigates the effect of metformin on atrial fibrillation (AF) in a
 - **Metformin Group**: Horses with AF treated with metformin for four months (n = 10)
 - **Sham Group**: Sham-operated horses in normal sinus rhythm with no treatment (n = 4)
 
-For proteomics, baseline biopsies from the right atrium were collected before inducing AF, allowing for a time-course comparison. All other analyses focus on samples obtained from the left and right atrium after four months of disease.
-
 The project is divided into the following main analysis workflows:
 
 ### Proteomics
-1. **Terminal Samples**: Analyzes terminal samples for differential protein abundance, enrichment, and pathway interactions.
-2. **Timecourse Samples**: Evaluates dynamic changes in protein abundance across different time points in horses treated with metformin compared to controls.
+Analyzes terminal samples for differential protein abundance, enrichment, and pathway interactions.
 
 ### RNA-seq
 Performs transcriptome-wide differential expression analysis and gene enrichment using RNA-seq data.
 
 ### Integration of Omics
 Combines multi-omics data (proteomics and transcriptomics) for joint dimensionality reduction analysis (MCIA) and functional enrichment of high-loading features.
-
-
+Most of this analysis was performed on the online OmicsAnalyst Platform, but the enrichment of loadings was performed here. 
 
 ## Directory Descriptions
 
@@ -39,7 +35,7 @@ Contains all RNA sequencing data and analysis scripts.
 - `preprocessing/`: Scripts and outputs for initial data preprocessing, quality control, and cleaning steps before downstream analysis (including Snakefiles).
 
 ### Proteomics
-The proteomics analyses are divided into terminal samples and time-course data.
+Contains all proteomic data and analysis scripts. 
 
 - `analysis/`: Contains scripts for differential protein abundance analysis, enrichment, and pathway interaction analysis.
   - `01_dge/`: Scripts for differential abundance analysis.
